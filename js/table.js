@@ -6,33 +6,21 @@
 (function (PT) {
   'use strict';
 
-  var lineTableEl = null;
   var roleTableEl = null;
 
   PT.initTable = function () {
-    lineTableEl = document.getElementById('dataTable');
     roleTableEl = document.getElementById('roleTable');
   };
 
   PT.renderTable = function () {
-    if (lineTableEl) {
-      lineTableEl.innerHTML = buildSeriesTableHtml({
-        kind: 'line',
-        series: PT.state.lines,
-        addLabel: 'Linie hinzufügen',
-        seriesLabel: 'Linie'
-      });
-      bindSeriesTableEvents(lineTableEl, 'line');
-    }
-    if (roleTableEl) {
-      roleTableEl.innerHTML = buildSeriesTableHtml({
-        kind: 'role',
-        series: PT.state.roles,
-        addLabel: 'Rolle hinzufügen',
-        seriesLabel: 'Rolle'
-      });
-      bindSeriesTableEvents(roleTableEl, 'role');
-    }
+    if (!roleTableEl) return;
+    roleTableEl.innerHTML = buildSeriesTableHtml({
+      kind: 'role',
+      series: PT.state.roles,
+      addLabel: 'Rolle hinzufügen',
+      seriesLabel: 'Rolle'
+    });
+    bindSeriesTableEvents(roleTableEl, 'role');
   };
 
   PT.renderRoleTable = PT.renderTable; // gleiche Funktion rendert beide
@@ -206,7 +194,6 @@
   }
 
   PT.updateAllSums = function () {
-    if (lineTableEl) updateAllSumsFor(lineTableEl, PT.state.lines, 'line');
     if (roleTableEl) updateAllSumsFor(roleTableEl, PT.state.roles, 'role');
   };
 

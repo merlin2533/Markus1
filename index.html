@@ -25,7 +25,6 @@
       <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
       <span class="toolbar-divider"></span>
       <button id="addPhaseBtn" class="btn" type="button" title="Sub-Phase (Realisierung) hinzufügen">+ Sub-Phase</button>
-      <button id="addLineBtn" class="btn" type="button">+ Linie</button>
       <button id="addRoleBtn" class="btn" type="button">+ Rolle</button>
       <span class="toolbar-divider"></span>
       <label class="color-field">
@@ -45,22 +44,14 @@
 
   <main>
     <section class="panel">
-      <h2>Tage pro Phase (Linien)</h2>
-      <div class="table-wrap">
-        <table id="dataTable" class="data-table"></table>
-      </div>
-      <p class="hint no-print">
-        Hinweis: Haupt-Phasen (Initialisierung, Definition, Planung, Abschluss) sind feste Bestandteile des Management-Prozesses.
-        Sub-Phasen (Analyse … Rollout) sind frei erweiterbar – „+ Sub-Phase" oben.
-      </p>
-    </section>
-
-    <section class="panel">
       <h2>Tage pro Phase pro Rolle</h2>
       <div class="table-wrap">
         <table id="roleTable" class="data-table"></table>
       </div>
-      <p class="hint no-print">Werte hier oder unten in der Heatmap eingeben – beide Ansichten sind verbunden.</p>
+      <p class="hint no-print">
+        Haupt-Phasen (Initialisierung, Definition, Planung, Abschluss) sind feste Bestandteile des Management-Prozesses.
+        Sub-Phasen (Analyse … Rollout) frei erweiterbar – „+ Sub-Phase" oben. Werte können auch in der Heatmap unten editiert werden.
+      </p>
     </section>
 
     <section class="panel print-keep">

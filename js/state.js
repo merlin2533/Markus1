@@ -344,8 +344,8 @@ window.PT = window.PT || {};
     var n = PT.state.phases.length;
     var out = new Array(n).fill(0);
     for (var i = 0; i < n; i++) {
-      for (var k = 0; k < PT.state.lines.length; k++) {
-        out[i] += Number(PT.state.lines[k].values[i]) || 0;
+      for (var k = 0; k < PT.state.roles.length; k++) {
+        out[i] += Number(PT.state.roles[k].values[i]) || 0;
       }
     }
     return out;

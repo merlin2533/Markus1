@@ -47,12 +47,12 @@
     var s = PT.state;
     var labels = s.phases.map(function (p) { return p.name; });
 
-    var lineDatasets = s.lines.map(function (l) {
+    var lineDatasets = s.roles.map(function (r) {
       return {
-        label: l.name,
-        data: l.values.slice(),
-        borderColor: l.color,
-        backgroundColor: PT.hexToRgba(l.color, 0.18),
+        label: r.name,
+        data: r.values.slice(),
+        borderColor: r.color,
+        backgroundColor: PT.hexToRgba(r.color, 0.18),
         tension: 0.4,
         fill: true,
         pointRadius: 3,
@@ -79,12 +79,12 @@
     lineChart.data.datasets = lineDatasets;
     lineChart.update('none');
 
-    var barDatasets = s.lines.map(function (l) {
+    var barDatasets = s.roles.map(function (r) {
       return {
-        label: l.name,
-        data: l.values.slice(),
-        backgroundColor: l.color,
-        borderColor: l.color,
+        label: r.name,
+        data: r.values.slice(),
+        backgroundColor: r.color,
+        borderColor: r.color,
         borderWidth: 1
       };
     });

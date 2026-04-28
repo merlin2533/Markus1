@@ -204,7 +204,7 @@ tr.column-sum-row td { background: #e7eef5; font-weight: 700; color: #1a3d6b; }
 
 /* ===== Process arrows (3 Tiers) ===== */
 .process-panel { padding-bottom: 24px; }
-.phase-arrows {
+.phase-arrows, .phase-groups {
   display: grid; gap: 4px; margin-bottom: 4px;
 }
 .phase-arrow {

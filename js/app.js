@@ -41,7 +41,6 @@
 
   function bindToolbar() {
     byId('addPhaseBtn').addEventListener('click', PT.addSubPhase);
-    byId('addLineBtn').addEventListener('click', PT.addLine);
     byId('addRoleBtn').addEventListener('click', PT.addRole);
 
     byId('resetBtn').addEventListener('click', function () {

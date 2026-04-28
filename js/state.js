@@ -14,7 +14,7 @@ window.PT = window.PT || {};
 (function (PT) {
   'use strict';
 
-  PT.STORAGE_KEY = 'phaseTracker.v3';
+  PT.STORAGE_KEY = 'phaseTracker.v4';
   PT.GROUPS = ['Vorbereitung', 'Durchführung', 'Produktivnahme'];
   PT.MAIN_REALISIERUNG = 'Realisierung / Steuerung';
 
@@ -35,20 +35,20 @@ window.PT = window.PT || {};
       { id: PT.uid(), name: 'Abschluss',       kind: 'main', fixed: true, group: 'Produktivnahme' }
     ];
     var lines = [
-      { id: PT.uid(), name: 'Projektmanagement', color: '#7BAE3F',
+      { id: PT.uid(), name: 'Projektmanagement', color: '#4F8B2C',
         values: [2, 4, 6, 8, 8, 8, 6, 4, 3] },
-      { id: PT.uid(), name: 'Fachliche Arbeit',  color: '#A9C97C',
+      { id: PT.uid(), name: 'Fachliche Arbeit',  color: '#D97706',
         values: [1, 3, 8, 15, 20, 18, 10, 4, 2] },
-      { id: PT.uid(), name: 'Technische Arbeit', color: '#5C8C2F',
+      { id: PT.uid(), name: 'Technische Arbeit', color: '#2563EB',
         values: [2, 5, 11, 17, 27, 34, 29, 17, 5] }
     ];
     // percentages[lineIdx] - Spalten-Summe sollte ~100% sein.
     var roles = [
       { id: PT.uid(), name: 'Projektleitung',  color: '#1F77B4', percentages: [40, 10, 10] },
-      { id: PT.uid(), name: 'Stellvertretung', color: '#4A90C2', percentages: [20,  5,  5] },
-      { id: PT.uid(), name: 'Projektbüro',     color: '#7AB0D4', percentages: [20,  5,  5] },
-      { id: PT.uid(), name: 'techn. Leitung',  color: '#A47C2A', percentages: [10, 10, 70] },
-      { id: PT.uid(), name: 'fachl. Leitung',  color: '#C9A66B', percentages: [10, 70, 10] }
+      { id: PT.uid(), name: 'Stellvertretung', color: '#6F42C1', percentages: [20,  5,  5] },
+      { id: PT.uid(), name: 'Projektbüro',     color: '#17A2B8', percentages: [20,  5,  5] },
+      { id: PT.uid(), name: 'techn. Leitung',  color: '#C0392B', percentages: [10, 10, 70] },
+      { id: PT.uid(), name: 'fachl. Leitung',  color: '#D4A017', percentages: [10, 70, 10] }
     ];
     return {
       phases: phases,

@@ -7,50 +7,59 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@2.2.5/dist/chartjs-plugin-dragdata.min.js"></script>
 </head>
 <body>
   <header class="toolbar no-print">
     <h1>Projekt-Phasen-Aufwand</h1>
     <div class="toolbar-actions">
-      <label class="btn btn-secondary" title="XLSX importieren (Drag&Drop ebenfalls möglich)">
+      <label class="btn btn-secondary" title="XLSX importieren">
         Excel importieren
         <input id="importInput" type="file" accept=".xlsx,.xls" hidden />
       </label>
       <button id="exportBtn" class="btn btn-secondary" type="button">Excel exportieren</button>
-      <button id="pngBtn" class="btn btn-secondary" type="button" title="Liniendiagramm als PNG">PNG-Export</button>
-      <button id="printBtn" class="btn btn-secondary" type="button" title="Drucken / als PDF speichern">Drucken</button>
+      <button id="pngBtn" class="btn btn-secondary" type="button">PNG-Export</button>
+      <button id="printBtn" class="btn btn-secondary" type="button">Drucken</button>
       <span class="toolbar-divider"></span>
-      <button id="undoBtn" class="btn btn-ghost" type="button" title="Rückgängig (Strg+Z)">↶ Undo</button>
-      <button id="redoBtn" class="btn btn-ghost" type="button" title="Wiederholen (Strg+Y)">↷ Redo</button>
+      <button id="undoBtn" class="btn btn-ghost" type="button" title="Strg+Z">↶ Undo</button>
+      <button id="redoBtn" class="btn btn-ghost" type="button" title="Strg+Y">↷ Redo</button>
       <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
       <span class="toolbar-divider"></span>
-      <button id="addPhaseBtn" class="btn" type="button" title="Sub-Phase (Realisierung) hinzufügen">+ Sub-Phase</button>
-      <button id="addRoleBtn" class="btn" type="button">+ Rolle</button>
+      <button id="addPhaseBtn" class="btn" type="button">+ Sub-Phase</button>
+      <button id="addLineBtn"  class="btn" type="button">+ Linie</button>
+      <button id="addRoleBtn"  class="btn" type="button">+ Rolle</button>
       <span class="toolbar-divider"></span>
-      <label class="color-field">
-        Gesamt-Farbe
-        <input id="totalColor" type="color" />
-      </label>
-      <label class="check-field">
-        <input id="showTotal" type="checkbox" checked />
-        Gesamtlinie zeigen
-      </label>
+      <label class="check-field"><input id="showNormal" type="checkbox" checked /> Normalaufwände</label>
+      <label class="check-field"><input id="showZusatz" type="checkbox" /> Zusatzaufwände</label>
+      <label class="check-field"><input id="showTotal"  type="checkbox" checked /> Gesamtlinie</label>
+      <label class="check-field"><input id="showLabels" type="checkbox" /> Werte am Chart</label>
+      <label class="color-field">Gesamt-Farbe <input id="totalColor" type="color" /></label>
     </div>
   </header>
 
-  <div id="dropOverlay" class="drop-overlay">
-    <div class="drop-overlay-message">.xlsx-Datei hier ablegen</div>
-  </div>
+  <div id="dropOverlay" class="drop-overlay"><div class="drop-overlay-message">.xlsx-Datei hier ablegen</div></div>
 
   <main>
     <section class="panel">
-      <h2>Tage pro Phase pro Rolle</h2>
+      <h2>Tage pro Phase (Linien)</h2>
       <div class="table-wrap">
-        <table id="roleTable" class="data-table"></table>
+        <table id="lineTable" class="data-table"></table>
       </div>
       <p class="hint no-print">
         Haupt-Phasen (Initialisierung, Definition, Planung, Abschluss) sind feste Bestandteile des Management-Prozesses.
-        Sub-Phasen (Analyse … Rollout) frei erweiterbar – „+ Sub-Phase" oben. Werte können auch in der Heatmap unten editiert werden.
+        Sub-Phasen frei erweiterbar via „+ Sub-Phase". Linien-Reihenfolge per Drag&amp;Drop.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Verteilung Rolle pro Linie (in %)</h2>
+      <div class="table-wrap">
+        <table id="percentTable" class="data-table"></table>
+      </div>
+      <p class="hint no-print">
+        Anteil jeder Rolle am Aufwand der jeweiligen Linie. Spaltensumme sollte 100 % betragen
+        (rot wenn ≠ 100). Tage gesamt pro Rolle = Summe(Linie × % / 100) über alle Phasen.
       </p>
     </section>
 
@@ -59,26 +68,29 @@
       <div class="chart-wrap">
         <canvas id="lineChart"></canvas>
       </div>
+      <p class="hint no-print">
+        Linien-Werte können direkt im Chart per Drag&amp;Drop hoch/runter gezogen werden;
+        die Tabelle aktualisiert sich automatisch. Über die Toolbar lassen sich Normal-/Zusatzaufwände,
+        Gesamtlinie und Punkt-Beschriftungen ein-/ausblenden.
+      </p>
     </section>
 
     <section class="panel process-panel print-keep">
       <h2>Phasenprozess</h2>
-      <div id="phaseSubArrows" class="phase-arrows tier-sub" aria-label="Sub-Phasen"></div>
+      <div id="phaseSubArrows"  class="phase-arrows tier-sub" aria-label="Sub-Phasen"></div>
       <div id="phaseMainArrows" class="phase-arrows tier-main" aria-label="Haupt-Phasen"></div>
-      <div id="phaseGroups" class="phase-groups tier-groups" aria-label="Lifecycle-Gruppen"></div>
+      <div id="phaseGroups"     class="phase-groups tier-groups" aria-label="Lifecycle-Gruppen"></div>
     </section>
 
     <details class="panel no-print" id="barDetails">
       <summary>Werte als Balken anzeigen</summary>
-      <div class="chart-wrap chart-wrap-short">
-        <canvas id="barChart"></canvas>
-      </div>
+      <div class="chart-wrap chart-wrap-short"><canvas id="barChart"></canvas></div>
     </details>
 
-    <section class="panel print-keep">
-      <h2>Schwerpunkte der Arbeit im Leitungsbereich</h2>
+    <details class="panel print-keep" id="heatmapDetails" open>
+      <summary>Schwerpunkte der Arbeit im Leitungsbereich</summary>
       <div id="heatmap" class="heatmap"></div>
-    </section>
+    </details>
 
     <details class="panel" id="heatmapSimpleDetails">
       <summary>Heatmap-Balken ohne Zahlen</summary>

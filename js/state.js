@@ -1,19 +1,20 @@
 /* Globaler Namespace + State + localStorage.
 
    Datenmodell:
-   - state.phases ist eine flache Liste mit fixen Haupt-Phasen (kind='main', fixed=true)
+   - state.phases: flache Liste mit fixen Haupt-Phasen (kind='main', fixed=true)
      und benutzerdefinierten Sub-Phasen (kind='sub') in der Mitte.
-   - Reihenfolge ist immer: [Init, Definition, Planung, ...subs..., Abschluss].
-   - Sub-Phasen sind die Unterschritte der Realisierung / Steuerung; nur sie sind
-     hinzu-/entfern-/umbenenn-/sortierbar.
-   - Linien und Rollen halten Werte (Tage) pro Phase in einem Array gleicher Länge.
+   - state.lines: Aufwands-Kategorien (z.B. Projektmanagement, Fachliche Arbeit,
+     Technische Arbeit) mit values[phaseIdx] = Tage.
+   - state.roles: Rollen (Projektleitung, ...) mit percentages[lineIdx] = 0..100.
+     Die tatsächlichen Tage pro Rolle und Phase werden berechnet:
+       roleDays(r, p) = sum_l(lines[l].values[p] * roles[r].percentages[l] / 100)
 */
 window.PT = window.PT || {};
 
 (function (PT) {
   'use strict';
 
-  PT.STORAGE_KEY = 'phaseTracker.v2';
+  PT.STORAGE_KEY = 'phaseTracker.v3';
   PT.GROUPS = ['Vorbereitung', 'Durchführung', 'Produktivnahme'];
   PT.MAIN_REALISIERUNG = 'Realisierung / Steuerung';
 
@@ -41,24 +42,23 @@ window.PT = window.PT || {};
       { id: PT.uid(), name: 'Technische Arbeit', color: '#5C8C2F',
         values: [2, 5, 11, 17, 27, 34, 29, 17, 5] }
     ];
+    // percentages[lineIdx] - Spalten-Summe sollte ~100% sein.
     var roles = [
-      { id: PT.uid(), name: 'Projektleitung',  color: '#1F77B4',
-        values: [5, 5, 4, 3, 3, 3, 3, 3, 5] },
-      { id: PT.uid(), name: 'Stellvertretung', color: '#4A90C2',
-        values: [2, 2, 2, 1, 1, 1, 1, 1, 2] },
-      { id: PT.uid(), name: 'Projektbüro',     color: '#7AB0D4',
-        values: [1, 2, 2, 1, 1, 1, 1, 2, 3] },
-      { id: PT.uid(), name: 'techn. Leitung',  color: '#A47C2A',
-        values: [1, 2, 4, 6, 8, 10, 8, 5, 2] },
-      { id: PT.uid(), name: 'fachl. Leitung',  color: '#C9A66B',
-        values: [1, 2, 5, 7, 9, 6, 3, 2, 1] }
+      { id: PT.uid(), name: 'Projektleitung',  color: '#1F77B4', percentages: [40, 10, 10] },
+      { id: PT.uid(), name: 'Stellvertretung', color: '#4A90C2', percentages: [20,  5,  5] },
+      { id: PT.uid(), name: 'Projektbüro',     color: '#7AB0D4', percentages: [20,  5,  5] },
+      { id: PT.uid(), name: 'techn. Leitung',  color: '#A47C2A', percentages: [10, 10, 70] },
+      { id: PT.uid(), name: 'fachl. Leitung',  color: '#C9A66B', percentages: [10, 70, 10] }
     ];
     return {
       phases: phases,
       lines: lines,
       roles: roles,
       totalColor: '#3E6B1F',
-      showTotal: true
+      showTotal: true,
+      showZusatz: false,
+      showNormal: true,
+      showLabels: false
     };
   };
 
@@ -91,50 +91,34 @@ window.PT = window.PT || {};
     PT.notify();
   };
 
-  /* ===== Normalize: erzwingt feste Struktur (Init, Def, Plan, *subs*, Abschluss) ===== */
+  /* ===== Normalize ===== */
   PT.normalize = function (s) {
     var d = PT.defaultState();
     if (!s || typeof s !== 'object' || !Array.isArray(s.phases) || s.phases.length === 0) {
       return d;
     }
-
-    // Finde Sub-Phasen: alles was nicht erste 3 oder letzte ist UND/ODER kind='sub'.
-    // Heuristik: Erste 3 Phasen werden zu fixed-main, letzte zu fixed-main, Rest sub.
     var src = s.phases.slice();
     var phases = [];
     function makeMain(name, group, fallback) {
-      return {
-        id: PT.uid(),
-        name: String(name || fallback),
-        kind: 'main',
-        fixed: true,
-        group: group
-      };
+      return { id: PT.uid(), name: String(name || fallback), kind: 'main', fixed: true, group: group };
     }
     function makeSub(p) {
-      return {
-        id: p.id || PT.uid(),
-        name: String(p.name || 'Sub-Phase'),
-        kind: 'sub',
-        fixed: false,
-        group: 'Durchführung'
-      };
+      return { id: p.id || PT.uid(), name: String(p.name || 'Sub-Phase'),
+               kind: 'sub', fixed: false, group: 'Durchführung' };
     }
-    var DEFAULT_NAMES = ['Initialisierung', 'Definition', 'Planung'];
     if (src.length >= 4) {
-      phases.push(makeMain(src[0].name, 'Vorbereitung', DEFAULT_NAMES[0]));
-      phases.push(makeMain(src[1].name, 'Vorbereitung', DEFAULT_NAMES[1]));
-      phases.push(makeMain(src[2].name, 'Vorbereitung', DEFAULT_NAMES[2]));
+      phases.push(makeMain(src[0].name, 'Vorbereitung', 'Initialisierung'));
+      phases.push(makeMain(src[1].name, 'Vorbereitung', 'Definition'));
+      phases.push(makeMain(src[2].name, 'Vorbereitung', 'Planung'));
       for (var i = 3; i < src.length - 1; i++) phases.push(makeSub(src[i]));
       phases.push(makeMain(src[src.length - 1].name, 'Produktivnahme', 'Abschluss'));
     } else {
-      // Zu wenige Phasen — nutze Defaults.
       return d;
     }
 
     var n = phases.length;
-    function fixSeries(arr) {
-      if (!Array.isArray(arr)) return [];
+    function fixLines(arr) {
+      if (!Array.isArray(arr)) return d.lines;
       return arr.map(function (item) {
         var v = Array.isArray(item.values) ? item.values.slice(0, n) : [];
         while (v.length < n) v.push(0);
@@ -146,16 +130,34 @@ window.PT = window.PT || {};
         };
       });
     }
+    var lines = fixLines(s.lines);
+    var L = lines.length;
+    function fixRoles(arr) {
+      if (!Array.isArray(arr)) return d.roles.slice(0, 0);
+      return arr.map(function (item) {
+        var p = Array.isArray(item.percentages) ? item.percentages.slice(0, L) : [];
+        while (p.length < L) p.push(0);
+        return {
+          id: item.id || PT.uid(),
+          name: String(item.name || ''),
+          color: String(item.color || '#888888'),
+          percentages: p.map(function (x) { return PT.clampPercent(x); })
+        };
+      });
+    }
     return {
       phases: phases,
-      lines: fixSeries(s.lines),
-      roles: fixSeries(s.roles),
+      lines: lines,
+      roles: fixRoles(s.roles),
       totalColor: s.totalColor || '#3E6B1F',
-      showTotal: s.showTotal !== false
+      showTotal: s.showTotal !== false,
+      showZusatz: !!s.showZusatz,
+      showNormal: s.showNormal !== false,
+      showLabels: !!s.showLabels
     };
   };
 
-  /* ===== Pub/Sub für Re-Rendering ===== */
+  /* ===== Pub/Sub ===== */
   var subscribers = [];
   PT.subscribe = function (fn) { subscribers.push(fn); };
   PT.notify = function () {
@@ -173,8 +175,14 @@ window.PT = window.PT || {};
     if (n > PT.MAX_VALUE) return PT.MAX_VALUE;
     return n;
   };
+  PT.clampPercent = function (v) {
+    var n = Number(v);
+    if (!isFinite(n) || n < 0) return 0;
+    if (n > 100) return 100;
+    return n;
+  };
 
-  /* ===== Debounce-Utility ===== */
+  /* ===== Debounce ===== */
   PT.debounce = function (fn, wait) {
     var t = null;
     return function () {
@@ -184,7 +192,7 @@ window.PT = window.PT || {};
     };
   };
 
-  /* ===== History (Undo/Redo) ===== */
+  /* ===== History ===== */
   PT.history = { undo: [], redo: [], max: 50 };
   PT.pushHistory = function () {
     var snap = JSON.stringify(PT.state);
@@ -209,8 +217,7 @@ window.PT = window.PT || {};
     PT.notify();
   };
 
-  /* ===== Sub-Phasen-Index-Range ===== */
-  // Indizes der Sub-Phasen (ohne fixed-main).
+  /* ===== Phasen-Mutationen ===== */
   PT.subPhaseRange = function () {
     var phases = PT.state.phases;
     var start = -1, end = -1;
@@ -223,7 +230,6 @@ window.PT = window.PT || {};
     return { start: start, end: end };
   };
 
-  /* ===== Mutationen ===== */
   PT.addSubPhase = function () {
     PT.pushHistory();
     var range = PT.subPhaseRange();
@@ -233,21 +239,18 @@ window.PT = window.PT || {};
     };
     PT.state.phases.splice(insertAt, 0, newPhase);
     PT.state.lines.forEach(function (l) { l.values.splice(insertAt, 0, 0); });
-    PT.state.roles.forEach(function (r) { r.values.splice(insertAt, 0, 0); });
     PT.notify();
   };
-  // Backward compat
   PT.addPhase = PT.addSubPhase;
 
   PT.removePhase = function (idx) {
     var phase = PT.state.phases[idx];
     if (!phase || phase.fixed) return;
     var range = PT.subPhaseRange();
-    if (range.start === range.end) return; // mind. eine Sub-Phase muss bleiben
+    if (range.start === range.end) return;
     PT.pushHistory();
     PT.state.phases.splice(idx, 1);
     PT.state.lines.forEach(function (l) { l.values.splice(idx, 1); });
-    PT.state.roles.forEach(function (r) { r.values.splice(idx, 1); });
     PT.notify();
   };
 
@@ -256,19 +259,18 @@ window.PT = window.PT || {};
     if (!phase || phase.fixed) return;
     var j = idx + delta;
     var target = PT.state.phases[j];
-    if (!target || target.fixed) return; // nur innerhalb der Sub-Phasen
+    if (!target || target.fixed) return;
     PT.pushHistory();
     function swap(arr) { var t = arr[idx]; arr[idx] = arr[j]; arr[j] = t; }
     swap(PT.state.phases);
     PT.state.lines.forEach(function (l) { swap(l.values); });
-    PT.state.roles.forEach(function (r) { swap(r.values); });
     PT.notify();
   };
 
   PT.movePhaseTo = function (from, to) {
     var pf = PT.state.phases[from];
     var pt = PT.state.phases[to];
-    if (!pf || !pt || pf.fixed || pt.fixed) return; // beide müssen Sub-Phasen sein
+    if (!pf || !pt || pf.fixed || pt.fixed) return;
     if (from === to) return;
     PT.pushHistory();
     function moveItem(arr) {
@@ -277,10 +279,10 @@ window.PT = window.PT || {};
     }
     moveItem(PT.state.phases);
     PT.state.lines.forEach(function (l) { moveItem(l.values); });
-    PT.state.roles.forEach(function (r) { moveItem(r.values); });
     PT.notify();
   };
 
+  /* ===== Linien-Mutationen ===== */
   PT.addLine = function () {
     PT.pushHistory();
     var n = PT.state.phases.length;
@@ -288,12 +290,15 @@ window.PT = window.PT || {};
       id: PT.uid(), name: 'Neue Linie', color: '#888888',
       values: new Array(n).fill(0)
     });
+    // Allen Rollen einen 0%-Eintrag für die neue Linie hinzufügen.
+    PT.state.roles.forEach(function (r) { r.percentages.push(0); });
     PT.notify();
   };
 
   PT.removeLine = function (idx) {
     PT.pushHistory();
     PT.state.lines.splice(idx, 1);
+    PT.state.roles.forEach(function (r) { r.percentages.splice(idx, 1); });
     PT.notify();
   };
 
@@ -303,15 +308,21 @@ window.PT = window.PT || {};
     PT.pushHistory();
     var item = PT.state.lines.splice(from, 1)[0];
     PT.state.lines.splice(to, 0, item);
+    // Auch die Rollen-Prozentwerte umsortieren.
+    PT.state.roles.forEach(function (r) {
+      var p = r.percentages.splice(from, 1)[0];
+      r.percentages.splice(to, 0, p);
+    });
     PT.notify();
   };
 
+  /* ===== Rollen-Mutationen ===== */
   PT.addRole = function () {
     PT.pushHistory();
-    var n = PT.state.phases.length;
+    var L = PT.state.lines.length;
     PT.state.roles.push({
       id: PT.uid(), name: 'Neue Rolle', color: '#888888',
-      values: new Array(n).fill(0)
+      percentages: new Array(L).fill(0)
     });
     PT.notify();
   };
@@ -331,26 +342,52 @@ window.PT = window.PT || {};
     PT.notify();
   };
 
-  /* Setter ohne Re-Render der Inputs (Caller managed Saves/Refreshes). */
+  /* ===== Setter ===== */
   PT.setLineValue = function (lineIdx, phaseIdx, value) {
     PT.state.lines[lineIdx].values[phaseIdx] = PT.clampValue(value);
   };
-  PT.setRoleValue = function (roleIdx, phaseIdx, value) {
-    PT.state.roles[roleIdx].values[phaseIdx] = PT.clampValue(value);
+  PT.setRolePercent = function (roleIdx, lineIdx, value) {
+    PT.state.roles[roleIdx].percentages[lineIdx] = PT.clampPercent(value);
   };
 
-  /* Helpers */
+  /* ===== Berechnung ===== */
+  // Rollen-Tage in einer bestimmten Phase = sum_l(line[l].values[p] * pct[l] / 100)
+  PT.roleDayInPhase = function (roleIdx, phaseIdx) {
+    var role = PT.state.roles[roleIdx];
+    if (!role) return 0;
+    var sum = 0;
+    for (var l = 0; l < PT.state.lines.length; l++) {
+      sum += (Number(PT.state.lines[l].values[phaseIdx]) || 0) *
+             (Number(role.percentages[l]) || 0) / 100;
+    }
+    return sum;
+  };
+  PT.roleDaysAll = function (roleIdx) {
+    var n = PT.state.phases.length;
+    var out = new Array(n);
+    for (var p = 0; p < n; p++) out[p] = PT.roleDayInPhase(roleIdx, p);
+    return out;
+  };
+  PT.roleSumDays = function (roleIdx) {
+    var sum = 0;
+    var n = PT.state.phases.length;
+    for (var p = 0; p < n; p++) sum += PT.roleDayInPhase(roleIdx, p);
+    return sum;
+  };
+
+  // Cumulative der Linien (Normalaufwand-Gesamt)
   PT.cumulativePerPhase = function () {
     var n = PT.state.phases.length;
     var out = new Array(n).fill(0);
     for (var i = 0; i < n; i++) {
-      for (var k = 0; k < PT.state.roles.length; k++) {
-        out[i] += Number(PT.state.roles[k].values[i]) || 0;
+      for (var k = 0; k < PT.state.lines.length; k++) {
+        out[i] += Number(PT.state.lines[k].values[i]) || 0;
       }
     }
     return out;
   };
 
+  /* ===== Helper ===== */
   PT.hexToRgba = function (hex, alpha) {
     var h = (hex || '#888888').replace('#', '');
     if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
@@ -359,8 +396,6 @@ window.PT = window.PT || {};
     var b = parseInt(h.substr(4, 2), 16) || 0;
     return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
   };
-
-  /* Alpha → empfehle Textfarbe (dunkel oder hell) */
   PT.contrastTextColor = function (alpha) {
     return alpha > 0.55 ? '#ffffff' : '#1f2933';
   };

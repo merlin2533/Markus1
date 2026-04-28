@@ -30,7 +30,6 @@
     bindDropzone();
     bindDetailsResize();
 
-    // Initial-Render
     PT.renderTable();
     PT.renderCharts();
     PT.renderProcess();
@@ -41,16 +40,14 @@
 
   function bindToolbar() {
     byId('addPhaseBtn').addEventListener('click', PT.addSubPhase);
+    byId('addLineBtn').addEventListener('click', PT.addLine);
     byId('addRoleBtn').addEventListener('click', PT.addRole);
 
     byId('resetBtn').addEventListener('click', function () {
-      if (confirm('Wirklich auf Standardwerte zurücksetzen? Alle Eingaben gehen verloren.')) {
-        PT.reset();
-      }
+      if (confirm('Wirklich auf Standardwerte zurücksetzen? Alle Eingaben gehen verloren.')) PT.reset();
     });
 
     byId('exportBtn').addEventListener('click', PT.exportXlsx);
-
     var importInput = byId('importInput');
     importInput.addEventListener('change', function () {
       if (importInput.files && importInput.files[0]) {
@@ -61,22 +58,27 @@
 
     var totalColor = byId('totalColor');
     totalColor.addEventListener('input', function () {
-      PT.state.totalColor = totalColor.value;
-      PT.save();
-      PT.renderCharts();
+      PT.state.totalColor = totalColor.value; PT.save(); PT.renderCharts();
     });
 
-    var showTotal = byId('showTotal');
-    showTotal.addEventListener('change', function () {
-      PT.state.showTotal = showTotal.checked;
-      PT.save();
-      PT.renderCharts();
-    });
+    bindBoolToggle('showTotal',  function (v) { PT.state.showTotal = v;  PT.renderCharts(); });
+    bindBoolToggle('showNormal', function (v) { PT.state.showNormal = v; PT.renderCharts(); });
+    bindBoolToggle('showZusatz', function (v) { PT.state.showZusatz = v; PT.renderCharts(); });
+    bindBoolToggle('showLabels', function (v) { PT.state.showLabels = v; PT.renderCharts(); });
 
-    byId('undoBtn').addEventListener('click', function () { PT.undo(); });
-    byId('redoBtn').addEventListener('click', function () { PT.redo(); });
-    byId('pngBtn').addEventListener('click', function () { PT.exportLineChartPng(); });
+    byId('undoBtn').addEventListener('click', PT.undo);
+    byId('redoBtn').addEventListener('click', PT.redo);
+    byId('pngBtn').addEventListener('click', PT.exportLineChartPng);
     byId('printBtn').addEventListener('click', function () { window.print(); });
+  }
+
+  function bindBoolToggle(id, applyFn) {
+    var el = byId(id);
+    if (!el) return;
+    el.addEventListener('change', function () {
+      applyFn(el.checked);
+      PT.save();
+    });
   }
 
   function bindKeyboard() {
@@ -128,10 +130,17 @@
   }
 
   function syncToolbarFromState() {
-    var totalColor = byId('totalColor');
-    var showTotal = byId('showTotal');
-    if (totalColor) totalColor.value = PT.state.totalColor;
-    if (showTotal) showTotal.checked = !!PT.state.showTotal;
+    var s = PT.state;
+    var pairs = [
+      ['totalColor', 'value', s.totalColor],
+      ['showTotal',  'checked', !!s.showTotal],
+      ['showNormal', 'checked', s.showNormal !== false],
+      ['showZusatz', 'checked', !!s.showZusatz],
+      ['showLabels', 'checked', !!s.showLabels]
+    ];
+    pairs.forEach(function (p) {
+      var el = byId(p[0]); if (el) el[p[1]] = p[2];
+    });
   }
 
   function updateUndoRedoButtons() {

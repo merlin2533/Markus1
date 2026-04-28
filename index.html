@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projekt-Phasen-Aufwand</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <h1>Projekt-Phasen-Aufwand</h1>
+    <div class="toolbar-actions">
+      <label class="btn btn-secondary">
+        Excel importieren
+        <input id="importInput" type="file" accept=".xlsx,.xls" hidden />
+      </label>
+      <button id="exportBtn" class="btn btn-secondary" type="button">Excel exportieren</button>
+      <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
+      <span class="toolbar-divider"></span>
+      <button id="addPhaseBtn" class="btn" type="button">+ Phase</button>
+      <button id="addLineBtn" class="btn" type="button">+ Linie</button>
+      <button id="addRoleBtn" class="btn" type="button">+ Rolle</button>
+      <span class="toolbar-divider"></span>
+      <label class="color-field">
+        Gesamt-Farbe
+        <input id="totalColor" type="color" />
+      </label>
+      <label class="check-field">
+        <input id="showTotal" type="checkbox" checked />
+        Gesamtlinie zeigen
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Tage pro Phase</h2>
+      <div class="table-wrap">
+        <table id="dataTable" class="data-table"></table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Aufwandsverlauf</h2>
+      <div class="chart-wrap">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </section>
+
+    <section class="panel process-panel">
+      <h2>Phasenprozess</h2>
+      <div id="phaseArrows" class="phase-arrows"></div>
+      <div id="phaseGroups" class="phase-groups"></div>
+    </section>
+
+    <details class="panel" id="barDetails">
+      <summary>Werte als Balken anzeigen</summary>
+      <div class="chart-wrap chart-wrap-short">
+        <canvas id="barChart"></canvas>
+      </div>
+    </details>
+
+    <section class="panel">
+      <h2>Schwerpunkte der Arbeit im Leitungsbereich</h2>
+      <div id="heatmap" class="heatmap"></div>
+    </section>
+  </main>
+
+  <script src="js/state.js"></script>
+  <script src="js/table.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/process.js"></script>
+  <script src="js/heatmap.js"></script>
+  <script src="js/excel.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -387,6 +387,25 @@ window.PT = window.PT || {};
     return out;
   };
 
+  // Aggregierter Zusatzaufwand pro Phase (Summe über alle Rollen)
+  PT.zusatzAggregatePerPhase = function () {
+    var n = PT.state.phases.length;
+    var out = new Array(n).fill(0);
+    for (var p = 0; p < n; p++) {
+      for (var r = 0; r < PT.state.roles.length; r++) {
+        out[p] += PT.roleDayInPhase(r, p);
+      }
+    }
+    return out;
+  };
+
+  // Gesamtaufwand pro Phase (Linien + Zusatz)
+  PT.totalPerPhase = function () {
+    var cum = PT.cumulativePerPhase();
+    var zus = PT.zusatzAggregatePerPhase();
+    return cum.map(function (v, i) { return v + (zus[i] || 0); });
+  };
+
   /* ===== Helper ===== */
   PT.hexToRgba = function (hex, alpha) {
     var h = (hex || '#888888').replace('#', '');

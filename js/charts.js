@@ -75,9 +75,13 @@
         animation: false,
         plugins: {
           legend: { position: 'top', align: 'start' },
+          tooltip: { mode: 'index' },
           datalabels: { display: false }
         },
-        scales: { y: { beginAtZero: true, title: { display: true, text: 'Tage' } } }
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Tage' } }
+        }
       }
     });
   };
@@ -159,23 +163,28 @@
 
     lineChart.update('none');
 
-    // Bar-Chart spiegelt Linien-Datasets
-    var barDatasets = s.lines.map(function (l) {
-      return {
+    // Bar-Chart: Linien gestapelt, Rollen-Anteile (Zusatz) optional ontop in selbem Stack
+    var barDatasets = [];
+    s.lines.forEach(function (l) {
+      barDatasets.push({
         label: l.name,
         data: l.values.slice(),
         backgroundColor: l.color,
         borderColor: l.color,
-        borderWidth: 1
-      };
+        borderWidth: 1,
+        stack: 'effort'
+      });
     });
-    if (s.showTotal) {
-      barDatasets.push({
-        label: 'Gesamt',
-        data: PT.cumulativePerPhase(),
-        backgroundColor: PT.hexToRgba(s.totalColor, 0.4),
-        borderColor: s.totalColor,
-        borderWidth: 1
+    if (s.showZusatz) {
+      s.roles.forEach(function (r, ri) {
+        barDatasets.push({
+          label: r.name + ' (Zusatz)',
+          data: PT.roleDaysAll(ri).map(function (v) { return Math.round(v * 10) / 10; }),
+          backgroundColor: PT.hexToRgba(r.color, 0.85),
+          borderColor: r.color,
+          borderWidth: 1,
+          stack: 'effort'
+        });
       });
     }
     barChart.data.labels = labels;
@@ -189,15 +198,17 @@
     if (barChart) barChart.resize();
   };
 
-  PT.exportLineChartPng = function () {
-    if (!lineChart) return;
-    var url = lineChart.toBase64Image('image/png', 1);
+  function downloadPng(chart, filename) {
+    if (!chart) return;
+    var url = chart.toBase64Image('image/png', 1);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'aufwandsverlauf_' + new Date().toISOString().slice(0, 10) + '.png';
+    a.download = filename + '_' + new Date().toISOString().slice(0, 10) + '.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  };
+  }
+  PT.exportLineChartPng = function () { downloadPng(lineChart, 'aufwandsverlauf'); };
+  PT.exportBarChartPng  = function () { downloadPng(barChart,  'balkendiagramm'); };
 
 })(window.PT);

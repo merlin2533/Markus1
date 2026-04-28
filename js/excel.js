@@ -41,6 +41,131 @@
 
   function emptyCols(n) { var a = []; for (var i = 0; i < n; i++) a.push(''); return a; }
 
+  function checkXlsx() {
+    if (typeof XLSX === 'undefined') {
+      alert('SheetJS (XLSX) konnte nicht geladen werden.');
+      return false;
+    }
+    return true;
+  }
+  function stamp() { return new Date().toISOString().slice(0, 10); }
+
+  /* Nur Linien-Tabelle exportieren (Phasen + Linien + Zeilen-/Spalten-/Gruppensummen). */
+  PT.exportLinesXlsx = function () {
+    if (!checkXlsx()) return;
+    var s = PT.state;
+    var wb = XLSX.utils.book_new();
+
+    var phaseRows = [['Phase', 'Gruppe', 'Kind']];
+    s.phases.forEach(function (p) { phaseRows.push([p.name, p.group || '', p.kind || 'sub']); });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(phaseRows), SHEET_PHASES);
+
+    var header = ['Phase'].concat(s.lines.map(function (l) { return l.name; })).concat(['Σ Zeile']);
+    var rows = [header];
+    s.phases.forEach(function (p, pi) {
+      var row = [p.name];
+      var sum = 0;
+      s.lines.forEach(function (l) {
+        var v = Number(l.values[pi]) || 0;
+        sum += v; row.push(v);
+      });
+      row.push(sum);
+      rows.push(row);
+    });
+    var sumRow = ['Σ pro Linie'];
+    var grand = 0;
+    s.lines.forEach(function (l) {
+      var sum = l.values.reduce(function (a, b) { return a + (Number(b) || 0); }, 0);
+      grand += sum; sumRow.push(sum);
+    });
+    sumRow.push(grand);
+    rows.push(sumRow);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Tage_pro_Phase');
+
+    XLSX.writeFile(wb, 'linien_' + stamp() + '.xlsx');
+  };
+
+  /* Nur die Prozent-Matrix exportieren. */
+  PT.exportRolesXlsx = function () {
+    if (!checkXlsx()) return;
+    var s = PT.state;
+    var wb = XLSX.utils.book_new();
+
+    var header = ['Rolle'].concat(s.lines.map(function (l) { return l.name + ' (%)'; }))
+                          .concat(['Σ %', 'Tage gesamt (berechnet)']);
+    var rows = [header];
+    s.roles.forEach(function (r, ri) {
+      var row = [r.name];
+      var pctSum = 0;
+      r.percentages.forEach(function (p) { var v = Number(p) || 0; pctSum += v; row.push(v); });
+      row.push(pctSum);
+      row.push(Math.round(PT.roleSumDays(ri) * 10) / 10);
+      rows.push(row);
+    });
+    var colSumRow = ['Σ % (Soll: 100)'];
+    s.lines.forEach(function (_, li) {
+      var sum = s.roles.reduce(function (a, r) { return a + (Number(r.percentages[li]) || 0); }, 0);
+      colSumRow.push(sum);
+    });
+    colSumRow.push('', '');
+    rows.push(colSumRow);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Verteilung_in_Prozent');
+
+    XLSX.writeFile(wb, 'rollen_verteilung_' + stamp() + '.xlsx');
+  };
+
+  /* Berechnete Werte: Aufwandsverlauf (Linien + Rollen-Aggregat + Gesamt) je Phase. */
+  PT.exportComputedXlsx = function () {
+    if (!checkXlsx()) return;
+    var s = PT.state;
+    var wb = XLSX.utils.book_new();
+
+    var header = ['Phase'].concat(s.lines.map(function (l) { return l.name; }))
+                          .concat(s.roles.map(function (r) { return r.name + ' (Zusatz)'; }))
+                          .concat(['Gesamt (Linien)', 'Gesamt inkl. Zusatz']);
+    var rows = [header];
+    s.phases.forEach(function (p, pi) {
+      var row = [p.name];
+      var sumLine = 0, sumRole = 0;
+      s.lines.forEach(function (l) {
+        var v = Number(l.values[pi]) || 0; sumLine += v; row.push(v);
+      });
+      s.roles.forEach(function (_, ri) {
+        var v = PT.roleDayInPhase(ri, pi);
+        sumRole += v;
+        row.push(Math.round(v * 10) / 10);
+      });
+      row.push(sumLine);
+      row.push(Math.round((sumLine + sumRole) * 10) / 10);
+      rows.push(row);
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Aufwandsverlauf');
+
+    XLSX.writeFile(wb, 'aufwandsverlauf_' + stamp() + '.xlsx');
+  };
+
+  /* Heatmap: berechnete Rollen-Tage je Phase. */
+  PT.exportHeatmapXlsx = function () {
+    if (!checkXlsx()) return;
+    var s = PT.state;
+    var wb = XLSX.utils.book_new();
+    var header = ['Rolle'].concat(s.phases.map(function (p) { return p.name; })).concat(['Σ Tage']);
+    var rows = [header];
+    s.roles.forEach(function (r, ri) {
+      var row = [r.name];
+      var sum = 0;
+      s.phases.forEach(function (_, pi) {
+        var v = PT.roleDayInPhase(ri, pi);
+        sum += v;
+        row.push(Math.round(v * 10) / 10);
+      });
+      row.push(Math.round(sum * 10) / 10);
+      rows.push(row);
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Schwerpunkte_Rollen');
+    XLSX.writeFile(wb, 'schwerpunkte_' + stamp() + '.xlsx');
+  };
+
   PT.importXlsx = function (file) {
     if (typeof XLSX === 'undefined') {
       alert('SheetJS (XLSX) konnte nicht geladen werden.');

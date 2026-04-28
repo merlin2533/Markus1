@@ -70,6 +70,19 @@
     byId('redoBtn').addEventListener('click', PT.redo);
     byId('pngBtn').addEventListener('click', PT.exportLineChartPng);
     byId('printBtn').addEventListener('click', function () { window.print(); });
+
+    // Per-Section-Exporte (optional vorhanden)
+    bindClick('exportLinesBtn',     PT.exportLinesXlsx);
+    bindClick('exportRolesBtn',     PT.exportRolesXlsx);
+    bindClick('exportLineChartBtn', PT.exportLineChartPng);
+    bindClick('exportBarChartBtn',  PT.exportBarChartPng);
+    bindClick('exportComputedBtn',  PT.exportComputedXlsx);
+    bindClick('exportHeatmapBtn',   PT.exportHeatmapXlsx);
+  }
+
+  function bindClick(id, fn) {
+    var el = document.getElementById(id);
+    if (el && fn) el.addEventListener('click', fn);
   }
 
   function bindBoolToggle(id, applyFn) {

@@ -56,7 +56,7 @@ window.PT = window.PT || {};
       roles: roles,
       totalColor: '#3E6B1F',
       showTotal: true,
-      showZusatz: false,
+      showZusatz: true,
       showNormal: true,
       showLabels: false
     };
@@ -151,7 +151,7 @@ window.PT = window.PT || {};
       roles: fixRoles(s.roles),
       totalColor: s.totalColor || '#3E6B1F',
       showTotal: s.showTotal !== false,
-      showZusatz: !!s.showZusatz,
+      showZusatz: s.showZusatz !== false,
       showNormal: s.showNormal !== false,
       showLabels: !!s.showLabels
     };

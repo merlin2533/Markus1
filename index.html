@@ -31,7 +31,7 @@
       <button id="addRoleBtn"  class="btn" type="button">+ Rolle</button>
       <span class="toolbar-divider"></span>
       <label class="check-field"><input id="showNormal" type="checkbox" checked /> Normalaufwände</label>
-      <label class="check-field"><input id="showZusatz" type="checkbox" /> Zusatzaufwände</label>
+      <label class="check-field"><input id="showZusatz" type="checkbox" checked /> Zusatzaufwände</label>
       <label class="check-field"><input id="showTotal"  type="checkbox" checked /> Gesamtlinie</label>
       <label class="check-field"><input id="showLabels" type="checkbox" /> Werte am Chart</label>
       <label class="color-field">Gesamt-Farbe <input id="totalColor" type="color" /></label>
@@ -42,7 +42,12 @@
 
   <main>
     <section class="panel">
-      <h2>Tage pro Phase (Linien)</h2>
+      <div class="panel-header">
+        <h2>Tage pro Phase (Linien)</h2>
+        <div class="panel-actions no-print">
+          <button id="exportLinesBtn" class="btn btn-ghost btn-sm" type="button" title="Nur diese Tabelle als Excel">Excel</button>
+        </div>
+      </div>
       <div class="table-wrap">
         <table id="lineTable" class="data-table"></table>
       </div>
@@ -53,18 +58,30 @@
     </section>
 
     <section class="panel">
-      <h2>Verteilung Rolle pro Linie (in %)</h2>
+      <div class="panel-header">
+        <h2>Verteilung Rolle pro Linie (in %)</h2>
+        <div class="panel-actions no-print">
+          <button id="exportRolesBtn" class="btn btn-ghost btn-sm" type="button" title="Nur Rollen-Matrix als Excel">Excel</button>
+        </div>
+      </div>
       <div class="table-wrap">
         <table id="percentTable" class="data-table"></table>
       </div>
       <p class="hint no-print">
         Anteil jeder Rolle am Aufwand der jeweiligen Linie. Spaltensumme sollte 100 % betragen
         (rot wenn ≠ 100). Tage gesamt pro Rolle = Summe(Linie × % / 100) über alle Phasen.
+        Diese Werte fließen als „Zusatzaufwände" in den Aufwandsverlauf ein.
       </p>
     </section>
 
     <section class="panel print-keep">
-      <h2>Aufwandsverlauf</h2>
+      <div class="panel-header">
+        <h2>Aufwandsverlauf</h2>
+        <div class="panel-actions no-print">
+          <button id="exportLineChartBtn" class="btn btn-ghost btn-sm" type="button" title="Liniendiagramm als PNG">PNG</button>
+          <button id="exportComputedBtn" class="btn btn-ghost btn-sm" type="button" title="Berechnete Werte (inkl. Zusatz) als Excel">Excel</button>
+        </div>
+      </div>
       <div class="chart-wrap">
         <canvas id="lineChart"></canvas>
       </div>
@@ -83,12 +100,18 @@
     </section>
 
     <details class="panel no-print" id="barDetails">
-      <summary>Werte als Balken anzeigen</summary>
+      <summary>Werte als Balken anzeigen (Anteil Leitung gestapelt oben drauf)</summary>
+      <div class="panel-actions no-print" style="margin: 8px 0;">
+        <button id="exportBarChartBtn" class="btn btn-ghost btn-sm" type="button" title="Balkendiagramm als PNG">PNG</button>
+      </div>
       <div class="chart-wrap chart-wrap-short"><canvas id="barChart"></canvas></div>
     </details>
 
     <details class="panel print-keep" id="heatmapDetails" open>
       <summary>Schwerpunkte der Arbeit im Leitungsbereich</summary>
+      <div class="panel-actions no-print" style="margin: 8px 0;">
+        <button id="exportHeatmapBtn" class="btn btn-ghost btn-sm" type="button" title="Berechnete Rollen-Tage als Excel">Excel</button>
+      </div>
       <div id="heatmap" class="heatmap"></div>
     </details>
 

@@ -75,6 +75,13 @@ main {
 .btn-secondary:hover { background: #eef4fb; }
 .btn-ghost { background: transparent; border-color: var(--border); color: var(--muted); }
 .btn-ghost:hover { background: #eef0f3; color: var(--text); }
+.btn-sm { padding: 3px 8px; font-size: 12px; }
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 12px;
+}
+.panel-header h2 { margin: 0; }
+.panel-actions { display: flex; gap: 6px; align-items: center; }
 .color-field, .check-field {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: 13px; color: var(--muted);

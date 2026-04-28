@@ -7,8 +7,10 @@
   --accent: #2b6cb0;
   --accent-hover: #245a92;
   --danger: #c0392b;
+  --process-blue-dark: #1481b0;
   --process-blue: #1e90c4;
   --process-blue-light: #4fb1d9;
+  --process-blue-lighter: #b0d8e8;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -34,6 +36,7 @@ main {
   flex-direction: column;
   gap: 16px;
 }
+.hint { font-size: 12px; color: var(--muted); margin: 8px 0 0 0; }
 
 /* ===== Toolbar ===== */
 .toolbar {
@@ -50,21 +53,13 @@ main {
   box-shadow: var(--shadow);
 }
 .toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 }
 .toolbar-divider {
-  width: 1px;
-  height: 22px;
-  background: var(--border);
-  margin: 0 4px;
+  width: 1px; height: 22px; background: var(--border); margin: 0 4px;
 }
 .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 12px;
   font-size: 13px;
   border-radius: 6px;
@@ -75,32 +70,18 @@ main {
   user-select: none;
 }
 .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-.btn-secondary {
-  background: #fff;
-  color: var(--accent);
-}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-secondary { background: #fff; color: var(--accent); }
 .btn-secondary:hover { background: #eef4fb; }
-.btn-ghost {
-  background: transparent;
-  border-color: var(--border);
-  color: var(--muted);
-}
+.btn-ghost { background: transparent; border-color: var(--border); color: var(--muted); }
 .btn-ghost:hover { background: #eef0f3; color: var(--text); }
 .color-field, .check-field {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--muted);
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--muted);
 }
 .color-field input[type="color"] {
-  width: 28px;
-  height: 24px;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: none;
-  cursor: pointer;
+  width: 28px; height: 24px; padding: 0;
+  border: 1px solid var(--border); border-radius: 4px; background: none; cursor: pointer;
 }
 
 /* ===== Panel ===== */
@@ -112,177 +93,162 @@ main {
   box-shadow: var(--shadow);
 }
 details.panel summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--muted);
-  list-style: revert;
+  cursor: pointer; font-weight: 600; color: var(--muted); list-style: revert;
 }
 details.panel[open] summary { margin-bottom: 12px; }
 
-/* ===== Table ===== */
-.table-wrap {
-  overflow-x: auto;
+/* ===== Drop-Overlay ===== */
+.drop-overlay {
+  position: fixed; inset: 0;
+  background: rgba(43, 108, 176, 0.85);
+  color: #fff;
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
 }
+.drop-overlay.visible { display: flex; }
+.drop-overlay-message {
+  font-size: 24px; font-weight: 700;
+  border: 3px dashed #fff; padding: 32px 64px; border-radius: 12px;
+}
+
+/* ===== Tables ===== */
+.table-wrap { overflow-x: auto; }
 .data-table {
-  border-collapse: collapse;
-  min-width: 100%;
-  font-size: 13px;
+  border-collapse: collapse; min-width: 100%; font-size: 13px;
 }
 .data-table th, .data-table td {
   border: 1px solid var(--border);
   padding: 4px 8px;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
+  text-align: center; vertical-align: middle; white-space: nowrap;
 }
 .data-table thead th {
-  background: #f7f9fb;
-  font-weight: 600;
-  position: sticky;
-  top: 0;
+  background: #f7f9fb; font-weight: 600; position: sticky; top: 0;
 }
-.data-table th.line-header {
-  text-align: center;
-  min-width: 130px;
-}
-.data-table th.row-actions, .data-table td.row-actions {
-  width: 32px;
-  background: #fafbfc;
-}
+.data-table th.line-header { text-align: center; min-width: 130px; cursor: grab; }
+.data-table th.line-header.dragging { cursor: grabbing; opacity: 0.5; }
+.data-table th.row-actions, .data-table td.row-actions { width: 32px; background: #fafbfc; }
 .data-table th.phase-col, .data-table td.phase-col {
-  text-align: left;
-  min-width: 160px;
-  background: #fafbfc;
+  text-align: left; min-width: 220px; background: #fafbfc;
 }
 .data-table .sum-col {
-  font-weight: 700;
-  background: #f3f6f9;
-  min-width: 60px;
+  font-weight: 700; background: #f3f6f9; min-width: 60px;
 }
 .data-table input[type="number"] {
-  width: 60px;
-  padding: 3px 4px;
-  border: 1px solid transparent;
-  background: transparent;
-  text-align: right;
-  font: inherit;
-  border-radius: 3px;
+  width: 60px; padding: 3px 4px;
+  border: 1px solid transparent; background: transparent;
+  text-align: right; font: inherit; border-radius: 3px;
 }
 .data-table input[type="number"]:focus {
-  outline: none;
-  border-color: var(--accent);
-  background: #fff;
+  outline: none; border-color: var(--accent); background: #fff;
 }
 .data-table input[type="text"] {
-  width: 100%;
-  padding: 3px 6px;
-  border: 1px solid transparent;
-  background: transparent;
-  font: inherit;
-  border-radius: 3px;
+  width: 100%; padding: 3px 6px;
+  border: 1px solid transparent; background: transparent;
+  font: inherit; border-radius: 3px;
 }
 .data-table input[type="text"]:focus {
-  outline: none;
-  border-color: var(--accent);
-  background: #fff;
+  outline: none; border-color: var(--accent); background: #fff;
 }
 .data-table input[type="color"] {
-  width: 22px;
-  height: 18px;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  vertical-align: middle;
-  cursor: pointer;
+  width: 22px; height: 18px; padding: 0;
+  border: 1px solid var(--border); border-radius: 3px;
+  vertical-align: middle; cursor: pointer;
 }
-.line-head-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 4px;
-}
-.line-head-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+.line-head-row { display: flex; align-items: center; gap: 4px; }
+.phase-name-cell { display: flex; align-items: center; gap: 4px; }
 .icon-btn {
-  width: 22px;
-  height: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-  background: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1;
-  padding: 0;
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); background: #fff; border-radius: 4px;
+  cursor: pointer; color: var(--muted);
+  font-size: 14px; line-height: 1; padding: 0;
 }
 .icon-btn:hover { color: var(--danger); border-color: var(--danger); }
 .icon-btn.move:hover { color: var(--accent); border-color: var(--accent); }
-.group-select {
-  font-size: 12px;
-  padding: 2px 4px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  background: #fff;
+.drag-handle {
+  cursor: grab; color: var(--muted); font-weight: 700;
+  user-select: none; padding: 0 4px;
 }
+.group-select {
+  font-size: 12px; padding: 2px 4px;
+  border: 1px solid var(--border); border-radius: 3px; background: #fff;
+}
+
+/* Sub vs. fixed Phasen */
+.phase-fixed-name {
+  font-weight: 700; color: var(--text); padding: 0 4px;
+}
+.phase-kind-badge {
+  font-size: 10px; text-transform: uppercase;
+  padding: 1px 4px; border-radius: 3px;
+  background: #d8e3ee; color: #245a92;
+}
+.phase-kind-badge.sub { background: #e3f0d8; color: #4a7a25; }
+tr.phase-fixed { background: #fcfcfd; }
+tr.phase-fixed td.phase-col { background: #f0f2f5; }
+
+tr.dragging { opacity: 0.4; }
+tr.drop-target td { box-shadow: inset 0 -2px 0 0 var(--accent); }
+th.drop-target { box-shadow: inset 0 -2px 0 0 var(--accent); }
+
+/* Gruppen-/Spaltensummen */
+tr.group-sum-row td { background: #eef5ec; font-weight: 600; color: #2d4a1e; }
+tr.column-sum-row td { background: #e7eef5; font-weight: 700; color: #1a3d6b; }
+.group-sum-total, .column-sum-grand { background: #d6e8d3 !important; }
 
 /* ===== Charts ===== */
-.chart-wrap {
-  position: relative;
-  width: 100%;
-  height: 380px;
-}
+.chart-wrap { position: relative; width: 100%; height: 380px; }
 .chart-wrap-short { height: 260px; }
 
-/* ===== Process arrows ===== */
+/* ===== Process arrows (3 Tiers) ===== */
 .process-panel { padding-bottom: 24px; }
 .phase-arrows {
-  display: grid;
-  gap: 4px;
-  margin-bottom: 8px;
+  display: grid; gap: 4px; margin-bottom: 4px;
 }
 .phase-arrow {
   position: relative;
   background: var(--process-blue);
   color: #fff;
-  font-weight: 600;
-  font-size: 13px;
-  padding: 10px 18px 10px 10px;
-  text-align: center;
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
-  min-height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.phase-arrow:first-child {
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
-}
-.phase-arrow:last-child {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 12px 50%);
-}
-.phase-arrow.light { background: var(--process-blue-light); }
-.phase-groups {
-  display: grid;
-  gap: 4px;
-}
-.phase-group-band {
-  background: #2b87b3;
-  color: #fff;
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 600; font-size: 13px;
   padding: 8px 18px 8px 10px;
   text-align: center;
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
   min-height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.phase-arrow.first {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
+}
+.phase-arrow.last {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 12px 50%);
+}
+.phase-arrow.sub {
+  background: var(--process-blue-lighter);
+  color: #1f3a4a;
+  font-size: 12px;
+  min-height: 22px;
+  padding: 4px 18px 4px 10px;
+}
+.phase-arrow.main {
+  background: var(--process-blue);
+  font-size: 14px;
+  min-height: 36px;
+  padding: 10px 18px 10px 10px;
+}
+.phase-arrow.main.light { background: var(--process-blue-light); }
+.phase-arrow-empty { background: transparent; min-height: 22px; }
+
+.phase-group-band {
+  background: var(--process-blue-dark);
+  color: #fff; font-weight: 600; font-size: 13px;
+  padding: 8px 18px 8px 10px;
+  text-align: center;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
+  min-height: 28px;
+  display: flex; align-items: center; justify-content: center;
 }
 .phase-group-band.first {
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
@@ -290,74 +256,77 @@ details.panel[open] summary { margin-bottom: 12px; }
 .phase-group-band.last {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 12px 50%);
 }
+.tier-groups { margin-top: 4px; }
 
 /* ===== Heatmap ===== */
 .heatmap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: flex; flex-direction: column; gap: 6px;
 }
 .heatmap-row {
-  display: grid;
-  gap: 2px;
-  align-items: stretch;
+  display: grid; gap: 2px; align-items: stretch;
 }
 .heatmap-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--text);
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text);
   padding: 4px 8px;
   background: #fafbfc;
   border-radius: 4px;
   border: 1px solid var(--border);
 }
+.heatmap-label-static {
+  justify-content: flex-start;
+}
 .heatmap-label input[type="text"] {
-  flex: 1;
-  border: none;
-  background: transparent;
-  font: inherit;
-  padding: 0;
-  min-width: 0;
+  flex: 1; border: none; background: transparent;
+  font: inherit; padding: 0; min-width: 0;
 }
 .heatmap-label input[type="text"]:focus {
-  outline: 1px solid var(--accent);
-  border-radius: 2px;
+  outline: 1px solid var(--accent); border-radius: 2px;
 }
 .heatmap-label input[type="color"] {
-  width: 20px;
-  height: 18px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 0;
-  cursor: pointer;
+  width: 20px; height: 18px;
+  border: 1px solid var(--border); border-radius: 3px;
+  padding: 0; cursor: pointer;
 }
 .heatmap-cell {
   border-radius: 3px;
   padding: 6px 4px;
-  font-size: 12px;
-  text-align: center;
-  color: #1f2933;
-  font-weight: 600;
+  font-size: 12px; text-align: center; font-weight: 600;
   border: 1px solid rgba(0, 0, 0, 0.04);
   min-height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
 }
-.heatmap-cell.empty { color: var(--muted); font-weight: 400; }
+.heatmap-cell.empty { font-weight: 400; }
 .heatmap-header {
-  display: grid;
-  gap: 2px;
-  font-size: 11px;
-  color: var(--muted);
-  text-align: center;
-  margin-bottom: 4px;
+  display: grid; gap: 2px;
+  font-size: 11px; color: var(--muted); text-align: center; margin-bottom: 4px;
 }
 .heatmap-header div {
-  padding: 2px 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 2px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.heatmap-simple .heatmap-cell { min-height: 20px; padding: 2px; }
+
+/* ===== Print-Stylesheet (eine Seite) ===== */
+@media print {
+  @page { size: A4 landscape; margin: 8mm; }
+  body { background: #fff; font-size: 11px; }
+  .no-print, .toolbar, details:not(.print-open), .drop-overlay,
+  .icon-btn, .drag-handle, .row-actions, .group-select,
+  .phase-kind-badge { display: none !important; }
+  main { padding: 0; max-width: none; gap: 8px; }
+  .panel {
+    box-shadow: none; border-color: #ccc; padding: 8px;
+    page-break-inside: avoid; break-inside: avoid;
+  }
+  h1 { font-size: 14px; }
+  h2 { font-size: 12px; margin-bottom: 4px; }
+  .chart-wrap { height: 220px; }
+  .data-table { font-size: 10px; }
+  .data-table th, .data-table td { padding: 2px 4px; }
+  .data-table input[type="number"] { width: auto; }
+  .data-table input { border: none !important; background: transparent !important; }
+  .heatmap-cell { min-height: 20px; padding: 2px; }
+  .phase-arrow.main { min-height: 24px; padding: 4px 12px; }
+  .phase-arrow.sub  { min-height: 16px; padding: 2px 12px; font-size: 10px; }
+  .phase-group-band { min-height: 20px; padding: 4px 12px; }
 }

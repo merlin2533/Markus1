@@ -15,17 +15,15 @@
     var s = PT.state;
     var wb = XLSX.utils.book_new();
 
-    // Phasen
-    var phaseRows = [['Phase', 'Gruppe']];
-    s.phases.forEach(function (p) { phaseRows.push([p.name, p.group || '']); });
+    // Phasen mit Kind-Spalte
+    var phaseRows = [['Phase', 'Gruppe', 'Kind']];
+    s.phases.forEach(function (p) { phaseRows.push([p.name, p.group || '', p.kind || 'sub']); });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(phaseRows), SHEET_PHASES);
 
-    // Linien
     var lineRows = buildSeriesRows(s.phases, s.lines);
     lineRows.push([TOTAL_MARK, s.totalColor].concat(emptyCols(s.phases.length)));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(lineRows), SHEET_LINES);
 
-    // Rollen
     var roleRows = buildSeriesRows(s.phases, s.roles);
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(roleRows), SHEET_ROLES);
 
@@ -55,6 +53,7 @@
         var wb = XLSX.read(data, { type: 'array' });
         var newState = parseWorkbook(wb);
         if (!newState) { alert('Datei konnte nicht ausgewertet werden.'); return; }
+        PT.pushHistory();
         PT.state = PT.normalize(newState);
         PT.notify();
       } catch (err) {
@@ -73,18 +72,17 @@
     if (!phasesSheet) throw new Error('Sheet "' + SHEET_PHASES + '" fehlt.');
 
     var phasesArr = XLSX.utils.sheet_to_json(phasesSheet, { header: 1, defval: '' });
-    // Erste Zeile = Header, ab Zeile 2 Daten
     var phases = [];
     for (var i = 1; i < phasesArr.length; i++) {
       var name = String(phasesArr[i][0] || '').trim();
       if (!name) continue;
       var group = String(phasesArr[i][1] || '').trim();
-      phases.push({ id: PT.uid(), name: name, group: group });
+      var kind = String(phasesArr[i][2] || '').trim() || 'sub';
+      phases.push({ id: PT.uid(), name: name, group: group, kind: kind, fixed: kind === 'main' });
     }
     if (phases.length === 0) throw new Error('Keine Phasen in Sheet "' + SHEET_PHASES + '" gefunden.');
 
     var n = phases.length;
-
     var linesParsed = parseSeriesSheet(linesSheet, n, /*allowTotal=*/true);
     var rolesParsed = parseSeriesSheet(rolesSheet, n, /*allowTotal=*/false);
 
@@ -101,7 +99,6 @@
     var result = { series: [], totalColor: null };
     if (!sheet) return result;
     var arr = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-    // Zeile 0 = Header (Name, Farbe, Phase1..PhaseN). Ab Zeile 1 = Daten.
     for (var r = 1; r < arr.length; r++) {
       var row = arr[r];
       var name = String(row[0] || '').trim();
@@ -117,12 +114,7 @@
         var num = Number(raw);
         values.push(isFinite(num) ? num : 0);
       }
-      result.series.push({
-        id: PT.uid(),
-        name: name,
-        color: color,
-        values: values
-      });
+      result.series.push({ id: PT.uid(), name: name, color: color, values: values });
     }
     return result;
   }

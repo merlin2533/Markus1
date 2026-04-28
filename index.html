@@ -9,17 +9,22 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <header class="toolbar">
+  <header class="toolbar no-print">
     <h1>Projekt-Phasen-Aufwand</h1>
     <div class="toolbar-actions">
-      <label class="btn btn-secondary">
+      <label class="btn btn-secondary" title="XLSX importieren (Drag&Drop ebenfalls möglich)">
         Excel importieren
         <input id="importInput" type="file" accept=".xlsx,.xls" hidden />
       </label>
       <button id="exportBtn" class="btn btn-secondary" type="button">Excel exportieren</button>
+      <button id="pngBtn" class="btn btn-secondary" type="button" title="Liniendiagramm als PNG">PNG-Export</button>
+      <button id="printBtn" class="btn btn-secondary" type="button" title="Drucken / als PDF speichern">Drucken</button>
+      <span class="toolbar-divider"></span>
+      <button id="undoBtn" class="btn btn-ghost" type="button" title="Rückgängig (Strg+Z)">↶ Undo</button>
+      <button id="redoBtn" class="btn btn-ghost" type="button" title="Wiederholen (Strg+Y)">↷ Redo</button>
       <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
       <span class="toolbar-divider"></span>
-      <button id="addPhaseBtn" class="btn" type="button">+ Phase</button>
+      <button id="addPhaseBtn" class="btn" type="button" title="Sub-Phase (Realisierung) hinzufügen">+ Sub-Phase</button>
       <button id="addLineBtn" class="btn" type="button">+ Linie</button>
       <button id="addRoleBtn" class="btn" type="button">+ Rolle</button>
       <span class="toolbar-divider"></span>
@@ -34,38 +39,60 @@
     </div>
   </header>
 
+  <div id="dropOverlay" class="drop-overlay">
+    <div class="drop-overlay-message">.xlsx-Datei hier ablegen</div>
+  </div>
+
   <main>
     <section class="panel">
-      <h2>Tage pro Phase</h2>
+      <h2>Tage pro Phase (Linien)</h2>
       <div class="table-wrap">
         <table id="dataTable" class="data-table"></table>
       </div>
+      <p class="hint no-print">
+        Hinweis: Haupt-Phasen (Initialisierung, Definition, Planung, Abschluss) sind feste Bestandteile des Management-Prozesses.
+        Sub-Phasen (Analyse … Rollout) sind frei erweiterbar – „+ Sub-Phase" oben.
+      </p>
     </section>
 
     <section class="panel">
+      <h2>Tage pro Phase pro Rolle</h2>
+      <div class="table-wrap">
+        <table id="roleTable" class="data-table"></table>
+      </div>
+      <p class="hint no-print">Werte hier oder unten in der Heatmap eingeben – beide Ansichten sind verbunden.</p>
+    </section>
+
+    <section class="panel print-keep">
       <h2>Aufwandsverlauf</h2>
       <div class="chart-wrap">
         <canvas id="lineChart"></canvas>
       </div>
     </section>
 
-    <section class="panel process-panel">
+    <section class="panel process-panel print-keep">
       <h2>Phasenprozess</h2>
-      <div id="phaseArrows" class="phase-arrows"></div>
-      <div id="phaseGroups" class="phase-groups"></div>
+      <div id="phaseSubArrows" class="phase-arrows tier-sub" aria-label="Sub-Phasen"></div>
+      <div id="phaseMainArrows" class="phase-arrows tier-main" aria-label="Haupt-Phasen"></div>
+      <div id="phaseGroups" class="phase-groups tier-groups" aria-label="Lifecycle-Gruppen"></div>
     </section>
 
-    <details class="panel" id="barDetails">
+    <details class="panel no-print" id="barDetails">
       <summary>Werte als Balken anzeigen</summary>
       <div class="chart-wrap chart-wrap-short">
         <canvas id="barChart"></canvas>
       </div>
     </details>
 
-    <section class="panel">
+    <section class="panel print-keep">
       <h2>Schwerpunkte der Arbeit im Leitungsbereich</h2>
       <div id="heatmap" class="heatmap"></div>
     </section>
+
+    <details class="panel" id="heatmapSimpleDetails">
+      <summary>Heatmap-Balken ohne Zahlen</summary>
+      <div id="heatmapSimple" class="heatmap heatmap-simple"></div>
+    </details>
   </main>
 
   <script src="js/state.js"></script>

@@ -1,4 +1,4 @@
-/* Chart.js Linien- und Balkendiagramm. */
+/* Chart.js Linien- und Balkendiagramm. PNG-Export für Liniendiagramm. */
 (function (PT) {
   'use strict';
 
@@ -16,6 +16,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: false,
         interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { position: 'top', align: 'start' },
@@ -34,12 +35,9 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top', align: 'start' }
-        },
-        scales: {
-          y: { beginAtZero: true, title: { display: true, text: 'Tage' } }
-        }
+        animation: false,
+        plugins: { legend: { position: 'top', align: 'start' } },
+        scales: { y: { beginAtZero: true, title: { display: true, text: 'Tage' } } }
       }
     });
   };
@@ -73,16 +71,14 @@
         fill: false,
         pointRadius: 4,
         pointHoverRadius: 6,
-        borderWidth: 3,
-        borderDash: []
+        borderWidth: 3
       });
     }
 
     lineChart.data.labels = labels;
     lineChart.data.datasets = lineDatasets;
-    lineChart.update();
+    lineChart.update('none');
 
-    // Bar chart: gruppiert pro Phase, ein Balken pro Linie
     var barDatasets = s.lines.map(function (l) {
       return {
         label: l.name,
@@ -92,7 +88,6 @@
         borderWidth: 1
       };
     });
-
     if (s.showTotal) {
       barDatasets.push({
         label: 'Gesamt',
@@ -102,10 +97,25 @@
         borderWidth: 1
       });
     }
-
     barChart.data.labels = labels;
     barChart.data.datasets = barDatasets;
-    barChart.update();
+    barChart.update('none');
+  };
+
+  PT.resizeCharts = function () {
+    if (lineChart) lineChart.resize();
+    if (barChart) barChart.resize();
+  };
+
+  PT.exportLineChartPng = function () {
+    if (!lineChart) return;
+    var url = lineChart.toBase64Image('image/png', 1);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'aufwandsverlauf_' + new Date().toISOString().slice(0, 10) + '.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
 })(window.PT);

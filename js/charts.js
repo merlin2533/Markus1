@@ -33,6 +33,26 @@
     if (!stripePatternBar) stripePatternBar = makeStripePattern('rgba(120, 70, 30, 0.9)', 'rgba(200, 150, 90, 0.55)');
   }
 
+  // Per-Linie Schraffur (pro Farbe gecached)
+  var linePatternCache = {};
+  function getLinePattern(color, dense) {
+    var key = color + (dense ? '_d' : '_l');
+    if (linePatternCache[key]) return linePatternCache[key];
+    var c = document.createElement('canvas');
+    c.width = 8; c.height = 8;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = PT.hexToRgba(color, dense ? 0.45 : 0.18);
+    ctx.fillRect(0, 0, 8, 8);
+    ctx.strokeStyle = PT.hexToRgba(color, 0.85);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 8); ctx.lineTo(8, 0);
+    ctx.moveTo(-2, 2); ctx.lineTo(2, -2);
+    ctx.moveTo(6, 10); ctx.lineTo(10, 6);
+    ctx.stroke();
+    return (linePatternCache[key] = ctx.createPattern(c, 'repeat'));
+  }
+
   function registerPluginsOnce() {
     if (pluginsRegistered) return;
     pluginsRegistered = true;
@@ -117,7 +137,8 @@
     var cumNormal = PT.cumulativePerPhase();
     var totalAll  = PT.totalPerPhase();
 
-    // Normalaufwände: ein Dataset pro Linie
+    // Normalaufwände: pro Linie ein Basis-Dataset; bei showZusatz zusätzlich
+    // ein "(inkl Zusatz)"-Dataset mit schraffierter Fläche zwischen Basis und inkl-Zusatz.
     if (s.showNormal) {
       s.lines.forEach(function (l, li) {
         datasets.push({
@@ -134,38 +155,44 @@
           _dragKind: 'line',
           _lineIdx: li
         });
+        if (s.showZusatz) {
+          var zus = PT.lineZusatzPerPhase(li);
+          var inkl = l.values.map(function (v, i) { return v + (zus[i] || 0); });
+          datasets.push({
+            label: l.name + ' (inkl Zusatz)',
+            data: inkl,
+            borderColor: PT.hexToRgba(l.color, 0.85),
+            backgroundColor: getLinePattern(l.color, false),
+            borderDash: [3, 3],
+            tension: 0.4,
+            fill: '-1',
+            pointRadius: 2,
+            pointHoverRadius: 5,
+            borderWidth: 1.5,
+            dragData: false,
+            _dragKind: 'line-inkl'
+          });
+        }
       });
     }
 
-    // Zusatzaufwände: EINE aggregierte Linie + schraffierter Anteil zwischen Normal-Cumul und Total
-    if (s.showZusatz) {
-      // Anker: Normal-Cumul (dünne gestrichelte Linie, dient als Untergrenze des Zusatz-Bands)
-      datasets.push({
-        label: 'Normal-Gesamt',
-        data: cumNormal.slice(),
-        borderColor: PT.hexToRgba(s.totalColor, 0.55),
-        backgroundColor: 'transparent',
-        borderDash: [4, 4],
-        tension: 0.4,
-        fill: false,
-        pointRadius: 0,
-        borderWidth: 1.5,
-        dragData: false,
-        _dragKind: 'anchor'
-      });
-      // Zusatz-Band: schraffierte Fläche zwischen Anker und Total
-      datasets.push({
-        label: 'Anteil Zusatz',
-        data: totalAll.slice(),
-        borderColor: 'rgba(120, 70, 30, 0.85)',
-        backgroundColor: stripePattern,
-        tension: 0.4,
-        fill: '-1',
-        pointRadius: 2,
-        pointHoverRadius: 5,
-        borderWidth: 1.5,
-        dragData: false,
-        _dragKind: 'zusatz'
+    // Einzelne Rollenlinien (Default ausgeblendet, einblendbar)
+    if (s.showZusatz && s.showRoleLines) {
+      s.roles.forEach(function (r, ri) {
+        datasets.push({
+          label: r.name + ' (Rolle)',
+          data: PT.roleDaysAll(ri),
+          borderColor: r.color,
+          backgroundColor: 'transparent',
+          borderDash: [2, 4],
+          tension: 0.4,
+          fill: false,
+          pointRadius: 2,
+          pointHoverRadius: 5,
+          borderWidth: 1.5,
+          dragData: false,
+          _dragKind: 'role'
+        });
       });
     }
 
@@ -200,9 +227,9 @@
 
     lineChart.update('none');
 
-    // Bar-Chart: Linien gestapelt, EIN aggregierter Zusatz-Stack ontop (schraffiert)
+    // Bar-Chart: pro Linie Basis + (bei showZusatz) schraffierter Zusatz oben
     var barDatasets = [];
-    s.lines.forEach(function (l) {
+    s.lines.forEach(function (l, li) {
       barDatasets.push({
         label: l.name,
         data: l.values.slice(),
@@ -211,17 +238,18 @@
         borderWidth: 1,
         stack: 'effort'
       });
+      if (s.showZusatz) {
+        var zus = PT.lineZusatzPerPhase(li).map(function (v) { return Math.round(v * 10) / 10; });
+        barDatasets.push({
+          label: l.name + ' (Zusatz)',
+          data: zus,
+          backgroundColor: getLinePattern(l.color, true),
+          borderColor: PT.hexToRgba(l.color, 0.85),
+          borderWidth: 1,
+          stack: 'effort'
+        });
+      }
     });
-    if (s.showZusatz) {
-      barDatasets.push({
-        label: 'Anteil Zusatz',
-        data: PT.zusatzAggregatePerPhase().map(function (v) { return Math.round(v * 10) / 10; }),
-        backgroundColor: stripePatternBar,
-        borderColor: 'rgba(120, 70, 30, 0.9)',
-        borderWidth: 1,
-        stack: 'effort'
-      });
-    }
     barChart.data.labels = labels;
     barChart.data.datasets = barDatasets;
     barChart.options.plugins.datalabels = dlOpts;

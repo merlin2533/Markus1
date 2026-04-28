@@ -61,10 +61,11 @@
       PT.state.totalColor = totalColor.value; PT.save(); PT.renderCharts();
     });
 
-    bindBoolToggle('showTotal',  function (v) { PT.state.showTotal = v;  PT.renderCharts(); });
-    bindBoolToggle('showNormal', function (v) { PT.state.showNormal = v; PT.renderCharts(); });
-    bindBoolToggle('showZusatz', function (v) { PT.state.showZusatz = v; PT.renderCharts(); });
-    bindBoolToggle('showLabels', function (v) { PT.state.showLabels = v; PT.renderCharts(); });
+    bindBoolToggle('showTotal',     function (v) { PT.state.showTotal = v;     PT.renderCharts(); });
+    bindBoolToggle('showNormal',    function (v) { PT.state.showNormal = v;    PT.renderCharts(); });
+    bindBoolToggle('showZusatz',    function (v) { PT.state.showZusatz = v;    PT.renderCharts(); });
+    bindBoolToggle('showRoleLines', function (v) { PT.state.showRoleLines = v; PT.renderCharts(); });
+    bindBoolToggle('showLabels',    function (v) { PT.state.showLabels = v;    PT.renderCharts(); });
 
     byId('undoBtn').addEventListener('click', PT.undo);
     byId('redoBtn').addEventListener('click', PT.redo);
@@ -145,11 +146,12 @@
   function syncToolbarFromState() {
     var s = PT.state;
     var pairs = [
-      ['totalColor', 'value', s.totalColor],
-      ['showTotal',  'checked', !!s.showTotal],
-      ['showNormal', 'checked', s.showNormal !== false],
-      ['showZusatz', 'checked', !!s.showZusatz],
-      ['showLabels', 'checked', !!s.showLabels]
+      ['totalColor',    'value',   s.totalColor],
+      ['showTotal',     'checked', !!s.showTotal],
+      ['showNormal',    'checked', s.showNormal !== false],
+      ['showZusatz',    'checked', s.showZusatz !== false],
+      ['showRoleLines', 'checked', !!s.showRoleLines],
+      ['showLabels',    'checked', !!s.showLabels]
     ];
     pairs.forEach(function (p) {
       var el = byId(p[0]); if (el) el[p[1]] = p[2];

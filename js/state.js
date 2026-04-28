@@ -58,7 +58,8 @@ window.PT = window.PT || {};
       showTotal: true,
       showZusatz: true,
       showNormal: true,
-      showLabels: false
+      showLabels: false,
+      showRoleLines: false
     };
   };
 
@@ -153,7 +154,8 @@ window.PT = window.PT || {};
       showTotal: s.showTotal !== false,
       showZusatz: s.showZusatz !== false,
       showNormal: s.showNormal !== false,
-      showLabels: !!s.showLabels
+      showLabels: !!s.showLabels,
+      showRoleLines: !!s.showRoleLines
     };
   };
 
@@ -383,6 +385,22 @@ window.PT = window.PT || {};
       for (var k = 0; k < PT.state.lines.length; k++) {
         out[i] += Number(PT.state.lines[k].values[i]) || 0;
       }
+    }
+    return out;
+  };
+
+  // Pro-Linie Zusatzaufwand pro Phase (= line.values × Σ_rollen pct[r][line] / 100)
+  PT.lineZusatzPerPhase = function (lineIdx) {
+    var n = PT.state.phases.length;
+    var out = new Array(n).fill(0);
+    if (!PT.state.lines[lineIdx]) return out;
+    var pctSum = 0;
+    for (var r = 0; r < PT.state.roles.length; r++) {
+      pctSum += Number(PT.state.roles[r].percentages[lineIdx]) || 0;
+    }
+    for (var p = 0; p < n; p++) {
+      var v = Number(PT.state.lines[lineIdx].values[p]) || 0;
+      out[p] = v * pctSum / 100;
     }
     return out;
   };

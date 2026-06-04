@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "typ": "Kreditprotokoll",
+  "cover": {
+    "kundeTyp": "NeuKunde",
+    "kundenart": "sHB",
+    "finanzierung": "BauFi"
+  },
+  "kopf": {
+    "kreditnehmer": "Dr. Max Mustermann",
+    "stammnummer": "1234567",
+    "datum": "06.06.2026",
+    "berater": "A. Beispiel",
+    "obligo": "450 TEUR"
+  },
+  "antworten": {
+    "1.2": {
+      "auswahl": "Trifft zu"
+    },
+    "1.3": {
+      "auswahl": "Trifft zu"
+    },
+    "1.4": {
+      "auswahl": "Kernkunde"
+    },
+    "1.5": {
+      "auswahl": "Trifft nicht zu"
+    },
+    "1.7": {
+      "auswahl": "Trifft zu"
+    },
+    "1.8": {
+      "auswahl": "Trifft zu"
+    },
+    "1.11": {
+      "auswahl": "Trifft zu - Bitte kommentieren (Benennung der Qualifikationen und Zertifikate)",
+      "begruendung": "<hier Begründung eintragen>"
+    },
+    "1.12": {
+      "auswahl": "Trifft zu"
+    },
+    "1.19": {
+      "auswahl": "Keine Anmerkungen"
+    },
+    "2.0": {
+      "auswahl": "Bitte eintragen",
+      "begruendung": "<hier Begründung eintragen>"
+    },
+    "2.1": {
+      "auswahl": "Kauf"
+    },
+    "2.2": {
+      "auswahl": "Eigennutzung"
+    },
+    "2.7": {
+      "auswahl": "Trifft zu"
+    },
+    "2.8": {
+      "auswahl": "Trifft zu"
+    },
+    "2.9": {
+      "auswahl": "Trifft zu"
+    },
+    "2.10": {
+      "auswahl": "Trifft zu - Bitte kommentieren",
+      "begruendung": "<hier Begründung eintragen>"
+    },
+    "2.30": {
+      "auswahl": "Keine Anmerkungen"
+    },
+    "3.1": {
+      "auswahl": "Trifft zu"
+    },
+    "3.2": {
+      "auswahl": "Trifft zu"
+    },
+    "3.2.1": {
+      "auswahl": "Trifft zu"
+    },
+    "3.7": {
+      "auswahl": "Keine Anmerkungen"
+    },
+    "4.0": {
+      "auswahl": "Trifft zu"
+    },
+    "4.1": {
+      "auswahl": "Trifft zu"
+    },
+    "4.5": {
+      "auswahl": "Trifft zu"
+    },
+    "4.8": {
+      "auswahl": "Positiv"
+    },
+    "4.10": {
+      "auswahl": "Trifft zu"
+    },
+    "4.10a": {
+      "auswahl": "Liqui nach Sensitivitätsanalyse positiv"
+    },
+    "4.10b": {
+      "auswahl": "Liqui nach Sensitivitätsanalyse positiv"
+    },
+    "4.12": {
+      "auswahl": "Trifft zu - Bitte kommentieren \n(Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+      "begruendung": "<hier Begründung eintragen>"
+    },
+    "4.14": {
+      "auswahl": "Trifft zu - ggf. bitte kommentieren (Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+      "begruendung": "<hier Begründung eintragen>"
+    },
+    "4.15": {
+      "auswahl": "Trifft zu"
+    },
+    "4.17": {
+      "auswahl": "Trifft zu"
+    },
+    "4.18": {
+      "auswahl": "Entschuldung bis zum 67. Lebensjahr möglich"
+    },
+    "4.20": {
+      "auswahl": "Trifft zu"
+    },
+    "4.21": {
+      "auswahl": "Trifft zu"
+    },
+    "4.22": {
+      "auswahl": "Trifft zu"
+    },
+    "4.23": {
+      "auswahl": "Trifft zu"
+    },
+    "4.25": {
+      "auswahl": "Keine Anmerkungen"
+    },
+    "5.1": {
+      "auswahl": "Trifft zu"
+    },
+    "5.2": {
+      "auswahl": "Keine Anmerkungen"
+    },
+    "6.0": {
+      "auswahl": "Trifft zu"
+    },
+    "6.1": {
+      "auswahl": "Trifft zu"
+    },
+    "6.2": {
+      "auswahl": "Keine Anmerkungen"
+    },
+    "7.1": {
+      "auswahl": "Bitte eintragen",
+      "begruendung": "<hier Begründung eintragen>"
+    },
+    "7.2": {
+      "auswahl": "Trifft zu"
+    },
+    "7.4": {
+      "auswahl": "Trifft zu"
+    },
+    "7.6": {
+      "auswahl": "Trifft zu"
+    },
+    "7.7": {
+      "auswahl": "Trifft zu"
+    },
+    "7.8": {
+      "auswahl": "Trifft zu"
+    },
+    "7.9": {
+      "auswahl": "per Post an Kunden."
+    },
+    "7.12": {
+      "auswahl": "ESG-Gesamt-Score (Scoreklasse) aus RISIKO-Sicht"
+    },
+    "7.13": {
+      "auswahl": "ESG-Gesamt-Score (Scoreklasse) aus IMPACT-Sicht"
+    },
+    "7.14": {
+      "auswahl": "Trifft zu "
+    },
+    "8.": {
+      "auswahl": "Einzelkompetenz"
+    }
+  }
+}

@@ -1,0 +1,3237 @@
+{
+ "1.0": {
+  "frage": "Der Kunde wurde am [Datum] durch [Name KB] entsprechend der rechtlichen Vorgaben beraten.",
+  "abschnitt": "1. Person",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Eigengeschäft",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "VP-Geschäft",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.1": {
+  "frage": "Absatzweg",
+  "abschnitt": "1. Person",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Präsenzgeschäft ",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Fernabsatzgeschäft",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "außerhalb Geschäftsräume ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.2": {
+  "frage": "Die Stammdaten und das Rating sind geprüft und korrekt.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.3": {
+  "frage": "Die Kreditnehmereinheit / Gruppe verbundener Kunden ist geprüft und richtig gebildet.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.4": {
+  "frage": "Einordnung Kundengruppe.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Kernkunde",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstiger mit Fokus",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstiger ohne Fokus - Bitte kommentieren (Grund der Geschäftsverbindung)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.5": {
+  "frage": "Es gibt mehrere Kreditnehmer.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.6": {
+  "frage": "Der Kunde ist angestellt.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   5,
+   7,
+   11
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.7": {
+  "frage": "Der Kunde ist niedergelassen. (Nur bei mehreren Kreditnehmern)",
+  "abschnitt": "1. Person",
+  "varianten": [
+   2,
+   3,
+   6,
+   8,
+   9,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.8": {
+  "frage": "Die persönliche Kreditwürdigkeit des Kreditnehmers ist gegeben - es sind keine Risikofaktoren erkennbar.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.9": {
+  "frage": "Es liegen keine Erkenntnisse vor, die Einschränkungen auf die Einkommenssituation erwarten lassen (z.B. Krankheit, drohende Berufsunfähigkeit, etc.).",
+  "abschnitt": "1. Person",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.10": {
+  "frage": "Lebenslauf ohne Auffälligkeiten",
+  "abschnitt": "1. Person",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.11": {
+  "frage": "Es liegen besondere berufliche oder fachliche Zusatzqualifikationen/ Zertifikate vor.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - Bitte kommentieren (Benennung der Qualifikationen und Zertifikate)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.12": {
+  "frage": "Das wirtschaftliche Verständnis (für das Vorhaben) ist gegeben.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   2,
+   5,
+   6,
+   7,
+   8,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.13": {
+  "frage": "Das wirtschaftliche und kaufmännische Verständnis (für das Vorhaben) ist gegeben.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.14": {
+  "frage": "Ein positives Motiv für den Weg in die Selbstständigkeit gegeben.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.15": {
+  "frage": "Die leitende Person/ der Initiator hat ausreichende Managementqualitäten.",
+  "abschnitt": "1. Person",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren ",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.16": {
+  "frage": "Das Leistungsspektrum der geplanten Existenzgründung ist abgedeckt.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.17": {
+  "frage": "Ein unbefristetes Arbeitsverhältnis liegt vor.",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   5,
+   7,
+   11
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "1.18": {
+  "frage": "Ein erstes Anzeichen für eine potenzielle (zukünftige) Niederlassung liegt vor.",
+  "abschnitt": "1. Person",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.19": {
+  "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+  "abschnitt": "1. Person",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Keine Anmerkungen",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstige Anmerkungen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.20": {
+  "frage": "Hat sich die Kundin / der Kunde angemessen auf die Niederlassung vorbereitet?",
+  "abschnitt": "1. Person",
+  "varianten": [
+   3,
+   4,
+   9,
+   10
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "nicht relevant da Obligo < 100 T€",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.21": {
+  "frage": "Erscheint die konkrete Motivation zur Niederlassung und die vorhandenen Visionen nachvollziehbar?",
+  "abschnitt": "1. Person",
+  "varianten": [
+   3,
+   4,
+   9,
+   10
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "nicht relevant da Obligo < 100 T€",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.22": {
+  "frage": "Sind die über das Studium hinausgehenden betriebswirtschaftlichen Kenntnisse (Fortbildungen / Berufserfahrung / etc.) für das Vorhaben angemessen?",
+  "abschnitt": "1. Person",
+  "varianten": [
+   3,
+   4,
+   9,
+   10
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "nicht relevant da Obligo < 100 T€",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "1.23": {
+  "frage": "Keine zulässige Kombination",
+  "abschnitt": "1. Person",
+  "varianten": [
+   4,
+   10
+  ],
+  "auswahlMoeglichkeiten": []
+ },
+ "2.0": {
+  "frage": "Informationen zum Baufi-Vorhaben inkl. Objektart und Adresse",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.1": {
+  "frage": "Handelt es sich um einen Kauf, einen Kauf mit Sanierung, einen Neubau oder eine Ablösung bei einer anderen Bank?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Kauf",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Kauf mit Sanierung",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Neubau",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Ablösung bei einer anderen Bank",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.2": {
+  "frage": "Dient das Objekt dem Eigennutz oder der Vermietung?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Eigennutzung",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Vermietung",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.3": {
+  "frage": "Informationen zur Praxis inkl. Adresse",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.4": {
+  "frage": "Handelt es sich um eine Praxisneugründung, einen Kauf, einen Einstieg oder eine Ablösung bei einer anderen Bank?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Neugründung",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Kauf",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Einstieg",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Ablösung bei einer anderen Bank",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.5": {
+  "frage": "Es handelt sich um eine Einzelpraxis, BAG, MVZ oder Sonstiges?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Einzelpraxis",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "BAG",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "MVZ",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstiges - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.6": {
+  "frage": "Informationen zur sonstigen Finanzierung und zum Investitionszweck.",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   5,
+   6,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.7": {
+  "frage": "Der Kaufpreis der zu finanzierenden Immobilie ist kleiner als 190% des bankseitig ermittelte Marktwertes",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren ",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu (es handelt sich um eine Immobilie aus „apoReal“) - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.8": {
+  "frage": "Die Eigenmittel sind nachgewiesen.",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.9": {
+  "frage": "Die Eigenmittel werden vorrangig eingesetzt.",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.10": {
+  "frage": "Die Immobilie steht unter Denkmalschutz und die Darlehnsrestschuld nach 12 Jahren ist <= 60% des Kaufpreises",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.11": {
+  "frage": "Erwerbsnebenkosten und ggf. Sanierungsbedarf sind ausreichend berücksichtigt.",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.12": {
+  "frage": "Abgabegrund",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Altersgründe",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Umzug",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Krankheit/ Todesfall",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Andere - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.13": {
+  "frage": "Beteiligungsquote",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte berechnen und eintragen ",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.14": {
+  "frage": "Abgeber Kunde apoBank",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - Bitte kommentieren (Benennung BP-Nummer Abgeber)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.15": {
+  "frage": "Kaufpreis = x-fache des erwarteten BCF \nbitte Zahl eingeben: [   ]",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte Zahl eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.16": {
+  "frage": "Das Gründungskonzept liegt vor und ist schlüssig.",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.17": {
+  "frage": "Besonderheiten aus der Standortanalyse liegen vor.",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.18": {
+  "frage": "Wie ist der Zustand der Praxis/ Apotheke (Ausstattung, Einrichtung, etc.)?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Gut",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Mittel - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Schlecht - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.19": {
+  "frage": "Wie ist der Zustand der vorhandenen medizinischen Geräte?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Gut",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Mittel - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Schlecht - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.20": {
+  "frage": "Wie ist die Erreichbarkeit der Praxis/ Apotheke (z.B. Parkplätze, öffentliche Verkehrsmittel, etc.)?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Gut",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Mittel - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Schlecht - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.21": {
+  "frage": "Anzahl Mitarbeiter und davon angestellte Ärzte/ Apotheker",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.22": {
+  "frage": "Anzahl Fachgruppen und Anzahl KV-Sitze - bei mehreren kommentieren (Benennung der Fachgruppen)",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.23": {
+  "frage": "Anzahl zu übernehmender Sitze",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte Zahl eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.24": {
+  "frage": "Anzahl Betriebsstätten insg. und Nennung der Orte",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte Zahl und Ort eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.25": {
+  "frage": "Die Übernahme des vorhandenen Personals ist gegeben.",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.26": {
+  "frage": "Ein gut geschultes Personal ist vorhanden.",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht bekannt - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.27": {
+  "frage": "Restlaufzeit des Mietvertrags (inkl. Verlängerungsoptionen) in Jahren",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte Jahre eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.28": {
+  "frage": "Ist mit dem Kunden die Vergleichsrechnung Direkttilgung vs. Tilgungsaussetzung besprochen worden?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.29": {
+  "frage": "Hat der Kunde eine im Verhältnis zum Einkommen und der Verschuldung ausreichende Berufsunfähigkeitsabsicherung?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "2.30": {
+  "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Keine Anmerkungen",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstige Anmerkungen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.31": {
+  "frage": "Ist für das Vorhaben eine angemessene Führungserfahrung vorhanden?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   4,
+   9,
+   10
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "nicht relevant da Obligo < 100 T€",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.32": {
+  "frage": "Ist eine ausreichende Einarbeitungs- und Übergangsphase mit der Abgeberin / dem Abgeber in Bezug auf die kaufmännischen und personellen Themen vorgesehen?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   4,
+   9,
+   10
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "nicht relevant da Obligo < 100 T€ oder Neugründung",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.33": {
+  "frage": "Ist die folgende Aussage zutreffend: „Es sind keine wesentlichen personellen Veränderungen (z. B. Altersteilzeit, Schwangerschaften, Rückkehr aus Elternzeit) geplant“?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   4,
+   9,
+   10
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "nicht relevant da Obligo < 100 T€ oder Neugründung",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.34": {
+  "frage": "Liegt ein aussagefähiger Businessplan vor?",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   3,
+   4,
+   9,
+   10
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "nicht relevant da Obligo < 100 T€ oder Übernahme ohne wesentliche Änderungen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "2.35": {
+  "frage": "Keine zulässige Kombination",
+  "abschnitt": "2. Vorhaben",
+  "varianten": [
+   4,
+   10
+  ],
+  "auswahlMoeglichkeiten": []
+ },
+ "3.0": {
+  "frage": "Die apoBank ist Hauptbankverbindung des Kunden.",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "3.1": {
+  "frage": "Eine Bankauskunft (für Ablösungen Fremdbank relevant) bzw. Auskunft der Creditreform (sonstige Kunden) ohne Negativmerkmale liegt vor .",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "3.2": {
+  "frage": "Die apoBank wird Hauptbankverbindung des Kunden.",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "3.2.1": {
+  "frage": "Kunde ist bereits Mitglied der apoBank bzw. hat Anteil(e) neu gezeichnet?",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "3.3": {
+  "frage": "Es gibt bestehende Kreditengagements bei der apoBank.",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu  - Bitte kommentieren (Benennung und Erläuterung)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "3.4": {
+  "frage": "Es gibt keine Auffälligkeiten in der Kredithistorie (Umschuldungen, Steuerfinanzierungen, etc.).",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Auffälligkeiten)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "3.5": {
+  "frage": "Die Konto- und Engagementsführung ist ohne Auffälligkeiten.",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "3.6": {
+  "frage": "Die bisherige Erfüllung von Auflagen bzw. Einreichung von Unterlagen ist termingerecht.",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "3.7": {
+  "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Keine Anmerkungen",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstige Anmerkungen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "3.8": {
+  "frage": "Keine zulässige Kombination",
+  "abschnitt": "3. Entwicklung",
+  "varianten": [
+   4,
+   10
+  ],
+  "auswahlMoeglichkeiten": []
+ },
+ "4.0": {
+  "frage": "Die internen und externen Offenlegungspflichten sind erfüllt.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Benennung der fehlenden Unterlagen und Begründung, warum qualifizierte Entscheidung trotz Verzicht auf die Unterlagen möglich ist.)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Bitte prüfen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.1": {
+  "frage": "Es gibt keine Auffälligkeiten in den wirtschaftlichen Unterlagen (BWA, EÜR, Gehalt, etc.).",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.2": {
+  "frage": "Die Abgeberzahlen sind plausibel.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.3": {
+  "frage": "Die Planzahlen sind plausibel.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.4": {
+  "frage": "Was ist die Basis/ Quelle der Planzahlen?",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "InKo",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Abgeberzahlen",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstige Planunterlagen - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.5": {
+  "frage": "Es gibt keine wesentlichen Abweichungen der Kennzahlen zum Fachgruppendurchschnitt (mit GMP Serviceportal abgeglichen).",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   2,
+   3,
+   6,
+   8,
+   9,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - (z.B. Apotheker (Relation Umsatz zu Wareneinsatz/ Personal); Zahnarzt (Fremdlabor); Arzt (Umsatz/Betriebsergebnis)",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.6": {
+  "frage": "Wie sind die erwarteten Planzahlen im Verhältnis zu den Abgeberzahlen?",
+  "abschnitt": "4. Liquidität",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Auf dem gleichen Niveau - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Übersteigen die Abgeberzahlen deutlich - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Unterschreiten die Abgeberzahlen deutlich - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.7": {
+  "frage": "Was sind Gründe für geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen?",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   3,
+   9
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Altersgründe",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Erweitertes Leistungsspektrum",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Unterdurchschnittliche Honorare",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Steigerung Privatliquidation",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Erweiterte Öffnungszeiten",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Reduzierte Personalkosten",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Reduzierte Raumkosten",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Andere - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.8": {
+  "frage": "Wie ist die Entwicklung der Praxis/ Apotheke?",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   2,
+   3,
+   6,
+   8,
+   9,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Positiv",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Konstant",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sprunghaft - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Rückläufig - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.9": {
+  "frage": "Die Relation zwischen Überschuss aus HHR, Tilgung und Gesamtverschuldung ist angemessen.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   5,
+   7,
+   11
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Triff nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.9a": {
+  "frage": "Sensitivitätsanalyse für risikorelevantes Geschäft  - Bitte Daten aus HHR einfügen.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   5,
+   7,
+   11
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "HHR nach Sensitivitätsanalyse positiv",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "HHR nach Sensitivitätsanalyse negativ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.9b": {
+  "frage": "Kommentierung der Sensitivitätsanalyse für risikorelevantes Geschäft",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   5,
+   7,
+   11
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "HHR nach Sensitivitätsanalyse positiv",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "HHR nach Sensitivitätsanalyse negativ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.10": {
+  "frage": "Die Relation zwischen freier Liqui, Tilgung und Gesamtverschuldung ist angemessen.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   2,
+   3,
+   6,
+   8,
+   9,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.10a": {
+  "frage": "Sensitivitätsanalyse für risikorelevantes Geschäft - Bitte Daten aus Liqui-Rechnung einfügen.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   2,
+   3,
+   6,
+   8,
+   9,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Liqui nach Sensitivitätsanalyse positiv",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Liqui nach Sensitivitätsanalyse negativ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.10b": {
+  "frage": "Kommentierung der Sensitivitätsanalyse für risikorelevantes Geschäft",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   2,
+   3,
+   6,
+   8,
+   9,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Liqui nach Sensitivitätsanalyse positiv",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Liqui nach Sensitivitätsanalyse negativ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.11": {
+  "frage": "Es bestehen weitere, nicht in der HHR berücksichtigte Sondereinkünfte.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   5,
+   7,
+   11
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - Bitte kommentieren (Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.12": {
+  "frage": "Es bestehen weitere, nicht in der Liqui-Rechnung berücksichtigte Sondereinkünfte.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   2,
+   3,
+   6,
+   8,
+   9,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - Bitte kommentieren \n(Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.13": {
+  "frage": "Eine Einkommenssteigerung wird erwartet.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft zu - Bitte kommentieren (wann, wie viel und wie wahrscheinlich)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.14": {
+  "frage": "Lebenshaltungskosten/ Ausgabeverhalten/ Privatentnahmen stehen in einem angemessenen Verhältnis zur freien Liquidität",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - ggf. bitte kommentieren (Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant (Liqui-Rechnung erstellt)",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.15": {
+  "frage": "Bei Immobiliar-Verbraucherdarlehen (IVD) wurde eine kalkulatorische Mindestannuität von 5% p.a. berücksichtigt.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.16": {
+  "frage": "Vermögensüberschuss",
+  "abschnitt": "4. Liquidität",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte in TEUR eintragen",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.17": {
+  "frage": "Das Vermögen ist angemessen/ realistisch bewertet.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.18": {
+  "frage": "Darstellung des Entschuldungskonzeptes.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Entschuldung bis zum 67. Lebensjahr möglich",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Entschuldung bis zum 67. Lebensjahr nicht möglich",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.19": {
+  "frage": "Verbleibendes Restengagement laut Entschuldungskonzept.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.20": {
+  "frage": "Der Verschuldungsgrad unterhalb des 5-fachen Gesamtjahresbruttoeinkommen ist gegeben.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.21": {
+  "frage": "Eine Unterhaltsverpflichtung liegt nicht vor.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (z.B. Zeitraum, Veränderungen der Zahlungsverpflichtungen, etc.)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.22": {
+  "frage": "Steuerverbindlichkeiten sind nicht vorhanden.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   2,
+   3,
+   6,
+   8,
+   9,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Höhe, Fälligkeit und mögliche Zahlung)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "4.23": {
+  "frage": "Die Renditeimmobilie trägt sich aus Mieten selbst.",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   7,
+   8
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.24": {
+  "frage": "Für alle nicht-natürlichen Personen mit einem Kreditengagement größer TEUR 25 sind für die AnaCredit-Meldung nachfolgenden Unternehmensattribute zu erheben:",
+  "abschnitt": "4. Liquidität",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "relevant",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Nicht relevant",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.25": {
+  "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Keine Anmerkungen",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstige Anmerkungen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "4.26": {
+  "frage": "Kein zulässige Kombination",
+  "abschnitt": "4. Liquidität",
+  "varianten": [
+   4,
+   10
+  ],
+  "auswahlMoeglichkeiten": []
+ },
+ "5.0": {
+  "frage": "Das Rating bildet das Risiko sachgerecht ab.",
+  "abschnitt": "5. Rating",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Unregelmäßigkeiten)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "5.1": {
+  "frage": "Es sind keine Punktabzüge im Rating vorhanden.",
+  "abschnitt": "5. Rating",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Punktabzüge)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "5.2": {
+  "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+  "abschnitt": "5. Rating",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Keine Anmerkungen",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstige Anmerkungen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "5.3": {
+  "frage": "Keine zulässige Kombination",
+  "abschnitt": "5. Rating",
+  "varianten": [
+   4,
+   10
+  ],
+  "auswahlMoeglichkeiten": []
+ },
+ "6.0": {
+  "frage": "Standardsicherheiten liegen vor bzw. werden vereinbart.",
+  "abschnitt": "6. Sicherheit",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "6.1": {
+  "frage": "Eine angemessene Todesfallabsicherung liegt vor.",
+  "abschnitt": "6. Sicherheit",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "6.2": {
+  "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+  "abschnitt": "6. Sicherheit",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Keine Anmerkungen",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Sonstige Anmerkungen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "6.3": {
+  "frage": "Keine zulässige Kombination",
+  "abschnitt": "6. Sicherheit",
+  "varianten": [
+   4,
+   10
+  ],
+  "auswahlMoeglichkeiten": []
+ },
+ "7.0": {
+  "frage": "Deckungsbeitrag II",
+  "abschnitt": "7. Votum",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte in TEUR eintragen",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "7.1": {
+  "frage": "Marge - Kundenzins abzüglich Einstandszins in % (Provision bei VP angeben)",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Bitte eintragen",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "7.2": {
+  "frage": "Es gibt keine Abweichung zur Geschäfts- und Risikostrategie.",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Erklärung warum trotzdem attraktiv)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "7.3": {
+  "frage": "Das Finanzierungsvorhaben ist schlüssig.",
+  "abschnitt": "7. Votum",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "7.4": {
+  "frage": "Die Kapitaldienstfähigkeit ist gegeben. Die wirtschaftlichen Verhältnisse lassen die Kreditgewährung zu.",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "7.5": {
+  "frage": "Das Entschuldungskonzept ist nachvollziehbar.",
+  "abschnitt": "7. Votum",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "7.6": {
+  "frage": "Bei der Finanzierung bestehen keine (weiteren) wesentlichen Risiken.",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Risiken)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "7.7": {
+  "frage": "Es bestehen keine Auflagen aus dem Vorprotokoll.",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Bitte prüfen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "7.8": {
+  "frage": "Keine weiteren Auflagen sind notwendig.",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Definition der Auflagen)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "7.9": {
+  "frage": "Entsprechend dem Kundenwunsch erfolgt der Vertragsversand",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "per Post an Kunden.",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "per Email an Berater.",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "per Post an Filiale/ Berater.",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "7.10": {
+  "frage": "ESG – Risiken | Für den Kunden (und seine Standorte sowie die und allenfalls finanzierten oder zu finanzierenden Immobilien) bestehen auf Basis der bekannten Daten umweltbedingte physische oder transitorische Risiken.",
+  "abschnitt": "7. Votum",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu (bitte kommentieren)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu  ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "7.11": {
+  "frage": "ESG – Risiken |  Bestehen für den Kunden auf Basis der bekannten Daten soziale Risiken?",
+  "abschnitt": "7. Votum",
+  "varianten": [],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu (bitte kommentieren)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu  ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "7.12": {
+  "frage": "ESG – Risiken | Ermittelter ESG-Gesamt Score (RISIKO-Sicht) aus CredaRate",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "ESG-Gesamt-Score (Scoreklasse) aus RISIKO-Sicht",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "n/a",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "7.13": {
+  "frage": "ESG – Risiken | Ermittelte ESG-Gesamt-Score (IMPACT-Sicht) aus CredaRate",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "ESG-Gesamt-Score (Scoreklasse) aus IMPACT-Sicht",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "n/a",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "7.14": {
+  "frage": "ESG-Risiken | Das ESG-Scoring bewegt sich nicht im roten Bereich (Scoreklasse nicht F oder G); für den Kunden sind keine hohen ESG.Risiken erkennbar",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu ",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu (bitte kommentieren)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "7.15": {
+  "frage": "Keine zulässige Kombination",
+  "abschnitt": "7. Votum",
+  "varianten": [
+   4,
+   10
+  ],
+  "auswahlMoeglichkeiten": []
+ },
+ "8.": {
+  "frage": "Genehmigung",
+  "abschnitt": "8. Finale Entscheidung",
+  "varianten": [
+   1,
+   2,
+   3,
+   5,
+   6,
+   7,
+   8,
+   9,
+   11,
+   12
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Einzelkompetenz",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Kreditreserve",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Genehmigung Markt (Zweivotenfall) ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.0": {
+  "frage": "Kriterien für Finanzierung Konpakt sind erfüllt",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.1": {
+  "frage": "Die Stammdaten und das Rating sind geprüft und korrekt.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.2": {
+  "frage": "Die Kreditnehmereinheit / Gruppe verbundener Kunden ist geprüft und richtig gebildet.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.3": {
+  "frage": "Die persönliche Kreditwürdigkeit des Kreditnehmers ist gegeben  - es sind keine Risikofaktoren erkennbar.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.4": {
+  "frage": "Das Rückführungskonzept ermöglicht eine Entschuldung bis zum 67. Lebensjahr.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.5": {
+  "frage": "Um welches Vorhaben handelt es sich?",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Überziehungslimit",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Mietaval (privat)",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Mietaval (gewerblich)",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Mietaval (gewerblich) - Standortverlegung",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Darlehen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.6": {
+  "frage": "Es gibt keine Auffälligkeiten in der Kredithistorie (Umschuldungen, Steuerfinanzierungen, etc.).",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Auffälligkeiten)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.7": {
+  "frage": "Die Konto- und Engagementsführung ist ohne Auffälligkeiten.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.8": {
+  "frage": "Die internen und externen Offenlegungspflichten sind erfüllt",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.9": {
+  "frage": "Es gibt keine Auffälligkeiten in den wirtschaftlichen Unterlagen (BWA, EÜR, Gehalt, etc.).",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.10": {
+  "frage": "Die Relation zwischen Überschuss aus HHR, Tilgung und Gesamtverschuldung ist angemessen.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   15
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Triff nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.11": {
+  "frage": "Die Relation zwischen freier Liqui, Tilgung und Gesamtverschuldung ist angemessen.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   14,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.12": {
+  "frage": "Kommentierung der Sensitivitätsanalyse für risikorelevantes Geschäft",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   14,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Liqui nach Sensitivitätsanalyse positiv",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Liqui nach Sensitivitätsanalyse negativ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.13": {
+  "frage": "Lebenshaltungskosten/ Ausgabeverhalten/ Privatentnahmen stehen in einem angemessenen Verhältnis zur freien Liquidität / Gehalt",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu - ggf. bitte kommentieren (Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Nicht relevant (Liqui-Rechnung erstellt)",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.14": {
+  "frage": "Kommentierung der Sensitivitätsanalyse für risikorelevantes Geschäft",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   15
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "HHR nach Sensitivitätsanalyse positiv",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "HHR nach Sensitivitätsanalyse negativ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.15": {
+  "frage": "Das Vermögen ist angemessen/ realistisch bewertet.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.16": {
+  "frage": "Darstellung des Entschuldungskonzeptes.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Entschuldung bis zum 67. Lebensjahr möglich",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Entschuldung bis zum 67. Lebensjahr nicht möglich",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.17": {
+  "frage": "Standardsicherheiten liegen vor bzw. werden vereinbart.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Neukunde",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Bestandskunde",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.18": {
+  "frage": "Das Rating wurde geprüft. Es liegen keine Negativmerkmale vor.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.19": {
+  "frage": "Es gibt keine Abweichung zur Geschäfts- und Risikostrategie.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren (Erklärung warum trotzdem attraktiv)",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.20": {
+  "frage": "Die Kapitaldienstfähigkeit ist gegeben. Die wirtschaftlichen Verhältnisse lassen die Kreditgewährung zu.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   },
+   {
+    "label": "Trifft nicht zu - Bitte kommentieren",
+    "begruendungPflicht": true
+   }
+  ]
+ },
+ "K.21": {
+  "frage": "Es bestehen keine Auflagen aus dem Vorprotokoll.",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Bitte prüfen",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.22": {
+  "frage": "Genehmigung",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Einzelkompetenz",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Kreditreserve",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Genehmigung Markt (Zweivotenfall) ",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.23": {
+  "frage": "ESG – Risiken | Ermittelter ESG-Gesamt Score (RISIKO-Sicht) aus CredaRate",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   14,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "ESG-Gesamt-Score (Scoreklasse) aus RISIKO-Sicht",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "n/a",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.24": {
+  "frage": "ESG – Risiken | Ermittelte ESG-Gesamt-Score (IMPACT-Sicht) aus CredaRate",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   14,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "ESG-Gesamt-Score (Scoreklasse) aus IMPACT-Sicht",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "n/a",
+    "begruendungPflicht": false
+   }
+  ]
+ },
+ "K.25": {
+  "frage": "ESG-Risiken | Das ESG-Scoring bewegt sich nicht im roten Bereich (Scoreklasse nicht F oder G); für den Kunden sind keine hohen ESG.Risiken erkennbar",
+  "abschnitt": "Finanzierung Kompakt",
+  "varianten": [
+   14,
+   16
+  ],
+  "auswahlMoeglichkeiten": [
+   {
+    "label": "Trifft zu ",
+    "begruendungPflicht": false
+   },
+   {
+    "label": "Trifft nicht zu (bitte kommentieren)",
+    "begruendungPflicht": true
+   }
+  ]
+ }
+}

@@ -8,14 +8,24 @@ PDF-Ansicht.
 
 ## Schnellstart
 
-Wegen des `fetch` der Datendatei muss die Seite über einen kleinen
-Webserver geöffnet werden (nicht per Doppelklick):
+**Lokal ohne Webserver:** Einfach `index.html` per Doppelklick im Browser
+öffnen. Die Daten sind als eingebettete Skripte hinterlegt
+(`data/protocol-data.js`, `config.js`, `bausteine.js`), daher funktioniert
+alles direkt über `file://` – kein Server nötig.
+
+Optional (z. B. fürs Hosting) geht es weiterhin auch per Webserver:
 
 ```bash
 cd Protokoll
 python3 -m http.server 8000
 # Browser: http://localhost:8000
 ```
+
+> Hinweis: Die `*.js`-Datendateien werden aus den gleichnamigen `*.json`
+> erzeugt. Wird eine JSON geändert, die passende JS neu generieren
+> (`window.PROTOCOL_DATA` / `PROTOCOL_CONFIG` / `PROTOCOL_BAUSTEINE`).
+> Im laufenden Betrieb lassen sich Bausteine ohnehin per „Bausteine laden"
+> aktualisieren.
 
 ## Bedienung
 

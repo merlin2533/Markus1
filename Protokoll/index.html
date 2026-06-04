@@ -14,11 +14,12 @@
       <span class="app-header__sub" id="appSub">Markt einschließlich Finanzierung (Kompakt)</span>
     </div>
     <div class="app-header__actions">
-      <button type="button" id="btnKi"     class="btn btn--ki">🤖 KI-Export</button>
-      <button type="button" id="btnSave"   class="btn">💾 Datensatz speichern</button>
-      <button type="button" id="btnLoad"   class="btn">📂 Datensatz laden</button>
+      <button type="button" id="btnKi"       class="btn btn--ki">🤖 KI-Export</button>
+      <button type="button" id="btnAutoSave" class="btn">🔁 Auto-Speichern</button>
+      <button type="button" id="btnSave"     class="btn">💾 Datensatz speichern</button>
+      <button type="button" id="btnLoad"     class="btn">📂 Datensatz laden</button>
       <input type="file" id="fileLoad" accept="application/json,.json" hidden />
-      <button type="button" id="btnReset"  class="btn btn--ghost">🗑 Zurücksetzen</button>
+      <button type="button" id="btnReset"    class="btn btn--ghost">🗑 Zurücksetzen</button>
     </div>
   </header>
 
@@ -131,6 +132,11 @@
       </div>
 
       <!-- Fragen -->
+      <div class="filter-bar no-print" id="filterBar">
+        <input type="search" id="qSearch" class="filter-search" placeholder="🔍 Fragen durchsuchen (Nummer oder Text) …" />
+        <label class="chk"><input type="checkbox" id="qOnlyOpen" /> nur offene</label>
+        <span class="filter-info" id="filterInfo"></span>
+      </div>
       <div id="questionContainer"></div>
     </section>
 

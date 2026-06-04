@@ -62,9 +62,17 @@ kommentarpflichtigen Antworten direkt ins Begründungsfeld.
 
 ### Komfortfunktionen
 
+- **Suche & Filter**: Suchfeld über den Fragen (Nummer, Fragetext oder
+  Antwort) sowie Schalter **„nur offene"** – beide zeigen die Treffer
+  abschnittsübergreifend; ein Klick auf einen Reiter verlässt den Filter.
 - **Fortschrittsanzeige**: Balken unter den Reitern zeigt „X / Y Fragen
   bearbeitet" und offene Pflicht-Begründungen; je Reiter erscheint ein
   ✓-Häkchen, sobald alle Fragen vollständig beantwortet sind.
+- **Auto-Speichern in Datei** (Button „🔁 Auto-Speichern"): einmal eine
+  Datei wählen – danach wird jede Änderung automatisch dorthin geschrieben
+  (Chromium-basierte Browser; sonst bleibt der Stand wie bisher im
+  Browser erhalten). Unabhängig davon wird der Stand stets automatisch im
+  Browser gesichert.
 - **Druck-/PDF-Schutz**: Bei offenen Pflicht-Begründungen erfolgt vor dem
   Drucken eine Rückfrage.
 

@@ -156,7 +156,11 @@ function syncCoverInputs() {
 function renderTabs() {
   const variant = currentVariant();
   const visBySec = {};
-  visibleQuestions(variant).forEach(q => { visBySec[q.section] = (visBySec[q.section] || 0) + 1; });
+  const ansBySec = {};
+  visibleQuestions(variant).forEach(q => {
+    visBySec[q.section] = (visBySec[q.section] || 0) + 1;
+    if (isAnswered(q)) ansBySec[q.section] = (ansBySec[q.section] || 0) + 1;
+  });
 
   const tabsEl = document.getElementById('tabs');
   const active = DATA.sections.find(s => s.id === State.activeTab && visBySec[s.id]) ||
@@ -165,13 +169,57 @@ function renderTabs() {
 
   tabsEl.innerHTML = DATA.sections.map(s => {
     const count = visBySec[s.id] || 0;
+    const done = ansBySec[s.id] || 0;
+    const complete = count && done >= count;
     const cls = ['tab'];
     if (s.id === State.activeTab) cls.push('is-active');
     if (!count) cls.push('is-empty');
+    if (complete) cls.push('is-complete');
+    const badge = count ? `<span class="badge">${complete ? '✓' : `${done}/${count}`}</span>` : '';
     return `<button type="button" class="${cls.join(' ')}" data-tab="${s.id}" ${count ? '' : 'disabled'}>
-              ${esc(s.title)}${count ? `<span class="badge">${count}</span>` : ''}
+              ${esc(s.title)}${badge}
             </button>`;
   }).join('');
+  renderProgress();
+}
+
+// Frage gilt als "bearbeitet", wenn der Nutzer eine gültige Antwort gewählt hat
+// und (falls kommentarpflichtig) eine Begründung vorliegt.
+function isAnswered(q) {
+  const st = State.answers[q.nr];
+  if (!st || st.label == null) return false;
+  const ans = q.answers.find(a => !a.placeholder && a.label === st.label);
+  if (!ans) return false;
+  if (ans.comment && !(st.begruendung || '').trim()) return false;
+  return true;
+}
+
+function countOpenComments() {
+  const variant = currentVariant();
+  if (variant == null) return 0;
+  return visibleQuestions(variant).filter(q => {
+    const st = State.answers[q.nr] || {};
+    const label = st.label ?? defaultLabel(q);
+    const ans = q.answers.find(a => !a.placeholder && a.label === label);
+    return ans && ans.comment && !(st.begruendung || '').trim();
+  }).length;
+}
+
+function renderProgress() {
+  const variant = currentVariant();
+  const bar = document.getElementById('progressBar');
+  if (variant == null) { bar.hidden = true; return; }
+  const vis = visibleQuestions(variant);
+  const total = vis.length;
+  const done = vis.filter(isAnswered).length;
+  const open = countOpenComments();
+  const pct = total ? Math.round(done / total * 100) : 0;
+  bar.hidden = false;
+  bar.classList.toggle('is-done', total > 0 && done === total && open === 0);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    `${done} / ${total} Fragen bearbeitet (${pct} %)` +
+    (open ? ` · ${open} offene Begründung${open > 1 ? 'en' : ''}` : '');
 }
 
 function renderQuestions() {
@@ -240,7 +288,11 @@ function renderQuestion(q) {
       ${needsComment ? `
         <div class="q__comment is-required">
           ${renderBausteine(q.nr)}
-          <label>Begründung / Kommentar <span class="req-star">*Pflichtfeld</span></label>
+          <div class="q__comment-lbl">
+            <label>Begründung / Kommentar <span class="req-star">*Pflichtfeld</span></label>
+            <button type="button" class="btn-mini" data-role="savebs" data-nr="${esc(q.nr)}"
+              title="Aktuelle Begründung als wiederverwendbaren Baustein speichern">＋ Als Baustein speichern</button>
+          </div>
           <textarea data-role="comment" data-nr="${esc(q.nr)}"
             placeholder="Bitte begründen … (Strg+Enter = weiter)">${esc(state.begruendung || '')}</textarea>
         </div>` : ''}
@@ -252,14 +304,17 @@ function defaultLabel(q) {
   return first ? first.label : null;
 }
 
-// Textbausteine je Frage als anklickbare Chips
+// Textbausteine je Frage als anklickbare Chips (mit Lösch-Funktion)
 function renderBausteine(nr) {
   const list = State.bausteine[nr];
   if (!Array.isArray(list) || !list.length) return '';
   const chips = list.map((t, i) =>
-    `<button type="button" class="chip" data-baustein="${esc(nr)}" data-idx="${i}" title="${esc(t)}">
-       <span class="chip__txt">＋ ${esc(t)}</span>
-     </button>`).join('');
+    `<span class="chip">
+       <button type="button" class="chip__ins" data-baustein="${esc(nr)}" data-idx="${i}" title="${esc(t)}">
+         <span class="chip__txt">＋ ${esc(t)}</span>
+       </button>
+       <button type="button" class="chip__del" data-bsdel="${esc(nr)}" data-idx="${i}" title="Baustein entfernen">×</button>
+     </span>`).join('');
   return `<div class="q__bausteine">
       <span class="q__bausteine-lbl">Standardbausteine (Klick zum Einfügen):</span>
       <div class="q__chips">${chips}</div>
@@ -395,6 +450,7 @@ function rebuildOutput() {
 
   host.querySelectorAll('.out-text').forEach(autoSize);
   renderValidation();
+  renderProgress();
   renderPrintDoc(struct);
 }
 
@@ -550,6 +606,10 @@ function bindEvents() {
   qc.addEventListener('click', e => {
     const chip = e.target.closest('[data-baustein]');
     if (chip) { insertBaustein(chip.dataset.baustein, +chip.dataset.idx); return; }
+    const del = e.target.closest('[data-bsdel]');
+    if (del) { removeBaustein(del.dataset.bsdel, +del.dataset.idx); return; }
+    const save = e.target.closest('[data-role="savebs"]');
+    if (save) { saveCurrentAsBaustein(save.dataset.nr); return; }
     const nav = e.target.closest('[data-nav]');
     if (nav) handleNav(nav.dataset.nav);
   });
@@ -622,7 +682,11 @@ function bindEvents() {
     () => copyText(document.getElementById('kiPrompt').value, 'KI-Prompt kopiert.'));
 
   document.getElementById('btnCopyAll').addEventListener('click', copyAll);
-  document.getElementById('btnPrint').addEventListener('click', () => window.print());
+  document.getElementById('btnPrint').addEventListener('click', () => {
+    const open = countOpenComments();
+    if (open > 0 && !confirm(`Es sind noch ${open} Pflicht-Begründung(en) offen.\nTrotzdem drucken / als PDF speichern?`)) return;
+    window.print();
+  });
   document.getElementById('btnSave').addEventListener('click', saveToFile);
   document.getElementById('btnLoad').addEventListener('click', () => document.getElementById('fileLoad').click());
   document.getElementById('fileLoad').addEventListener('change', loadFromFile);
@@ -668,6 +732,7 @@ function onAnswer(nr, label) {
   if (!ans || !ans.comment) delete State.answers[nr].begruendung;
   persist();
   renderQuestions();
+  renderTabs();
   rebuildOutput();
   if (ans && ans.comment) focusComment(nr); else focusNextAfter(nr);
 }
@@ -754,6 +819,32 @@ function insertBaustein(nr, idx) {
   onComment(nr, ta.value);
   ta.focus();
   try { ta.setSelectionRange(caret, caret); } catch (e) {}
+}
+
+// Aktuelle Begründung als wiederverwendbaren Baustein speichern
+function saveCurrentAsBaustein(nr) {
+  const text = (State.answers[nr]?.begruendung || '').trim();
+  if (!text) { toast('Bitte zuerst eine Begründung eingeben.'); return; }
+  const cur = State.bausteine[nr] || [];
+  if (cur.includes(text)) { toast('Baustein ist bereits vorhanden.'); return; }
+  cur.push(text);
+  State.bausteine[nr] = cur;
+  persistBausteine(); updateBsStatus();
+  const focused = document.activeElement;
+  const keepNr = focused && focused.dataset && focused.dataset.nr;
+  renderQuestions();
+  if (keepNr) focusComment(keepNr);
+  toast('Als Baustein gespeichert.');
+}
+
+// Einzelnen Baustein entfernen
+function removeBaustein(nr, idx) {
+  const list = State.bausteine[nr];
+  if (!Array.isArray(list) || list[idx] == null) return;
+  list.splice(idx, 1);
+  if (!list.length) delete State.bausteine[nr];
+  persistBausteine(); updateBsStatus(); renderQuestions();
+  toast('Baustein entfernt.');
 }
 
 // Nur gültige Einträge übernehmen: bekannte Fragenummern, nicht-leere Strings, dedupliziert

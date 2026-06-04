@@ -31,7 +31,9 @@ const State = {
   bausteine: {}, // nr -> [Standard-Begruendungen]
   manualSections: {}, // secId -> manuell bearbeiteter Text
   editMode: false,
-  activeTab: null
+  activeTab: null,
+  search: '',
+  onlyOpen: false
 };
 
 let DATA = null;          // protocol-data.json
@@ -222,22 +224,57 @@ function renderProgress() {
     (open ? ` · ${open} offene Begründung${open > 1 ? 'en' : ''}` : '');
 }
 
+function isFilterMode() {
+  return State.search.trim() !== '' || State.onlyOpen;
+}
+function matchesSearch(q) {
+  const s = State.search.trim().toLowerCase();
+  if (!s) return true;
+  if (String(q.nr).toLowerCase().includes(s)) return true;
+  if (String(q.frage).toLowerCase().includes(s)) return true;
+  return q.answers.some(a => !a.placeholder && a.label.toLowerCase().includes(s));
+}
+
 function renderQuestions() {
   const variant = currentVariant();
   const container = document.getElementById('questionContainer');
+  const info = document.getElementById('filterInfo');
 
   if (variant == null) {
     container.innerHTML = `<div class="card section-empty">
       Bitte zunächst <b>Neu-/Bestandskunde</b>, <b>Kundenart</b> und <b>Finanzierung</b> auswählen.</div>`;
+    if (info) info.textContent = '';
     return;
   }
+
+  // Filter-/Suchmodus: abschnittsübergreifend gefilterte Liste
+  if (isFilterMode()) {
+    const matches = visibleQuestions(variant).filter(q =>
+      matchesSearch(q) && (!State.onlyOpen || !isAnswered(q)));
+    if (info) info.textContent = `${matches.length} Treffer`;
+    if (!matches.length) {
+      container.innerHTML = `<div class="card section-empty">Keine Fragen entsprechen dem Filter.</div>`;
+      return;
+    }
+    const bySec = {};
+    matches.forEach(q => (bySec[q.section] = bySec[q.section] || []).push(q));
+    container.innerHTML = DATA.sections.filter(s => bySec[s.id]).map(s => `
+      <div class="section-block">
+        <div class="section-block__title">${esc(s.title)}</div>
+        ${bySec[s.id].map(renderQuestion).join('')}
+      </div>`).join('');
+    return;
+  }
+
   const sec = DATA.sections.find(s => s.id === State.activeTab);
   if (!sec) {
     container.innerHTML = `<div class="card section-empty">Für diese Kombination sind keine Fragen hinterlegt.</div>`;
+    if (info) info.textContent = '';
     return;
   }
 
   const qs = visibleQuestions(variant).filter(q => q.section === sec.id);
+  if (info) info.textContent = '';
   const tabs = sectionsWithQuestions(variant);
   const idx = tabs.findIndex(s => s.id === sec.id);
   const prev = tabs[idx - 1], next = tabs[idx + 1];
@@ -535,6 +572,12 @@ function renderPrintDoc(struct) {
 function setActiveTab(id, { scroll = true } = {}) {
   if (!id) return;
   State.activeTab = id;
+  // Reiterwechsel verlässt den Filter-/Suchmodus
+  if (State.search || State.onlyOpen) {
+    State.search = ''; State.onlyOpen = false;
+    const qs = document.getElementById('qSearch'); if (qs) qs.value = '';
+    const oo = document.getElementById('qOnlyOpen'); if (oo) oo.checked = false;
+  }
   renderTabs();
   renderQuestions();
   // aktiven Ausgabe-Abschnitt markieren
@@ -595,6 +638,17 @@ function bindEvents() {
     const btn = e.target.closest('.tab'); if (!btn || btn.disabled) return;
     setActiveTab(btn.dataset.tab);
   });
+
+  // Suche & Filter
+  document.getElementById('qSearch').addEventListener('input', e => {
+    State.search = e.target.value; renderQuestions();
+  });
+  document.getElementById('qOnlyOpen').addEventListener('change', e => {
+    State.onlyOpen = e.target.checked; renderQuestions();
+  });
+
+  // Auto-Speichern in Datei
+  document.getElementById('btnAutoSave').addEventListener('click', toggleAutoSave);
 
   const qc = document.getElementById('questionContainer');
   qc.addEventListener('change', e => {
@@ -939,6 +993,70 @@ function persistBausteine() {
 /* ----------------------------------------------------------------------- */
 function persist() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize())); } catch (e) {}
+  scheduleAutoSave();
+}
+
+/* ----------------------------------------------------------------------- */
+/* Auto-Speichern in Datei (File System Access API)                         */
+/* ----------------------------------------------------------------------- */
+let autoSaveHandle = null;
+let autoSaveTimer = null;
+
+async function toggleAutoSave() {
+  if (autoSaveHandle) { // ausschalten
+    autoSaveHandle = null;
+    updateAutoSaveBtn();
+    toast('Auto-Speichern beendet.');
+    return;
+  }
+  if (!window.showSaveFilePicker) {
+    toast('Datei-Autospeichern wird von diesem Browser nicht unterstützt. Der Stand bleibt im Browser erhalten.');
+    return;
+  }
+  try {
+    const name = datasetFileName();
+    autoSaveHandle = await window.showSaveFilePicker({
+      suggestedName: name,
+      types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+    });
+    await writeAutoSave();
+    updateAutoSaveBtn();
+    toast('Auto-Speichern aktiv – Änderungen werden automatisch in die Datei geschrieben.');
+  } catch (e) { autoSaveHandle = null; /* abgebrochen */ }
+}
+
+function scheduleAutoSave() {
+  if (!autoSaveHandle) return;
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(writeAutoSave, 800);
+}
+
+async function writeAutoSave() {
+  if (!autoSaveHandle) return;
+  try {
+    const opts = { mode: 'readwrite' };
+    if (autoSaveHandle.queryPermission && (await autoSaveHandle.queryPermission(opts)) !== 'granted') {
+      if (!autoSaveHandle.requestPermission || (await autoSaveHandle.requestPermission(opts)) !== 'granted') return;
+    }
+    const w = await autoSaveHandle.createWritable();
+    await w.write(JSON.stringify(serialize(), null, 2));
+    await w.close();
+    updateAutoSaveBtn(true);
+  } catch (e) { /* z.B. Berechtigung entzogen */ }
+}
+
+function updateAutoSaveBtn(savedNow) {
+  const btn = document.getElementById('btnAutoSave');
+  if (!btn) return;
+  if (autoSaveHandle) {
+    btn.classList.add('btn--autosave-on');
+    btn.textContent = savedNow
+      ? `🔁 Auto-Speichern: gespeichert ${new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`
+      : '🔁 Auto-Speichern: an';
+  } else {
+    btn.classList.remove('btn--autosave-on');
+    btn.textContent = '🔁 Auto-Speichern';
+  }
 }
 function restoreFromStorage() {
   try {
@@ -970,11 +1088,13 @@ function buildAnswerExport() {
   return out;
 }
 
-function saveToFile() {
-  const data = serialize();
-  const name = (State.header.kreditnehmer || 'Kreditprotokoll')
+function datasetFileName() {
+  const base = (State.header.kreditnehmer || 'Kreditprotokoll')
     .replace(/[^\wäöüÄÖÜß\- ]+/g, '').trim().replace(/\s+/g, '_') || 'Kreditprotokoll';
-  download(`${name}_${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(data, null, 2));
+  return `${base}_${new Date().toISOString().slice(0, 10)}.json`;
+}
+function saveToFile() {
+  download(datasetFileName(), JSON.stringify(serialize(), null, 2));
   toast('Datensatz gespeichert.');
 }
 function loadFromFile(e) {
@@ -1059,6 +1179,9 @@ function resetAll() {
   State.cover = { kundeTyp: '', kundenart: '', finanzierung: '' };
   State.header = { kreditnehmer: '', stammnummer: '', datum: '', berater: '', bearbeiter: '', obligo: '', bemerkung: '' };
   State.answers = {}; State.manualSections = {}; State.editMode = false; State.activeTab = null;
+  State.search = ''; State.onlyOpen = false;
+  const qs = document.getElementById('qSearch'); if (qs) qs.value = '';
+  const oo = document.getElementById('qOnlyOpen'); if (oo) oo.checked = false;
   localStorage.removeItem(STORAGE_KEY);
   renderAll(); toast('Zurückgesetzt.');
 }

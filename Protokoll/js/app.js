@@ -46,26 +46,32 @@ init();
 /* ----------------------------------------------------------------------- */
 /* Initialisierung                                                          */
 /* ----------------------------------------------------------------------- */
-async function init() {
+async function tryFetchJson(url) {
   try {
-    const res = await fetch('data/protocol-data.json');
-    DATA = await res.json();
-  } catch (e) {
-    document.body.innerHTML = '<p style="padding:2rem">Konnte <code>data/protocol-data.json</code> nicht laden. ' +
-      'Bitte die Seite über einen Webserver öffnen (z.&nbsp;B. <code>python -m http.server</code>).</p>';
+    const res = await fetch(url);
+    if (res.ok) return await res.json();
+  } catch (e) { /* z.B. file:// blockiert fetch */ }
+  return null;
+}
+
+async function init() {
+  // Daten laden: bevorzugt eingebettete Globals (funktioniert lokal per
+  // Doppelklick, file://), sonst per fetch (Serverbetrieb).
+  DATA = window.PROTOCOL_DATA || await tryFetchJson('data/protocol-data.json');
+  if (!DATA) {
+    document.body.innerHTML = '<p style="padding:2rem">Konnte die Protokolldaten nicht laden. ' +
+      'Bitte sicherstellen, dass <code>data/protocol-data.js</code> vorhanden ist.</p>';
     return;
   }
+
   // Config (optional, mit Fallback)
-  try {
-    const cres = await fetch('config.json');
-    if (cres.ok) {
-      const c = await cres.json();
-      CONFIG = {
-        zeichenLimits: Object.assign({ default: 2000 }, c.zeichenLimits || {}),
-        warnAbProzent: Number(c.warnAbProzent) || 90
-      };
-    }
-  } catch (e) { /* Fallback bleibt */ }
+  const c = window.PROTOCOL_CONFIG || await tryFetchJson('config.json');
+  if (c) {
+    CONFIG = {
+      zeichenLimits: Object.assign({ default: 2000 }, c.zeichenLimits || {}),
+      warnAbProzent: Number(c.warnAbProzent) || 90
+    };
+  }
 
   DATA.questions.forEach(q => Q_BY_NR.set(q.nr, q));
   DATA.sections.forEach(s => SECTION_IDS.add(s.id));
@@ -74,11 +80,9 @@ async function init() {
   document.getElementById('appSub').textContent =
     `${DATA.meta.title} · Stand ${DATA.meta.stand}`;
 
-  // Textbausteine: zuerst Datei im Ordner, dann lokal Gespeichertes (überschreibt/ergänzt)
-  try {
-    const bres = await fetch('bausteine.json');
-    if (bres.ok) mergeBausteine((await bres.json()).bausteine);
-  } catch (e) { /* optional */ }
+  // Textbausteine: zuerst eingebettet/Datei im Ordner, dann lokal Gespeichertes (überschreibt/ergänzt)
+  const bs = window.PROTOCOL_BAUSTEINE || await tryFetchJson('bausteine.json');
+  if (bs && bs.bausteine) mergeBausteine(bs.bausteine);
   try {
     const raw = localStorage.getItem(BAUSTEINE_KEY);
     if (raw) mergeBausteine(JSON.parse(raw));

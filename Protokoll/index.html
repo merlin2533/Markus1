@@ -23,6 +23,13 @@
 
   <!-- ===================== Navigation ===================== -->
   <nav class="tabs no-print" id="tabs"></nav>
+  <div class="kbd-help no-print" id="kbdHelp">
+    ⌨ <b>Alt + → / ←</b> Reiter wechseln ·
+    <b>Alt + ↓ / ↑</b> Frage wechseln ·
+    <b>Enter</b> weiter zur nächsten Frage ·
+    <b>Alt + C</b> Reiter kopieren ·
+    <b>Alt + P</b> Drucken/PDF
+  </div>
 
   <main class="layout">
     <!-- ===================== Eingabe ===================== -->
@@ -68,19 +75,19 @@
     <section class="panel" id="outputPanel">
       <div class="card">
         <div class="output-toolbar no-print">
-          <h2>Protokoll-Ausgabe</h2>
+          <h2>Protokoll-Ausgabe <span class="hint-inline">– reiterweise kopierbar</span></h2>
           <div class="output-toolbar__actions">
-            <label class="chk"><input type="checkbox" id="chkLiveEdit" /> Text manuell bearbeitbar</label>
+            <label class="chk"><input type="checkbox" id="chkLiveEdit" /> bearbeitbar</label>
             <button type="button" id="btnRebuild" class="btn btn--ghost">↻ Neu aufbauen</button>
-            <button type="button" id="btnCopy"  class="btn">📋 Kopieren</button>
+            <button type="button" id="btnCopyAll" class="btn">📋 Alles kopieren</button>
             <button type="button" id="btnPrint" class="btn btn--primary">🖨 Drucken / PDF</button>
           </div>
         </div>
 
         <div id="validationHint" class="validation-hint no-print" hidden></div>
 
-        <!-- Editierbare Rohausgabe -->
-        <textarea id="outputText" class="output-text no-print" spellcheck="false" readonly></textarea>
+        <!-- Reiterweise Ausgabe-Abschnitte -->
+        <div id="outputSections" class="out-sections no-print"></div>
       </div>
 
       <!-- Druck-/PDF-Ansicht -->

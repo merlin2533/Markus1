@@ -7,6 +7,15 @@
 
 const SCHEMA_VERSION = 1;
 const STORAGE_KEY = 'kreditprotokoll-state-v1';
+const BAUSTEINE_KEY = 'kreditprotokoll-bausteine-v1';
+
+// Farbpalette je Abschnitt (Output & Druck)
+const SECTION_COLORS = {
+  person: '#0b5d8a', vorhaben: '#1d8a5b', entwicklung: '#9a6a12',
+  liquiditaet: '#6a3da6', rating: '#b4471c', sicherheit: '#0b768a',
+  votum: '#2d6a2d', entscheidung: '#8a2d4f', kompakt: '#084766'
+};
+function sectionColor(id) { return SECTION_COLORS[id] || '#0b5d8a'; }
 
 const DEFAULT_CONFIG = {
   zeichenLimits: { default: 2000 },
@@ -15,9 +24,10 @@ const DEFAULT_CONFIG = {
 
 const State = {
   cover: { kundeTyp: '', kundenart: '', finanzierung: '' },
-  header: { kreditnehmer: '', stammnummer: '', datum: '', berater: '', obligo: '' },
+  header: { kreditnehmer: '', stammnummer: '', datum: '', berater: '', bearbeiter: '', obligo: '', bemerkung: '' },
   // answers[nr] = { label, begruendung }
   answers: {},
+  bausteine: {}, // nr -> [Standard-Begruendungen]
   manualSections: {}, // secId -> manuell bearbeiteter Text
   editMode: false,
   activeTab: null
@@ -61,9 +71,20 @@ async function init() {
   document.getElementById('appSub').textContent =
     `${DATA.meta.title} · Stand ${DATA.meta.stand}`;
 
+  // Textbausteine: zuerst Datei im Ordner, dann lokal Gespeichertes (überschreibt/ergänzt)
+  try {
+    const bres = await fetch('bausteine.json');
+    if (bres.ok) mergeBausteine((await bres.json()).bausteine);
+  } catch (e) { /* optional */ }
+  try {
+    const raw = localStorage.getItem(BAUSTEINE_KEY);
+    if (raw) mergeBausteine(JSON.parse(raw));
+  } catch (e) { /* optional */ }
+
   buildCoverSelects();
   bindEvents();
   restoreFromStorage();
+  updateBsStatus();
   renderAll();
 }
 
@@ -118,7 +139,9 @@ function syncCoverInputs() {
   document.getElementById('hdrStammnummer').value = State.header.stammnummer;
   document.getElementById('hdrDatum').value = State.header.datum;
   document.getElementById('hdrBerater').value = State.header.berater;
+  document.getElementById('hdrBearbeiter').value = State.header.bearbeiter;
   document.getElementById('hdrObligo').value = State.header.obligo;
+  document.getElementById('hdrBemerkung').value = State.header.bemerkung;
   document.getElementById('chkLiveEdit').checked = State.editMode;
 
   const variant = currentVariant();
@@ -214,6 +237,7 @@ function renderQuestion(q) {
       </div>
       ${needsComment ? `
         <div class="q__comment is-required">
+          ${renderBausteine(q.nr)}
           <label>Begründung / Kommentar <span class="req-star">*Pflichtfeld</span></label>
           <textarea data-role="comment" data-nr="${esc(q.nr)}"
             placeholder="Bitte begründen … (Strg+Enter = weiter)">${esc(state.begruendung || '')}</textarea>
@@ -224,6 +248,20 @@ function renderQuestion(q) {
 function defaultLabel(q) {
   const first = q.answers.find(a => !a.placeholder);
   return first ? first.label : null;
+}
+
+// Textbausteine je Frage als anklickbare Chips
+function renderBausteine(nr) {
+  const list = State.bausteine[nr];
+  if (!Array.isArray(list) || !list.length) return '';
+  const chips = list.map((t, i) =>
+    `<button type="button" class="chip" data-baustein="${esc(nr)}" data-idx="${i}" title="${esc(t)}">
+       <span class="chip__txt">＋ ${esc(t)}</span>
+     </button>`).join('');
+  return `<div class="q__bausteine">
+      <span class="q__bausteine-lbl">Standardbausteine (Klick zum Einfügen):</span>
+      <div class="q__chips">${chips}</div>
+    </div>`;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -342,7 +380,7 @@ function rebuildOutput() {
     }
 
     const countLbl = `${len}${limit ? ` / ${limit}` : ''} Zeichen${over ? ` · ${len - limit} zu viel` : ''}`;
-    return `<div class="out-section ${s.id === State.activeTab ? 'is-active' : ''}" data-sec="${esc(s.id)}">
+    return `<div class="out-section ${s.id === State.activeTab ? 'is-active' : ''}" data-sec="${esc(s.id)}" style="--sec-color:${sectionColor(s.id)}">
         <div class="out-section__head">
           <span class="out-section__title">${esc(s.title)}</span>
           <span class="out-section__count ${lvl.txt}" data-count="${esc(s.id)}">${countLbl}</span>
@@ -383,13 +421,14 @@ function renderPrintDoc(struct) {
   const meta = [
     ['Kreditnehmer', h.kreditnehmer], ['Stammnummer', h.stammnummer],
     ['Datum', h.datum], ['Berater (KB)', h.berater],
-    ['Obligo / Volumen', h.obligo], ['Variante', variantTxt]
+    ['Bearbeiter', h.bearbeiter], ['Obligo / Volumen', h.obligo],
+    ['Variante', variantTxt], ['Bemerkung', h.bemerkung]
   ].filter(([, v]) => v && String(v).trim())
    .map(([k, v]) => `<div><b>${esc(k)}:</b> ${esc(v)}</div>`).join('');
 
   const body = struct.map(s => {
     const lines = sectionText(s).split('\n').filter(l => l.trim());
-    return `<div class="print-doc__section">
+    return `<div class="print-doc__section" style="--sec-color:${sectionColor(s.id)}">
         <h2>${esc(s.title)}</h2>
         ${lines.map(l => `<p>${esc(l)}</p>`).join('')}
       </div>`;
@@ -398,11 +437,14 @@ function renderPrintDoc(struct) {
   document.getElementById('printDoc').innerHTML = `
     <div class="print-doc__head">
       <h1>Kreditprotokoll</h1>
-      <div>${esc(DATA.meta.title)} · Stand ${esc(DATA.meta.stand)}</div>
+      <div class="sub">${esc(DATA.meta.title)} · Stand ${esc(DATA.meta.stand)}</div>
       <div class="print-doc__meta">${meta || '<div>—</div>'}</div>
     </div>
     ${body || '<p>Keine Angaben.</p>'}
-    <div class="print-doc__foot">Erstellt am ${new Date().toLocaleDateString('de-DE')} · Kreditprotokoll (HTML)</div>`;
+    <div class="print-doc__foot">
+      <span>${esc(h.bearbeiter ? 'Bearbeiter: ' + h.bearbeiter : 'Kreditprotokoll (HTML)')}</span>
+      <span>Erstellt am ${new Date().toLocaleDateString('de-DE')}</span>
+    </div>`;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -460,7 +502,7 @@ function bindEvents() {
   document.getElementById('selKundenart').addEventListener('change', e => onCover('kundenart', e.target.value));
   document.getElementById('selFinanzierung').addEventListener('change', e => onCover('finanzierung', e.target.value));
 
-  ['kreditnehmer', 'stammnummer', 'datum', 'berater', 'obligo'].forEach(k => {
+  ['kreditnehmer', 'stammnummer', 'datum', 'berater', 'bearbeiter', 'obligo', 'bemerkung'].forEach(k => {
     const id = 'hdr' + k.charAt(0).toUpperCase() + k.slice(1);
     document.getElementById(id).addEventListener('input', e => {
       State.header[k] = e.target.value; persist(); renderPrintDoc(buildOutputStructure());
@@ -480,8 +522,10 @@ function bindEvents() {
     if (e.target.dataset.role === 'comment') onComment(e.target.dataset.nr, e.target.value);
   });
   qc.addEventListener('click', e => {
-    const nav = e.target.closest('[data-nav]'); if (!nav) return;
-    handleNav(nav.dataset.nav);
+    const chip = e.target.closest('[data-baustein]');
+    if (chip) { insertBaustein(chip.dataset.baustein, +chip.dataset.idx); return; }
+    const nav = e.target.closest('[data-nav]');
+    if (nav) handleNav(nav.dataset.nav);
   });
   // Enter = weiter
   qc.addEventListener('keydown', e => {
@@ -521,6 +565,14 @@ function bindEvents() {
   document.getElementById('chkLiveEdit').addEventListener('change', e => {
     State.editMode = e.target.checked; rebuildOutput(); persist();
   });
+
+  // Textbausteine
+  document.getElementById('btnBsGen').addEventListener('click', () => document.getElementById('fileBsGen').click());
+  document.getElementById('fileBsGen').addEventListener('change', generateBausteineFromFiles);
+  document.getElementById('btnBsLoad').addEventListener('click', () => document.getElementById('fileBsLoad').click());
+  document.getElementById('fileBsLoad').addEventListener('change', loadBausteineFile);
+  document.getElementById('btnBsSave').addEventListener('click', saveBausteine);
+  document.getElementById('btnBsClear').addEventListener('click', clearBausteine);
 
   document.getElementById('btnCopyAll').addEventListener('click', copyAll);
   document.getElementById('btnPrint').addEventListener('click', () => window.print());
@@ -630,6 +682,115 @@ function legacyCopy(text, done) {
   document.body.appendChild(ta); ta.select();
   try { document.execCommand('copy'); done(); } catch (e) { toast('Kopieren nicht möglich.'); }
   ta.remove();
+}
+
+/* ----------------------------------------------------------------------- */
+/* Textbausteine (Standard-Begründungen)                                    */
+/* ----------------------------------------------------------------------- */
+function insertBaustein(nr, idx) {
+  const list = State.bausteine[nr];
+  if (!Array.isArray(list) || list[idx] == null) return;
+  const text = list[idx];
+  const ta = document.querySelector(`#questionContainer textarea[data-role="comment"][data-nr="${cssEsc(nr)}"]`);
+  if (!ta) return;
+  const start = ta.selectionStart ?? ta.value.length;
+  const end = ta.selectionEnd ?? ta.value.length;
+  const before = ta.value.slice(0, start);
+  const after = ta.value.slice(end);
+  const sep = (before && !/\s$/.test(before)) ? ' ' : '';
+  const ins = sep + text;
+  ta.value = before + ins + after;
+  const caret = before.length + ins.length;
+  onComment(nr, ta.value);
+  ta.focus();
+  try { ta.setSelectionRange(caret, caret); } catch (e) {}
+}
+
+// Nur gültige Einträge übernehmen: bekannte Fragenummern, nicht-leere Strings, dedupliziert
+function mergeBausteine(map) {
+  if (!map || typeof map !== 'object') return 0;
+  let added = 0;
+  for (const [nr, arr] of Object.entries(map)) {
+    if (!Q_BY_NR.has(nr) || !Array.isArray(arr)) continue;
+    const cur = State.bausteine[nr] || [];
+    for (const t of arr) {
+      if (typeof t !== 'string') continue;
+      const s = t.trim();
+      if (s && !cur.includes(s)) { cur.push(s); added++; }
+    }
+    if (cur.length) State.bausteine[nr] = cur;
+  }
+  return added;
+}
+
+function updateBsStatus() {
+  const nQ = Object.keys(State.bausteine).length;
+  const nB = Object.values(State.bausteine).reduce((a, x) => a + x.length, 0);
+  const el = document.getElementById('bsStatus');
+  if (!el) return;
+  el.textContent = nB ? `${nB} Bausteine zu ${nQ} Frage(n) geladen` : 'keine Bausteine geladen';
+  el.classList.toggle('is-on', nB > 0);
+}
+
+async function generateBausteineFromFiles(e) {
+  const files = [...e.target.files]; e.target.value = '';
+  if (!files.length) return;
+  let added = 0;
+  for (const f of files) {
+    try {
+      const obj = JSON.parse(await f.text());
+      if (obj && obj.bausteine) added += mergeBausteine(obj.bausteine);
+      const ant = obj && (obj.antworten || obj.answers);
+      if (ant && typeof ant === 'object') {
+        const map = {};
+        for (const [nr, v] of Object.entries(ant)) {
+          if (!Q_BY_NR.has(nr) || !v) continue;
+          const b = v.begruendung ?? v.kommentar ?? v.comment;
+          if (typeof b === 'string' && b.trim()) (map[nr] = map[nr] || []).push(b.trim());
+        }
+        added += mergeBausteine(map);
+      }
+    } catch (err) { /* ungültige Datei überspringen */ }
+  }
+  persistBausteine(); updateBsStatus(); renderQuestions();
+  toast(`${added} Baustein(e) aus ${files.length} Datei(en) ergänzt.`);
+  if (added && confirm('Bausteine wurden generiert. Jetzt als Datei speichern?')) saveBausteine();
+}
+
+function loadBausteineFile(e) {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file) return;
+  file.text().then(txt => {
+    try {
+      const obj = JSON.parse(txt);
+      const added = mergeBausteine(obj.bausteine || obj);
+      persistBausteine(); updateBsStatus(); renderQuestions();
+      toast(added ? `${added} Baustein(e) geladen.` : 'Keine passenden Bausteine gefunden.');
+    } catch (err) { toast('Fehler: keine gültige Bausteine-Datei.'); }
+  });
+}
+
+function saveBausteine() {
+  if (!Object.keys(State.bausteine).length) { toast('Keine Bausteine vorhanden.'); return; }
+  let name = (prompt('Dateiname für die Bausteine-Datei:', 'bausteine') || 'bausteine')
+    .replace(/[^\wäöüÄÖÜß\- .]+/g, '').trim() || 'bausteine';
+  if (!name.toLowerCase().endsWith('.json')) name += '.json';
+  const data = {
+    typ: 'Kreditprotokoll-Bausteine', schemaVersion: SCHEMA_VERSION,
+    erstelltAm: new Date().toISOString(), bausteine: State.bausteine
+  };
+  download(name, JSON.stringify(data, null, 2));
+  toast('Bausteine gespeichert. Tipp: als bausteine.json im Ordner ablegen → Auto-Laden.');
+}
+
+function clearBausteine() {
+  if (!confirm('Alle geladenen Bausteine entfernen? (Eine vorhandene Datei bleibt erhalten.)')) return;
+  State.bausteine = {}; persistBausteine(); updateBsStatus(); renderQuestions();
+  toast('Bausteine geleert.');
+}
+
+function persistBausteine() {
+  try { localStorage.setItem(BAUSTEINE_KEY, JSON.stringify(State.bausteine)); } catch (e) {}
 }
 
 /* ----------------------------------------------------------------------- */
@@ -755,7 +916,7 @@ function matchInto(value, allowed, setter) {
 function resetAll() {
   if (!confirm('Alle Eingaben verwerfen und neu beginnen?')) return;
   State.cover = { kundeTyp: '', kundenart: '', finanzierung: '' };
-  State.header = { kreditnehmer: '', stammnummer: '', datum: '', berater: '', obligo: '' };
+  State.header = { kreditnehmer: '', stammnummer: '', datum: '', berater: '', bearbeiter: '', obligo: '', bemerkung: '' };
   State.answers = {}; State.manualSections = {}; State.editMode = false; State.activeTab = null;
   localStorage.removeItem(STORAGE_KEY);
   renderAll(); toast('Zurückgesetzt.');

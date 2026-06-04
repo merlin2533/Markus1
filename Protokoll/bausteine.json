@@ -1,0 +1,19 @@
+{
+  "_hinweis": "Textbausteine = Standard-Begruendungen je Frage. Schluessel ist die Fragenummer (siehe referenz-antwortoptionen.json), Wert ist eine Liste moeglicher Begruendungstexte. Diese erscheinen in der Oberflaeche ueber dem Begruendungsfeld der jeweiligen Frage und koennen per Klick eingefuegt und anschliessend bearbeitet werden. Diese Datei kann ueber 'Bausteine laden' importiert oder hier im Ordner als bausteine.json abgelegt werden (wird dann automatisch geladen). Mit 'Aus Datensaetzen generieren' lassen sich die Begruendungen aus vorhandenen gespeicherten Datensaetzen automatisch sammeln.",
+  "typ": "Kreditprotokoll-Bausteine",
+  "schemaVersion": 1,
+  "bausteine": {
+    "1.8": [
+      "Es bestehen keine negativen SCHUFA-Merkmale; das Einkommen ist stabil und ausreichend.",
+      "Die wirtschaftlichen Verhältnisse sind geordnet, es sind keine Risikofaktoren erkennbar."
+    ],
+    "4.1": [
+      "BWA und EÜR liegen vollständig vor und weisen keine Auffälligkeiten auf.",
+      "Die eingereichten Unterlagen sind plausibel und vollständig."
+    ],
+    "6.0": [
+      "Als Standardsicherheit wird eine erstrangige Grundschuld bestellt.",
+      "Die Sicherheitenstellung erfolgt vereinbarungsgemäß vor Auszahlung."
+    ]
+  }
+}

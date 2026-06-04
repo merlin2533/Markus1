@@ -60,6 +60,41 @@ python3 -m http.server 8000
 Nach Auswahl einer Antwort springt der Fokus automatisch weiter – bei
 kommentarpflichtigen Antworten direkt ins Begründungsfeld.
 
+### Textbausteine (Standard-Begründungen)
+
+Über der Karte **„Textbausteine"** lässt sich eine Bibliothek von
+Standard-Begründungen je Frage verwalten:
+
+- **⚙️ Aus Datensätzen generieren** – mehrere vorhandene, gespeicherte
+  Datensätze (JSON) auswählen; die App sammelt daraus automatisch alle
+  Begründungstexte je Frage (dedupliziert) und bietet die Bausteine-Datei
+  zum Speichern an.
+- **📥 Bausteine laden** / **💾 Bausteine speichern** – Bausteine-Datei
+  importieren bzw. exportieren (Dateiname frei wählbar).
+- Liegt eine Datei **`bausteine.json`** im Ordner, wird sie beim Start
+  **automatisch geladen**. (Geladene Bausteine werden zusätzlich im
+  Browser gehalten.)
+
+Bei jeder kommentarpflichtigen Frage erscheinen die passenden Bausteine
+als **Klick-Chips über dem Begründungsfeld** – ein Klick fügt den Text an
+der Cursorposition ein; anschließend ist alles wie gewohnt bearbeitbar.
+
+Format der Bausteine-Datei:
+
+```jsonc
+{
+  "typ": "Kreditprotokoll-Bausteine",
+  "schemaVersion": 1,
+  "bausteine": {
+    "1.8": ["Es bestehen keine negativen SCHUFA-Merkmale …", "…"],
+    "4.1": ["BWA und EÜR liegen vollständig vor …"]
+  }
+}
+```
+
+Auch hier ist der Import **robust**: nur existierende Fragenummern und
+nicht-leere Texte werden übernommen, Duplikate werden zusammengeführt.
+
 ### Zeichen-Limits konfigurieren (`config.json`)
 
 ```jsonc
@@ -84,6 +119,7 @@ Die Schlüssel entsprechen den Abschnitts-IDs: `person`, `vorhaben`,
 |-------|-------|
 | `index.html`, `styles.css`, `js/app.js` | Die Anwendung |
 | `config.json` | Zeichen-Limits je Reiter + Warnschwelle |
+| `bausteine.json` | Textbaustein-Bibliothek (wird automatisch geladen) |
 | `data/protocol-data.json` | Vollständiges Datenmodell (aus der Excel-Vorlage erzeugt) |
 | `beispiel-export.json` | Beispiel eines Datensatzes (Speicherformat) |
 | `referenz-antwortoptionen.json` | Alle Fragen + gültige Antwort-Labels (Nachschlagewerk / für KI) |

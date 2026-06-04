@@ -63,7 +63,31 @@
           <label class="field"><span>Stammnummer</span><input type="text" id="hdrStammnummer" /></label>
           <label class="field"><span>Datum</span><input type="text" id="hdrDatum" placeholder="TT.MM.JJJJ" /></label>
           <label class="field"><span>Berater (KB)</span><input type="text" id="hdrBerater" /></label>
+          <label class="field"><span>Bearbeiter</span><input type="text" id="hdrBearbeiter" /></label>
           <label class="field"><span>Obligo / Volumen</span><input type="text" id="hdrObligo" /></label>
+          <label class="field field--wide"><span>Bemerkung</span><input type="text" id="hdrBemerkung" /></label>
+        </div>
+      </div>
+
+      <!-- Textbausteine-Bibliothek -->
+      <div class="card" id="bausteineCard">
+        <div class="bs-head">
+          <h2>Textbausteine <span class="hint-inline">– Standard-Begründungen je Frage</span></h2>
+          <span class="bs-status" id="bsStatus">keine Bausteine geladen</span>
+        </div>
+        <p class="bs-info">
+          Vorhandene ausgefüllte Datensätze hochladen, um daraus eine Bausteine-Datei zu
+          erzeugen. Geladene Bausteine erscheinen über dem jeweiligen Begründungsfeld und
+          können per Klick eingefügt werden. Lege die Datei als <code>bausteine.json</code>
+          im Ordner ab, damit sie automatisch geladen wird.
+        </p>
+        <div class="bs-actions">
+          <button type="button" id="btnBsGen"  class="btn btn--alt">⚙️ Aus Datensätzen generieren</button>
+          <button type="button" id="btnBsLoad" class="btn btn--alt">📥 Bausteine laden</button>
+          <button type="button" id="btnBsSave" class="btn btn--alt">💾 Bausteine speichern</button>
+          <button type="button" id="btnBsClear" class="btn btn--ghost btn--alt">✖ Leeren</button>
+          <input type="file" id="fileBsGen"  accept="application/json,.json" multiple hidden />
+          <input type="file" id="fileBsLoad" accept="application/json,.json" hidden />
         </div>
       </div>
 

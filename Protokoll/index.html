@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kreditprotokoll</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ===================== Kopfleiste ===================== -->
+  <header class="app-header no-print">
+    <div class="app-header__title">
+      <h1 id="appTitle">Kreditprotokoll</h1>
+      <span class="app-header__sub" id="appSub">Markt einschließlich Finanzierung (Kompakt)</span>
+    </div>
+    <div class="app-header__actions">
+      <button type="button" id="btnSave"   class="btn">💾 Datensatz speichern</button>
+      <button type="button" id="btnLoad"   class="btn">📂 Datensatz laden</button>
+      <input type="file" id="fileLoad" accept="application/json,.json" hidden />
+      <button type="button" id="btnReset"  class="btn btn--ghost">🗑 Zurücksetzen</button>
+    </div>
+  </header>
+
+  <!-- ===================== Navigation ===================== -->
+  <nav class="tabs no-print" id="tabs"></nav>
+  <div class="kbd-help no-print" id="kbdHelp">
+    ⌨ <b>Alt + → / ←</b> Reiter wechseln ·
+    <b>Alt + ↓ / ↑</b> Frage wechseln ·
+    <b>Enter</b> weiter zur nächsten Frage ·
+    <b>Alt + C</b> Reiter kopieren ·
+    <b>Alt + P</b> Drucken/PDF
+  </div>
+
+  <main class="layout">
+    <!-- ===================== Eingabe ===================== -->
+    <section class="panel no-print" id="inputPanel">
+
+      <!-- Cover / Stammauswahl -->
+      <div class="card" id="coverCard">
+        <h2>Auswahl &amp; Stammdaten</h2>
+        <div class="grid">
+          <label class="field">
+            <span>Neu-/Bestandskunde</span>
+            <select id="selKundeTyp"></select>
+          </label>
+          <label class="field">
+            <span>Kundenart</span>
+            <select id="selKundenart"></select>
+          </label>
+          <label class="field">
+            <span>Finanzierung</span>
+            <select id="selFinanzierung"></select>
+          </label>
+          <div class="field">
+            <span>Ermittelte Variante</span>
+            <output id="variantInfo" class="variant-badge">–</output>
+          </div>
+        </div>
+
+        <h3>Angaben für das Dokument</h3>
+        <div class="grid">
+          <label class="field"><span>Kreditnehmer</span><input type="text" id="hdrKreditnehmer" /></label>
+          <label class="field"><span>Stammnummer</span><input type="text" id="hdrStammnummer" /></label>
+          <label class="field"><span>Datum</span><input type="text" id="hdrDatum" placeholder="TT.MM.JJJJ" /></label>
+          <label class="field"><span>Berater (KB)</span><input type="text" id="hdrBerater" /></label>
+          <label class="field"><span>Obligo / Volumen</span><input type="text" id="hdrObligo" /></label>
+        </div>
+      </div>
+
+      <!-- Fragen -->
+      <div id="questionContainer"></div>
+    </section>
+
+    <!-- ===================== Ausgabe ===================== -->
+    <section class="panel" id="outputPanel">
+      <div class="card">
+        <div class="output-toolbar no-print">
+          <h2>Protokoll-Ausgabe <span class="hint-inline">– reiterweise kopierbar</span></h2>
+          <div class="output-toolbar__actions">
+            <label class="chk"><input type="checkbox" id="chkLiveEdit" /> bearbeitbar</label>
+            <button type="button" id="btnRebuild" class="btn btn--ghost">↻ Neu aufbauen</button>
+            <button type="button" id="btnCopyAll" class="btn">📋 Alles kopieren</button>
+            <button type="button" id="btnPrint" class="btn btn--primary">🖨 Drucken / PDF</button>
+          </div>
+        </div>
+
+        <div id="validationHint" class="validation-hint no-print" hidden></div>
+
+        <!-- Reiterweise Ausgabe-Abschnitte -->
+        <div id="outputSections" class="out-sections no-print"></div>
+      </div>
+
+      <!-- Druck-/PDF-Ansicht -->
+      <div id="printDoc" class="print-doc"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

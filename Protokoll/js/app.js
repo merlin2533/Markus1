@@ -8,6 +8,7 @@
 const SCHEMA_VERSION = 1;
 const STORAGE_KEY = 'kreditprotokoll-state-v1';
 const BAUSTEINE_KEY = 'kreditprotokoll-bausteine-v1';
+const COLLAPSE_KEY = 'kreditprotokoll-collapse-v1';
 
 // Farbpalette je Abschnitt (Output & Druck)
 const SECTION_COLORS = {
@@ -83,6 +84,7 @@ async function init() {
 
   buildCoverSelects();
   bindEvents();
+  applyCollapse();
   restoreFromStorage();
   updateBsStatus();
   renderAll();
@@ -391,6 +393,7 @@ function rebuildOutput() {
       </div>`;
   }).join('');
 
+  host.querySelectorAll('.out-text').forEach(autoSize);
   renderValidation();
   renderPrintDoc(struct);
 }
@@ -409,7 +412,30 @@ function renderValidation() {
   if (!missing.length) { box.hidden = true; return; }
   box.hidden = false;
   box.innerHTML = `<b>Offene Pflicht-Begründungen (${missing.length}):</b>
-    <ul><li>${missing.map(esc).join('</li><li>')}</li></ul>`;
+    <div class="vh-chips">${missing.map(nr =>
+      `<button type="button" class="vh-chip" data-goto="${esc(nr)}">${esc(nr)}</button>`).join('')}</div>`;
+}
+
+// Auto-Höhe für Ausgabe-Textfelder (keine inneren Scrollbalken)
+function autoSize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = (ta.scrollHeight + 2) + 'px';
+}
+
+// Direkt zu einer Frage springen (aus der Pflicht-Begründungs-Liste)
+function gotoQuestion(nr) {
+  const q = Q_BY_NR.get(nr);
+  if (!q) return;
+  setActiveTab(q.section, { scroll: false });
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`.q[data-nr="${cssEsc(nr)}"]`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('q--flash');
+    setTimeout(() => el.classList.remove('q--flash'), 1500);
+    const ta = el.querySelector('textarea[data-role="comment"]');
+    if (ta) ta.focus();
+  });
 }
 
 function renderPrintDoc(struct) {
@@ -450,7 +476,7 @@ function renderPrintDoc(struct) {
 /* ----------------------------------------------------------------------- */
 /* Navigation & Tastatursteuerung                                           */
 /* ----------------------------------------------------------------------- */
-function setActiveTab(id) {
+function setActiveTab(id, { scroll = true } = {}) {
   if (!id) return;
   State.activeTab = id;
   renderTabs();
@@ -458,7 +484,7 @@ function setActiveTab(id) {
   // aktiven Ausgabe-Abschnitt markieren
   document.querySelectorAll('.out-section').forEach(el =>
     el.classList.toggle('is-active', el.dataset.sec === id));
-  document.querySelector('.layout')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (scroll) document.querySelector('.layout')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function stepTab(dir) {
   const tabs = sectionsWithQuestions(currentVariant());
@@ -574,6 +600,27 @@ function bindEvents() {
   document.getElementById('btnBsSave').addEventListener('click', saveBausteine);
   document.getElementById('btnBsClear').addEventListener('click', clearBausteine);
 
+  // Klick auf offene Pflicht-Begründung -> zur Frage springen
+  document.getElementById('validationHint').addEventListener('click', e => {
+    const c = e.target.closest('[data-goto]'); if (c) gotoQuestion(c.dataset.goto);
+  });
+
+  // Einklappbare Karten
+  document.querySelectorAll('[data-collapse]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      btn.closest('.card').classList.toggle('is-collapsed'); saveCollapse();
+    }));
+
+  // KI-Export-Dialog
+  document.getElementById('btnKi').addEventListener('click', openKiModal);
+  document.querySelectorAll('[data-close-ki]').forEach(el => el.addEventListener('click', closeKiModal));
+  document.querySelectorAll('.ki-tab').forEach(t =>
+    t.addEventListener('click', () => switchKiTab(t.dataset.kitab)));
+  document.getElementById('btnKiCopyFragen').addEventListener('click',
+    () => copyText(document.getElementById('kiFragen').value, 'Fragenliste kopiert.'));
+  document.getElementById('btnKiCopyPrompt').addEventListener('click',
+    () => copyText(document.getElementById('kiPrompt').value, 'KI-Prompt kopiert.'));
+
   document.getElementById('btnCopyAll').addEventListener('click', copyAll);
   document.getElementById('btnPrint').addEventListener('click', () => window.print());
   document.getElementById('btnSave').addEventListener('click', saveToFile);
@@ -583,6 +630,7 @@ function bindEvents() {
 
   // Globale Tastatursteuerung
   document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !document.getElementById('kiModal').hidden) { closeKiModal(); return; }
     if (!e.altKey || e.ctrlKey || e.metaKey) return;
     const k = e.key.toLowerCase();
     if (e.key === 'ArrowRight') { e.preventDefault(); stepTab(1); }
@@ -636,6 +684,8 @@ function onComment(nr, text) {
 // Live-Bearbeitung eines Ausgabe-Abschnitts: nur Zähler/Meter live aktualisieren
 function onSectionEdit(secId, value) {
   State.manualSections[secId] = value;
+  const ta = document.querySelector(`[data-edit="${cssEsc(secId)}"]`);
+  if (ta) autoSize(ta);
   const limit = limitFor(secId);
   const len = value.length;
   const lvl = levelClasses(len, limit);
@@ -921,6 +971,121 @@ function resetAll() {
   localStorage.removeItem(STORAGE_KEY);
   renderAll(); toast('Zurückgesetzt.');
 }
+
+/* ----------------------------------------------------------------------- */
+/* Einklappbare Karten                                                      */
+/* ----------------------------------------------------------------------- */
+function applyCollapse() {
+  let c = {};
+  try { c = JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '{}'); } catch (e) {}
+  document.querySelectorAll('.card.collapsible').forEach(card => {
+    const id = card.querySelector('[data-collapse]')?.dataset.collapse;
+    if (id && id in c) card.classList.toggle('is-collapsed', !!c[id]);
+  });
+}
+function saveCollapse() {
+  const c = {};
+  document.querySelectorAll('.card.collapsible').forEach(card => {
+    const id = card.querySelector('[data-collapse]')?.dataset.collapse;
+    if (id) c[id] = card.classList.contains('is-collapsed');
+  });
+  try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(c)); } catch (e) {}
+}
+
+/* ----------------------------------------------------------------------- */
+/* KI-Export-Dialog                                                         */
+/* ----------------------------------------------------------------------- */
+function kiQuestions() {
+  // Fragen der aktuellen Variante; ohne Auswahl: alle (außer Legacy ohne Varianten)
+  const variant = currentVariant();
+  const list = variant != null
+    ? visibleQuestions(variant)
+    : DATA.questions.filter(q => Array.isArray(q.variants) && q.variants.length);
+  return list;
+}
+
+function openKiModal() {
+  const variant = currentVariant();
+  document.getElementById('kiScope').textContent = variant == null
+    ? 'alle Fragen (keine Variante gewählt)'
+    : `Variante ${variant}: ${State.cover.kundeTyp} / ${State.cover.kundenart} / ${State.cover.finanzierung}`;
+  document.getElementById('kiFragen').value = buildKiFragen();
+  document.getElementById('kiPrompt').value = buildKiPrompt();
+  switchKiTab('fragen');
+  document.getElementById('kiModal').hidden = false;
+}
+function closeKiModal() { document.getElementById('kiModal').hidden = true; }
+function switchKiTab(name) {
+  document.querySelectorAll('.ki-tab').forEach(t => t.classList.toggle('is-active', t.dataset.kitab === name));
+  document.querySelectorAll('[data-kipanel]').forEach(p => { p.hidden = p.dataset.kipanel !== name; });
+}
+
+// Reiter A: Fragen + Auswahlmöglichkeiten in Kurzform
+function buildKiFragen() {
+  const qs = kiQuestions();
+  const bySec = {};
+  qs.forEach(q => (bySec[q.section] = bySec[q.section] || []).push(q));
+  const out = [];
+  for (const sec of DATA.sections) {
+    const items = bySec[sec.id];
+    if (!items || !items.length) continue;
+    out.push(`### ${sec.title}`);
+    for (const q of items) {
+      const opts = q.answers.filter(a => !a.placeholder)
+        .map(a => a.comment ? `${a.label} [Begründung nötig]` : a.label);
+      out.push(`${q.nr}: ${oneLine(q.frage)}`);
+      if (opts.length) out.push(`   Optionen: ${opts.join(' | ')}`);
+    }
+    out.push('');
+  }
+  return out.join('\n').trim();
+}
+
+// Reiter B: strikter Prompt zur Erzeugung der Datensatz-JSON
+function buildKiPrompt() {
+  const variant = currentVariant();
+  const coverHint = variant == null ? '' :
+    `\n- Setze im Feld "cover": {"kundeTyp":"${State.cover.kundeTyp}","kundenart":"${State.cover.kundenart}","finanzierung":"${State.cover.finanzierung}"}.`;
+  const fragen = buildKiFragen();
+  return [
+'[HIER ZUERST DEINEN DIKTIERTEN FALLTEXT EINFÜGEN]',
+'',
+'====================  ANWEISUNG  ====================',
+'',
+'Du bist ein Assistent, der aus dem oben stehenden Falltext ein Kreditprotokoll als JSON-Datensatz erzeugt.',
+'Analysiere ausschließlich den oben stehenden Falltext und ordne ihn den unten aufgeführten Fragen zu.',
+'',
+'STRIKTE REGELN:',
+'1. Gib AUSSCHLIESSLICH gültiges JSON aus – keinen Fließtext, keine Erklärungen, keine Markdown-Codeblöcke.',
+'2. Verwende GENAU die unten gelisteten Fragenummern als Schlüssel in "antworten".',
+'3. Der Wert von "auswahl" muss WORTWÖRTLICH einer der zur Frage gelisteten Optionen entsprechen (exakt, inkl. Groß-/Kleinschreibung und Satzzeichen). Erfinde keine Optionen.',
+'4. Nur Optionen, die mit [Begründung nötig] markiert sind, brauchen zusätzlich ein Feld "begruendung" (kurzer, sachlicher Text aus dem Falltext). Bei allen anderen KEIN "begruendung".',
+'5. Beantworte nur Fragen, die aus dem Falltext eindeutig hervorgehen. Ist etwas nicht ableitbar, lasse die Frage WEG (nicht raten).',
+'6. Keine zusätzlichen Felder, Kommentare oder Schlüssel außerhalb des vorgegebenen Schemas.' + coverHint,
+'',
+'AUSGABE-SCHEMA (genau diese Struktur):',
+'{',
+'  "schemaVersion": 1,',
+'  "typ": "Kreditprotokoll",',
+'  "cover": { "kundeTyp": "...", "kundenart": "...", "finanzierung": "..." },',
+'  "kopf": { "kreditnehmer": "", "stammnummer": "", "datum": "", "berater": "", "bearbeiter": "", "obligo": "", "bemerkung": "" },',
+'  "antworten": {',
+'    "<Fragenummer>": { "auswahl": "<exakte Option>", "begruendung": "<nur falls nötig>" }',
+'  }',
+'}',
+'',
+'cover-Werte sind ausschließlich: kundeTyp = BestandsKunde | NeuKunde; kundenart = aHB | sHB; finanzierung = BauFi | Exi | SoFi | Kompakt.',
+'',
+'====================  FRAGEN & OPTIONEN  ====================',
+'',
+fragen,
+'',
+'====================  ENDE  ====================',
+'Gib jetzt NUR das JSON gemäß Schema aus.'
+  ].join('\n');
+}
+
+function oneLine(s) { return String(s == null ? '' : s).replace(/\s*\n\s*/g, ' ').trim(); }
 
 function download(filename, content) {
   const blob = new Blob([content], { type: 'application/json;charset=utf-8' });

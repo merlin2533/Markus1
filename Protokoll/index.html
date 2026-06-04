@@ -14,12 +14,39 @@
       <span class="app-header__sub" id="appSub">Markt einschließlich Finanzierung (Kompakt)</span>
     </div>
     <div class="app-header__actions">
+      <button type="button" id="btnKi"     class="btn btn--ki">🤖 KI-Export</button>
       <button type="button" id="btnSave"   class="btn">💾 Datensatz speichern</button>
       <button type="button" id="btnLoad"   class="btn">📂 Datensatz laden</button>
       <input type="file" id="fileLoad" accept="application/json,.json" hidden />
       <button type="button" id="btnReset"  class="btn btn--ghost">🗑 Zurücksetzen</button>
     </div>
   </header>
+
+  <!-- ===================== KI-Export-Dialog ===================== -->
+  <div class="modal no-print" id="kiModal" hidden>
+    <div class="modal__backdrop" data-close-ki></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="kiTitle">
+      <div class="modal__head">
+        <h2 id="kiTitle">KI-Export</h2>
+        <span class="modal__scope" id="kiScope"></span>
+        <button type="button" class="modal__close" data-close-ki aria-label="Schließen">✕</button>
+      </div>
+      <div class="ki-tabs">
+        <button type="button" class="ki-tab is-active" data-kitab="fragen">Fragen &amp; Auswahlmöglichkeiten</button>
+        <button type="button" class="ki-tab" data-kitab="prompt">KI-Prompt</button>
+      </div>
+      <div class="ki-panel" data-kipanel="fragen">
+        <p class="ki-desc">Alle Fragen mit den möglichen Antworten in Kurzform – als Grundlage, um der KI
+          den Fall zu schildern. <button type="button" class="btn-copy" id="btnKiCopyFragen">📋 Kopieren</button></p>
+        <textarea id="kiFragen" class="ki-text" readonly spellcheck="false"></textarea>
+      </div>
+      <div class="ki-panel" data-kipanel="prompt" hidden>
+        <p class="ki-desc">Fertiger, strikter Prompt. Setze <b>oben deinen diktierten Falltext</b> ein,
+          danach folgt diese Anweisung. <button type="button" class="btn-copy" id="btnKiCopyPrompt">📋 Kopieren</button></p>
+        <textarea id="kiPrompt" class="ki-text" readonly spellcheck="false"></textarea>
+      </div>
+    </div>
+  </div>
 
   <!-- ===================== Navigation ===================== -->
   <nav class="tabs no-print" id="tabs"></nav>
@@ -36,8 +63,12 @@
     <section class="panel no-print" id="inputPanel">
 
       <!-- Cover / Stammauswahl -->
-      <div class="card" id="coverCard">
-        <h2>Auswahl &amp; Stammdaten</h2>
+      <div class="card collapsible" id="coverCard">
+        <button type="button" class="card__toggle" data-collapse="cover">
+          <span>Auswahl &amp; Stammdaten</span>
+          <span class="chev">▾</span>
+        </button>
+        <div class="card__body">
         <div class="grid">
           <label class="field">
             <span>Neu-/Bestandskunde</span>
@@ -67,14 +98,17 @@
           <label class="field"><span>Obligo / Volumen</span><input type="text" id="hdrObligo" /></label>
           <label class="field field--wide"><span>Bemerkung</span><input type="text" id="hdrBemerkung" /></label>
         </div>
+        </div>
       </div>
 
       <!-- Textbausteine-Bibliothek -->
-      <div class="card" id="bausteineCard">
-        <div class="bs-head">
-          <h2>Textbausteine <span class="hint-inline">– Standard-Begründungen je Frage</span></h2>
+      <div class="card collapsible is-collapsed" id="bausteineCard">
+        <button type="button" class="card__toggle" data-collapse="bausteine">
+          <span>Textbausteine <span class="hint-inline">– Standard-Begründungen je Frage</span></span>
           <span class="bs-status" id="bsStatus">keine Bausteine geladen</span>
-        </div>
+          <span class="chev">▾</span>
+        </button>
+        <div class="card__body">
         <p class="bs-info">
           Vorhandene ausgefüllte Datensätze hochladen, um daraus eine Bausteine-Datei zu
           erzeugen. Geladene Bausteine erscheinen über dem jeweiligen Begründungsfeld und
@@ -88,6 +122,7 @@
           <button type="button" id="btnBsClear" class="btn btn--ghost btn--alt">✖ Leeren</button>
           <input type="file" id="fileBsGen"  accept="application/json,.json" multiple hidden />
           <input type="file" id="fileBsLoad" accept="application/json,.json" hidden />
+        </div>
         </div>
       </div>
 

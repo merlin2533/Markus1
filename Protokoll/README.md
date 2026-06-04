@@ -147,7 +147,26 @@ Die Schlüssel entsprechen den Abschnitts-IDs: `person`, `vorhaben`,
   `auswahl` ist der **exakte Antwort-Label-Text**. `begruendung` nur, wenn
   die Antwort kommentarpflichtig ist.
 
-### Datensatz aus Freitext von einer KI erzeugen lassen
+### KI-Export direkt in der App (Button „🤖 KI-Export")
+
+Der Button in der Kopfleiste öffnet ein Fenster mit zwei Reitern:
+
+- **Fragen & Auswahlmöglichkeiten** – alle Fragen der aktuellen Variante
+  mit ihren Antwortoptionen in Kurzform (kommentarpflichtige Optionen sind
+  mit `[Begründung nötig]` markiert). Grundlage, um der KI den Fall zu
+  schildern.
+- **KI-Prompt** – ein fertiger, strikter Prompt, der die KI anweist, aus
+  dem Falltext eine Datensatz-JSON im exakten Schema zu erzeugen. Ablauf:
+  **oben den diktierten Falltext einfügen, darunter diesen Prompt** – die
+  KI gibt dann nur das JSON aus, das hier per „Datensatz laden" eingelesen
+  werden kann.
+
+Weitere Bedien-Optimierungen: Karten „Auswahl & Stammdaten" und
+„Textbausteine" sind **ein-/ausklappbar**; offene Pflicht-Begründungen in
+der Ausgabe sind **anklickbar** (springen direkt zur Frage); die
+Ausgabe-Textfelder wachsen automatisch auf Inhaltshöhe.
+
+### Datensatz aus Freitext von einer KI erzeugen lassen (Dateien)
 
 `beispiel-export.json` und `referenz-antwortoptionen.json` einer KI
 mitgeben und etwa so anweisen:

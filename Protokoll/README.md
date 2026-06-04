@@ -60,6 +60,14 @@ python3 -m http.server 8000
 Nach Auswahl einer Antwort springt der Fokus automatisch weiter – bei
 kommentarpflichtigen Antworten direkt ins Begründungsfeld.
 
+### Komfortfunktionen
+
+- **Fortschrittsanzeige**: Balken unter den Reitern zeigt „X / Y Fragen
+  bearbeitet" und offene Pflicht-Begründungen; je Reiter erscheint ein
+  ✓-Häkchen, sobald alle Fragen vollständig beantwortet sind.
+- **Druck-/PDF-Schutz**: Bei offenen Pflicht-Begründungen erfolgt vor dem
+  Drucken eine Rückfrage.
+
 ### Textbausteine (Standard-Begründungen)
 
 Über der Karte **„Textbausteine"** lässt sich eine Bibliothek von
@@ -78,6 +86,9 @@ Standard-Begründungen je Frage verwalten:
 Bei jeder kommentarpflichtigen Frage erscheinen die passenden Bausteine
 als **Klick-Chips über dem Begründungsfeld** – ein Klick fügt den Text an
 der Cursorposition ein; anschließend ist alles wie gewohnt bearbeitbar.
+Jeder Chip hat ein **×** zum Entfernen, und mit **„＋ Als Baustein
+speichern"** wird die aktuell eingegebene Begründung in die Bibliothek
+übernommen – so wächst die Sammlung beim Arbeiten mit.
 
 Format der Bausteine-Datei:
 

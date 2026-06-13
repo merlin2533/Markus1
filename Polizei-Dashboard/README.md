@@ -29,14 +29,22 @@ Alternativ lässt sich `index.html` auch direkt per Doppelklick (`file://`)
   des Monats, Leit-Kennzahlen – Klick führt zur Detailseite.
 - **4 Bereiche** mit KPI-Karten (Aktuell · Δ Vormonat · Ampel · Sparkline):
   Personal, Finanzen, Fuhrpark & Ausstattung, Einsatz & Ausbildung.
+- **Budgetübersicht (Finanzen)** nach **Referat 1–4 + Stab** mit Budgetelementen,
+  **Plan / Ist / Abgerechnet / Budget zur Verfügung** und aufklappbarem
+  **Drill-down** (Referat → Budgetelement → Monatsverlauf).
 - **Detailseiten** je Kennzahl: Verlauf + Ziel-Linie, Vergleich Vormonat/Vorjahr
   (YoY)/YTD, Aufschlüsselung nach Dimension, Excel-Export.
 - **Personalrisiko**: Pensionierungs-/Altersabgangswelle und Nachbesetzungsbedarf.
-- **Ad-hoc / Pivot** (PivotTable.js): Felder per Drag&Drop, Aggregationen,
-  Diagramme, Excel-Export der Ansicht.
-- **Management-Bericht**: druck-/PDF-optimierte Gesamtansicht mit
-  Bewertungsfeldern (lokal gespeichert).
-- **Drucken** (`🖨️`) für jede Ansicht; Sidebar/Topbar werden ausgeblendet.
+- **Ad-hoc / Pivot** (PivotTable.js): 5 Datensätze (inkl. Budget), Drag&Drop,
+  **Vorlagen**, Diagramm-Renderer (Plotly: Balken/Linie/Heatmap), Excel-Export.
+- **Management-Bericht**: aufbereitete Gesamtansicht inkl. Budget je Referat,
+  Bewertungsfeldern (lokal gespeichert), **direktem PDF-Download** und Drucken.
+- **Einstellungen → Schwellwerte**: Zielwerte/Richtung/Toleranz je Kennzahl und
+  Budget-Ampelgrenzen anpassen (lokal gespeichert).
+- **Excel-Integration**: Quelldateien als Download (Vorlage), aktuelle Daten je
+  Bereich exportieren, geänderte Datei über „Excel-Import" wieder einlesen.
+- **PDF & Drucken**: „⬇️ PDF" exportiert die Ansicht direkt als PDF (html2pdf);
+  „🖨️ Drucken" nutzt den Druckdialog. Sidebar/Topbar werden ausgeblendet.
 
 ## Verzeichnis & Datenmodell
 
@@ -57,6 +65,8 @@ Jede Bereichs-Excel hat drei Sheets:
 - **`Fakten`** – tidy/lang: `Monat`, Dimensionen (`Abteilung`, bei Personal
   zusätzlich `Beamtenstatus`, `Laufbahngruppe`, `Geschlecht`, `Altersgruppe`)
   + additive Messgrößen. Basis für Aufschlüsselungen und die Pivot-Seite.
+- **`Budget`** (nur `finanzen.xlsx`) – `Monat`, `Referat`, `Budgetelement`,
+  `Plan`, `Ist`, `Abgerechnet`. Basis für die Budgetübersicht und den Drill-down.
 
 ## Eigene Daten verwenden
 

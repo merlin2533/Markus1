@@ -33,6 +33,13 @@
     var cg = POL.cardGrid(kpis);
     wrap.appendChild(cg.grid);
 
+    // Finanzen: Budgetübersicht nach Referat (Drill-down)
+    var budget = null;
+    if (bereichId === 'finanzen' && POL.buildBudgetSection && (POL.data.bereiche.finanzen.budget || []).length) {
+      budget = POL.buildBudgetSection();
+      wrap.appendChild(budget.node);
+    }
+
     // nach dem Einhängen zeichnen
     POL._afterRender = function () {
       var s = POL.series(lead);
@@ -42,6 +49,7 @@
           borderColor: meta.farbe, backgroundColor: meta.farbe + '18', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 }],
         { beginAtZero: lead.fmt !== 'percent' });
       POL.drawSparks(cg.queue);
+      if (budget) budget.after();
     };
 
     return wrap;

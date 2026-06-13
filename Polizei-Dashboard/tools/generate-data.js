@@ -253,6 +253,47 @@ function buildFinanzen(personalZR) {
 }
 
 /* ----------------------------------------------------------------- *
+ * Budget nach Referat × Budgetelement (Plan / Ist / Abgerechnet)
+ * ----------------------------------------------------------------- */
+const REFERATE = [
+  { name: 'Referat 1', w: 0.28 },
+  { name: 'Referat 2', w: 0.22 },
+  { name: 'Referat 3', w: 0.18 },
+  { name: 'Referat 4', w: 0.20 },
+  { name: 'Stab', w: 0.12 },
+];
+const BUDGETELEMENTE = [
+  { name: 'Personalbudget', w: 0.55, saison: false },
+  { name: 'Sachmittel', w: 0.12, saison: true },
+  { name: 'IT & Technik', w: 0.10, saison: true },
+  { name: 'Fuhrpark & Mobilität', w: 0.08, saison: true },
+  { name: 'Liegenschaften', w: 0.07, saison: true },
+  { name: 'Fortbildung', w: 0.03, saison: true },
+  { name: 'Investitionen', w: 0.05, saison: true },
+];
+function buildBudget() {
+  const JAHRESBUDGET = 98_000_000;
+  const rows = [];
+  MONATE.forEach((mo) => {
+    REFERATE.forEach((rf) => {
+      BUDGETELEMENTE.forEach((be) => {
+        var planMonat = JAHRESBUDGET * rf.w * be.w / 12;
+        // Ist: Personalbudget gleichmäßig, Sachbudgets schwankend; leichte Über-/Unterschreitung
+        var saison = be.saison ? (0.7 + 0.6 * (1 + Math.sin((mo.monat - 3) / 1.9)) / 2) : 1;
+        var ist = planMonat * saison * jitter(be.saison ? 0.22 : 0.04);
+        // Abgerechnet: dem Ist nachlaufend (Rechnungslauf), 82–97 % des Ist
+        var abger = ist * (0.82 + rand() * 0.15);
+        rows.push({
+          Monat: mo.key, Referat: rf.name, Budgetelement: be.name,
+          Plan: round(planMonat, 0), Ist: round(ist, 0), Abgerechnet: round(abger, 0),
+        });
+      });
+    });
+  });
+  return rows;
+}
+
+/* ----------------------------------------------------------------- *
  * Bereich 3: FUHRPARK & AUSSTATTUNG
  * ----------------------------------------------------------------- */
 const FZ_KLASSEN = [
@@ -366,6 +407,9 @@ function writeWorkbook(name, bereich) {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(bereich.ziele), 'Ziele');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(bereich.zeitreihe), 'Zeitreihe');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(bereich.fakten), 'Fakten');
+  if (bereich.budget) {
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(bereich.budget), 'Budget');
+  }
   XLSX.writeFile(wb, path.join(DATA_DIR, name + '.xlsx'));
 }
 
@@ -375,6 +419,7 @@ function main() {
 
   const personal = buildPersonal();
   const finanzen = buildFinanzen(personal.zeitreihe);
+  finanzen.budget = buildBudget();
   const fuhrpark = buildFuhrpark();
   const einsatz = buildEinsatz(personal.zeitreihe);
 

@@ -96,7 +96,10 @@
   /* ---- Ziele & Ampel ---- */
   POL.ziel = function (kpi) {
     var list = POL.data.bereiche[kpi.bereich].ziele || [];
-    return list.filter(function (z) { return z.Kennzahl === kpi.key; })[0] || null;
+    var base = list.filter(function (z) { return z.Kennzahl === kpi.key; })[0] || null;
+    var ov = POL.overrides[kpi.bereich + '.' + kpi.key];
+    if (ov) base = Object.assign({ Kennzahl: kpi.key }, base || {}, ov); // benutzerdefinierte Schwellwerte
+    return base;
   };
 
   // Ampel: 'gruen' | 'gelb' | 'rot' (oder 'neutral' ohne Ziel)

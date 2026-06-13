@@ -13,6 +13,8 @@
     { route: 'risiko', icon: '📉', label: 'Personalrisiko' },
     { route: 'pivot', icon: '🧮', label: 'Ad-hoc / Pivot' },
     { route: 'bericht', icon: '📄', label: 'Management-Bericht' },
+    { sep: true, label: 'System' },
+    { route: 'einstellungen', icon: '⚙️', label: 'Einstellungen' },
   ];
 
   POL.buildNav = function () {
@@ -46,6 +48,7 @@
       case 'risiko': view = POL.viewRisiko(); break;
       case 'pivot': view = POL.viewPivot(); break;
       case 'bericht': view = POL.viewBericht(); break;
+      case 'einstellungen': view = POL.viewEinstellungen(); break;
       case 'detail': view = POL.viewDetail(parts[1], parts[2]); break;
       case 'cockpit': default: view = POL.viewCockpit(); break;
     }

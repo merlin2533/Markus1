@@ -63,6 +63,23 @@
     }
   };
 
+  /* ---- Einstellungen / Schwellwerte (localStorage) ---- */
+  POL.OVR_KEY = 'pol_schwellwerte_v1';
+  POL.CFG_KEY = 'pol_settings_v1';
+  POL.overrides = {};                         // 'bereich.Kennzahl' -> {Zielwert,Richtung,Toleranz}
+  POL.cfg = { budgetWarn: 90, budgetKrit: 100 };
+
+  POL.loadSettings = function () {
+    try { var o = JSON.parse(localStorage.getItem(POL.OVR_KEY)); if (o) POL.overrides = o; } catch (e) {}
+    try { var c = JSON.parse(localStorage.getItem(POL.CFG_KEY)); if (c) POL.cfg = Object.assign(POL.cfg, c); } catch (e) {}
+  };
+  POL.saveOverrides = function () { try { localStorage.setItem(POL.OVR_KEY, JSON.stringify(POL.overrides)); } catch (e) {} };
+  POL.saveCfg = function () { try { localStorage.setItem(POL.CFG_KEY, JSON.stringify(POL.cfg)); } catch (e) {} };
+  POL.resetSettings = function () {
+    POL.overrides = {}; POL.cfg = { budgetWarn: 90, budgetKrit: 100 };
+    try { localStorage.removeItem(POL.OVR_KEY); localStorage.removeItem(POL.CFG_KEY); } catch (e) {}
+  };
+
   POL.el = function (tag, cls, html) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;

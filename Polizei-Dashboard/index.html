@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PTLS POL – Finanz- &amp; Personal-Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Bibliotheken (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar no-print">
+      <div class="brand">
+        <div class="brand-logo">🛡️</div>
+        <div class="brand-text">
+          <strong>PTLS POL</strong>
+          <span>Präsidium Technik</span>
+        </div>
+      </div>
+      <nav id="sidebarNav" class="nav"></nav>
+      <div class="sidebar-foot" id="dataStatus">Lade Daten …</div>
+    </aside>
+
+    <!-- Hauptbereich -->
+    <div class="main">
+      <header class="topbar no-print">
+        <h1 id="currentTitle">Cockpit / Lagebild</h1>
+        <div class="topbar-actions">
+          <label class="btn btn-ghost" title="Bereichs-Excel laden (Dateiname mit personal/finanzen/fuhrpark/einsatz)">
+            Excel-Import
+            <input id="importInput" type="file" accept=".xlsx,.xls" hidden />
+          </label>
+          <button id="reportBtn" class="btn btn-ghost" type="button">📄 Bericht erzeugen</button>
+          <button id="printBtn" class="btn btn-primary" type="button">🖨️ Drucken</button>
+        </div>
+      </header>
+
+      <div id="fallbackBanner" class="banner no-print" style="display:none">
+        ⚠️ Die Excel-Dateien konnten nicht geladen werden (vermutlich Aufruf über <code>file://</code>).
+        Es werden eingebettete Demodaten angezeigt. Für das automatische Laden der Excel-Dateien einen
+        lokalen Server starten: <code>python3 -m http.server</code> und
+        <code>http://localhost:8000/Polizei-Dashboard/</code> öffnen.
+      </div>
+
+      <main id="content" class="content"><p class="loading">Lade Dashboard …</p></main>
+    </div>
+  </div>
+
+  <!-- Anwendung -->
+  <script src="js/state.js"></script>
+  <script src="js/kpi.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/cockpit.js"></script>
+  <script src="js/views.js"></script>
+  <script src="js/detail.js"></script>
+  <script src="js/risk.js"></script>
+  <script src="js/report.js"></script>
+  <script src="js/pivot.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/print.js"></script>
+  <!-- Offline-Fallback (von tools/generate-data.js erzeugt); nur genutzt, wenn fetch scheitert -->
+  <script src="js/fallback-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

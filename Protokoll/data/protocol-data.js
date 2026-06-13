@@ -1,0 +1,4225 @@
+/* Automatisch generiert aus data/protocol-data.json – fuer lokale Nutzung ohne Webserver (file://).
+   Nicht manuell editieren; bei Aenderung der JSON neu erzeugen. */
+window.PROTOCOL_DATA = {
+ "meta": {
+  "title": "Kreditprotokoll Markt einschließlich Finanzierung (Kompakt)",
+  "stand": "06.10.25"
+ },
+ "cover": {
+  "kundeTyp": [
+   "BestandsKunde",
+   "NeuKunde"
+  ],
+  "kundenart": [
+   "aHB",
+   "sHB"
+  ],
+  "finanzierung": [
+   "BauFi",
+   "Exi",
+   "SoFi",
+   "Kompakt"
+  ]
+ },
+ "variantMatrix": {
+  "BestandsKunde|aHB|BauFi": 1,
+  "BestandsKunde|sHB|BauFi": 2,
+  "BestandsKunde|sHB|Exi": 3,
+  "BestandsKunde|aHB|Exi": 4,
+  "BestandsKunde|aHB|SoFi": 5,
+  "BestandsKunde|sHB|SoFi": 6,
+  "NeuKunde|aHB|BauFi": 7,
+  "NeuKunde|sHB|BauFi": 8,
+  "NeuKunde|sHB|Exi": 9,
+  "NeuKunde|aHB|Exi": 10,
+  "NeuKunde|aHB|SoFi": 11,
+  "NeuKunde|sHB|SoFi": 12,
+  "BestandsKunde|aHB|Kompakt": 13,
+  "BestandsKunde|sHB|Kompakt": 14,
+  "NeuKunde|aHB|Kompakt": 15,
+  "NeuKunde|sHB|Kompakt": 16
+ },
+ "sections": [
+  {
+   "id": "person",
+   "title": "1. Person"
+  },
+  {
+   "id": "vorhaben",
+   "title": "2. Vorhaben"
+  },
+  {
+   "id": "entwicklung",
+   "title": "3. Entwicklung"
+  },
+  {
+   "id": "liquiditaet",
+   "title": "4. Liquidität"
+  },
+  {
+   "id": "rating",
+   "title": "5. Rating"
+  },
+  {
+   "id": "sicherheit",
+   "title": "6. Sicherheit"
+  },
+  {
+   "id": "votum",
+   "title": "7. Votum"
+  },
+  {
+   "id": "entscheidung",
+   "title": "8. Finale Entscheidung"
+  },
+  {
+   "id": "kompakt",
+   "title": "Finanzierung Kompakt"
+  }
+ ],
+ "questions": [
+  {
+   "nr": "1.0",
+   "section": "person",
+   "frage": "Der Kunde wurde am [Datum] durch [Name KB] entsprechend der rechtlichen Vorgaben beraten. ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Eigengeschäft",
+     "text": "1.0 Der Kunde wurde am [Datum] durch [Name KB] entsprechend der rechtlichen Vorgaben beraten.",
+     "comment": false
+    },
+    {
+     "label": "VP-Geschäft",
+     "text": "1.0 Der Kunde wurde am [Datum] durch [Name KB] entsprechend der rechtlichen Vorgaben beraten. Name des Vertriebspartners: …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.1",
+   "section": "person",
+   "frage": "Absatzweg ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Präsenzgeschäft ",
+     "text": "1.1 Absatzweg - Präsenzgeschäft ",
+     "comment": false
+    },
+    {
+     "label": "Fernabsatzgeschäft",
+     "text": "1.1 Absatzweg - Fernabsatzgeschäft ",
+     "comment": false
+    },
+    {
+     "label": "außerhalb Geschäftsräume ",
+     "text": "1.1 Absatzweg - außerhalb Geschäftsräume  ",
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "1.2",
+   "section": "person",
+   "frage": "Die Stammdaten und das Rating sind geprüft und korrekt.",
+   "hinweis": "Bitte alle Kunden des Verbundes berücksichtigen.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.2 Die Stammdaten und das Rating sind geprüft und korrekt.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.2 Die Stammdaten und das Rating ist NICHT geprüft bzw. ist NICHT korrekt: …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "1.3",
+   "section": "person",
+   "frage": "Die Kreditnehmereinheit / Gruppe verbundener Kunden ist geprüft und richtig gebildet.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.3 Die Kreditnehmereinheit ist richtig gebildet und geprüft.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.3 Die Kreditnehmereinheit ist NICHT richtig gebildet bzw. geprüft: …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "1.4",
+   "section": "person",
+   "frage": "Einordnung Kundengruppe.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Kernkunde",
+     "text": "1.4 Der Kunde ist Kernkunde.",
+     "comment": false
+    },
+    {
+     "label": "Sonstiger mit Fokus",
+     "text": "1.4 Kunde ist \"Sonstiger mit Fokus\".",
+     "comment": false
+    },
+    {
+     "label": "Sonstiger ohne Fokus - Bitte kommentieren (Grund der Geschäftsverbindung)",
+     "text": "1.4 Kunde ist Sonstiger ohne Fokus. Der Grund der Geschäftsverbindung ist …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.5",
+   "section": "person",
+   "frage": "Es gibt mehrere Kreditnehmer.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft nicht zu",
+     "text": "1.5 Es gibt nur einen Kreditnehmer.",
+     "comment": false
+    },
+    {
+     "label": "Trifft zu - Bitte kommentieren",
+     "text": "1.5 Die Anzahl der Kreditnehmer ist: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.6",
+   "section": "person",
+   "frage": "Der Kunde ist angestellt.",
+   "hinweis": "Bitte auch den Tätigkeitsschwerpunkt der weiteren Kreditnehmern nennen (gilt auch für juristische Personen).",
+   "feedback": null,
+   "variants": [
+    1,
+    5,
+    7,
+    11
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.6 Der Kunde ist angestellt als: …",
+     "comment": false
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.7",
+   "section": "person",
+   "frage": "Der Kunde ist niedergelassen. (Nur bei mehreren Kreditnehmern)",
+   "hinweis": "Bitte auch den Tätigkeitsschwerpunkt und die Niederlassung der weiteren Kreditnehmern nennen (gilt auch für juristische Personen).",
+   "feedback": null,
+   "variants": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.7 Der Kunde ist niedergelassen als: …",
+     "comment": false
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.8",
+   "section": "person",
+   "frage": "Die persönliche Kreditwürdigkeit des Kreditnehmers ist gegeben - es sind keine Risikofaktoren erkennbar.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.8 Die persönliche Kreditwürdigkeit des Kreditnehmers ist gegeben - es sind keine Risikofaktoren erkennbar.",
+     "comment": false
+    },
+    {
+     "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+     "text": "1.8 Persönliche Kreditwürdigkeit des Kreditnehmers ist EINGESCHRÄNKT gegeben - folgende Risikofaktoren sind erkennbar: …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.8 Persönliche Kreditwürdigkeit des Kreditnehmers ist NICHT gegeben - folgende Risikofaktoren sind erkennbar: ...",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "1.9",
+   "section": "person",
+   "frage": "Es liegen keine Erkenntnisse vor, die Einschränkungen auf die Einkommenssituation erwarten lassen (z.B. Krankheit, drohende Berufsunfähigkeit, etc.).",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.9 Es liegen keine Erkenntnisse vor, die Einschränkungen auf die Einkommenssituation erwarten lassen.",
+     "comment": false
+    },
+    {
+     "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+     "text": "1.9 Folgende Einschränkungen der Einkommenssituation sind zu erwarten: … (z.B. Krankheit, drohende Berufsunfähigkeit, etc.)",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.9 Folgende Einschränkungen der Einkommenssituation sind zu erwarten: … (z.B. Krankheit, drohende Berufsunfähigkeit, etc.)",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.10",
+   "section": "person",
+   "frage": "Lebenslauf ohne Auffälligkeiten",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.10 Der Lebenslauf ist ohne Auffälligkeiten.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.10 Lebenslauf MIT folgenden Auffälligkeiten: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.11",
+   "section": "person",
+   "frage": "Es liegen besondere berufliche oder fachliche Zusatzqualifikationen/ Zertifikate vor.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu - Bitte kommentieren (Benennung der Qualifikationen und Zertifikate)",
+     "text": "1.11 Es liegen folgende besondere berufliche, fachliche Zusatzqualifikationen/ Zertifikate vor: …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "1.11 Es liegen keine Zusatz-Qualifikationen/ Zertifikate vor. ",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.12",
+   "section": "person",
+   "frage": "Das wirtschaftliche Verständnis (für das Vorhaben) ist gegeben.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    5,
+    6,
+    7,
+    8,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.12 Das wirtschaftliche Verständnis (für das Vorhaben) ist gegeben.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.12 Wirtschaftliches Verständnis (für das Vorhaben) ist NICHT gegeben, da: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.13",
+   "section": "person",
+   "frage": "Das wirtschaftliche und kaufmännische Verständnis (für das Vorhaben) ist gegeben.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.13 Das wirtschaftliche und kaufmännische Verständnis (für das Vorhaben) ist gegeben.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.13 Wirtschaftliches & kaufmännisches Verständnis (für das Vorhaben) NICHT gegeben, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.14",
+   "section": "person",
+   "frage": "Ein positives Motiv für den Weg in die Selbstständigkeit gegeben.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.14 Ein positives Motiv für den Weg in die Selbstständigkeit gegeben.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.14 Es ist KEIN positives Motiv für Weg in die Selbstständigkeit gegeben, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.15",
+   "section": "person",
+   "frage": "Die leitende Person/ der Initiator hat ausreichende Managementqualitäten.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.15 Die leitende Person/ der Initiator hat ausreichende Managementqualitäten.",
+     "comment": false
+    },
+    {
+     "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+     "text": "1.15 Die leitende Person/ der Initiator hat EINGESCHRÄNKT ausreichende Managementqualitäten, da …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren ",
+     "text": "1.15 Die leitende Person/ der Initiator hat KEINE ausreichenden Managementqualitäten, da … ",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.16",
+   "section": "person",
+   "frage": "Das Leistungsspektrum der geplanten Existenzgründung ist abgedeckt.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.16 Das Leistungsspektrum der geplanten Existenzgründung ist abgedeckt.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.16 Das Leistungsspektrum der geplanten Existenzgründung ist NICHT abgedeckt, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.17",
+   "section": "person",
+   "frage": "Ein unbefristetes Arbeitsverhältnis liegt vor.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    5,
+    7,
+    11
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.17 Ein unbefristetes Arbeitsverhältnis liegt vor.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.17 Es liegt KEIN unbefristetes Arbeitsverhältnis liegt vor.",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant - Bitte kommentieren",
+     "text": "1.17 Das Arbeitsverhältnis ist nicht relevant, da ...",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "1.18",
+   "section": "person",
+   "frage": "Ein erstes Anzeichen für eine potenzielle (zukünftige) Niederlassung liegt vor.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.18 Ein erstes Anzeichen für eine potenzielle (zukünftige) Niederlassung liegt vor.",
+     "comment": false
+    },
+    {
+     "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+     "text": "1.18 Teilweise liegen Anzeichen für eine potenzielle (zukünftige) Niederlassung vor, da …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "1.18 Es liegen KEINE Anzeichen für eine potenzielle (zukünftige) Niederlassung vor, da …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.19",
+   "section": "person",
+   "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Keine Anmerkungen",
+     "text": "1.19 Keine sonstigen entscheidungsrelevanten Anmerkungen.",
+     "comment": false
+    },
+    {
+     "label": "Sonstige Anmerkungen",
+     "text": "1.19 Sonstige entscheidungsrelevante ANMERKUNGEN: …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.20",
+   "section": "person",
+   "frage": "Hat sich die Kundin / der Kunde angemessen auf die Niederlassung vorbereitet?",
+   "hinweis": "Bitte stellen Sie dar, wie Sie Ihre Einschätzung begründen: Wurden vorbereitende Seminare besucht und/oder sind die erforderlichen Kenntnisse aus der vorherigen Tätigkeit bekannt?",
+   "feedback": null,
+   "variants": [
+    3,
+    4,
+    9,
+    10
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.20 Die Kundin / der Kunde hat sich angemessen auf die Niederlassung vorbereitet. […]",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.20 Die Kundin / der Kunde hat sich nicht angemessen auf die Niederlassung vorbereitet.  …",
+     "comment": true
+    },
+    {
+     "label": "nicht relevant da Obligo < 100 T€",
+     "text": "1.20 nicht relevant da Obligo < 100 T€",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.21",
+   "section": "person",
+   "frage": "Erscheint die konkrete Motivation zur Niederlassung und die vorhandenen Visionen nachvollziehbar?",
+   "hinweis": "Bitte stellen sie da, wie Sie Ihre Einschätzung begründen: Wie konnte der Kunde / die Kundin Sie von dem Konzept überzeugen?",
+   "feedback": null,
+   "variants": [
+    3,
+    4,
+    9,
+    10
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.21 Die konkrete Motivation zur Niederlassung und vorhandene Visionen erscheinen nachvollziehbar. […]",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.21 Die konkrete Motivation zur Niederlassung und vorhandene Visionen erscheinen nicht nachvollziehbar. …",
+     "comment": true
+    },
+    {
+     "label": "nicht relevant da Obligo < 100 T€",
+     "text": "1.21 nicht relevant da Obligo < 100 T€",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.22",
+   "section": "person",
+   "frage": "Sind die über das Studium hinausgehenden betriebswirtschaftlichen Kenntnisse (Fortbildungen / Berufserfahrung / etc.) für das Vorhaben angemessen?",
+   "hinweis": "Bitte stellen Sie dar, welche Kenntnisse vorliegen und inwiefern diese angemessen erscheinen“",
+   "feedback": null,
+   "variants": [
+    3,
+    4,
+    9,
+    10
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "1.22 Die über das Studium hinausgehenden betriebswirtschaftlichen Kenntnisse (Fortbildungen / Berufserfahrung / etc.) sind für das Vorhaben angemessen. […]",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "1.22 Die über das Studium hinausgehenden betriebswirtschaftlichen Kenntnisse (Fortbildungen / Berufserfahrung / etc.) sind für das Vorhaben nicht angemessen.  …",
+     "comment": true
+    },
+    {
+     "label": "nicht relevant da Obligo < 100 T€",
+     "text": "1.22 nicht relevant da Obligo < 100 T€",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "1.23",
+   "section": "person",
+   "frage": "Keine zulässige Kombination",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    4,
+    10
+   ],
+   "answers": []
+  },
+  {
+   "nr": "2.0",
+   "section": "vorhaben",
+   "frage": "Informationen zum Baufi-Vorhaben inkl. Objektart und Adresse",
+   "hinweis": "Stichwortartige Nennung von Zusatzinformationen, wenn relevant für Vorhabenverständnis, Risikobeurteilung, Entscheidung, etc.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Bitte eintragen",
+     "text": "2.0 Bei dem Baufi-Vorhaben handelt es sich um folgende Objektart: …\nDie Adresse des Objektes ist: ….\nBeleihungswert aus Lora: …\nZudem sind die folgenden Informationen zur Beurteilung des Vorhabens relevant: …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.1",
+   "section": "vorhaben",
+   "frage": "Handelt es sich um einen Kauf, einen Kauf mit Sanierung, einen Neubau oder eine Ablösung bei einer anderen Bank?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Kauf",
+     "text": "2.1 Es handelt sich um den Kauf einer Bestandsimmobilie. ",
+     "comment": false
+    },
+    {
+     "label": "Kauf mit Sanierung",
+     "text": "2.1 Es handelt sich um den Kauf einer Bestandsimmobilie zzgl. einer Sanierung. ",
+     "comment": false
+    },
+    {
+     "label": "Neubau",
+     "text": "2.1 Es handelt sich um einen Neubau.",
+     "comment": false
+    },
+    {
+     "label": "Ablösung bei einer anderen Bank",
+     "text": "2.1 Es handelt sich um die Ablösung eines Kredites bei einer anderen Bank.",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.2",
+   "section": "vorhaben",
+   "frage": "Dient das Objekt dem Eigennutz oder der Vermietung?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Eigennutzung",
+     "text": "2.2 Das Objekt dient der Eigennutzung.",
+     "comment": false
+    },
+    {
+     "label": "Vermietung",
+     "text": "2.2 Das Objekt wird zur Vermietung genutzt.\n- Gesamtkosten / Finanzierungsbetrag entspricht […] TEUR pro qm\n- Gesamtkosten / Finanzierungsbetrag entspricht dem […]-fachen der Miete\n- Tilgungssatz: […] % p.a.\n- Zinssatz: […] % p.a.\n- Monatsmiete (kalt): […] EUR pro qm",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.3",
+   "section": "vorhaben",
+   "frage": "Informationen zur Praxis inkl. Adresse",
+   "hinweis": "Stichwortartige Nennung von Zusatzinformationen, wenn relevant für Vorhabenverständnis, Risikobeurteilung, Entscheidung, etc.",
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Bitte eintragen",
+     "text": "2.3 Die Adresse der Praxis (Finanzierungsobjekt) ist: ….\nZudem sind die folgenden Informationen zur Beurteilung des Vorhabens relevant: …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.4",
+   "section": "vorhaben",
+   "frage": "Handelt es sich um eine Praxisneugründung, einen Kauf, einen Einstieg oder eine Ablösung bei einer anderen Bank?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Neugründung",
+     "text": "2.4 Es handelt sich um eine Praxisneugründung.",
+     "comment": false
+    },
+    {
+     "label": "Kauf",
+     "text": "2.4 Es handelt ich um einen Kauf einer Praxis.",
+     "comment": false
+    },
+    {
+     "label": "Einstieg",
+     "text": "2.4 Es handelt ich um einen Einstieg in eine Praxis.",
+     "comment": false
+    },
+    {
+     "label": "Ablösung bei einer anderen Bank",
+     "text": "2.4 Es handelt sich um die Ablösung eines Kredites bei einer anderen Bank.",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.5",
+   "section": "vorhaben",
+   "frage": "Es handelt sich um eine Einzelpraxis, BAG, MVZ oder Sonstiges?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Einzelpraxis",
+     "text": "2.5 Es handelt sich um eine Einzelpraxis.",
+     "comment": false
+    },
+    {
+     "label": "BAG",
+     "text": "2.5 Es handelt sich um eine BAG.",
+     "comment": false
+    },
+    {
+     "label": "MVZ",
+     "text": "2.5 Es handelt sich um ein MVZ.",
+     "comment": false
+    },
+    {
+     "label": "Sonstiges - Bitte kommentieren",
+     "text": "2.5 Es handelt sich um …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.6",
+   "section": "vorhaben",
+   "frage": "Informationen zur sonstigen Finanzierung und zum Investitionszweck.",
+   "hinweis": "Stichwortartige Nennung von Zusatzinformationen, wenn relevant für Vorhabenverständnis, Risikobeurteilung, Entscheidung, etc.",
+   "feedback": null,
+   "variants": [
+    5,
+    6,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Bitte eintragen",
+     "text": "2.6 Informationen zur Finanzierung und zum Investitionszweck: …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.7",
+   "section": "vorhaben",
+   "frage": "Der Kaufpreis der zu finanzierenden Immobilie ist kleiner als 190% des bankseitig ermittelte Marktwertes",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.7 Das Verhältnis zwischen Kaufpreis EUR […] zum Marktwert EUR […] beträgt […] %",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren ",
+     "text": "2.7 Für die Finanzierung des Objekts wurde eine Wertindikation der Value AG unter der LORA-Auftragsnummer […] eingeholt. Der Kaufpreis ausweislich dieser Wertindikation beträgt […] % des ermittelten Marktwertes und übersteigt das Verhältnis von 190% nicht.",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu (es handelt sich um eine Immobilie aus „apoReal“) - Bitte kommentieren",
+     "text": "2.7 Für die Finanzierung des Objekts aus „apoReal“ liegt eine Wertindikation der Value AG unter der LORA-Auftragsnummer […] vor. Der Kaufpreis ausweislich dieser Wertindikation beträgt […] % des ermittelten Marktwertes.",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.8",
+   "section": "vorhaben",
+   "frage": "Die Eigenmittel sind nachgewiesen.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.8 Die Eigenmittel sind nachgewiesen.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.8 Die Eigenmittel sind NICHT nachgewiesen, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.9",
+   "section": "vorhaben",
+   "frage": "Die Eigenmittel werden vorrangig eingesetzt.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.9 Die Eigenmittel sind vorrangig eingesetzt.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.9 Die Eigenmittel sind NICHT vorrangig eingesetzt, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.10",
+   "section": "vorhaben",
+   "frage": "Die Immobilie steht unter Denkmalschutz und die Darlehnsrestschuld nach 12 Jahren ist <= 60% des Kaufpreises",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu - Bitte kommentieren",
+     "text": "2.10 Die Immobilie steht unter Denkmalschutz. Folgende Besonderheiten sind zu beachten …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu ",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.11",
+   "section": "vorhaben",
+   "frage": "Erwerbsnebenkosten und ggf. Sanierungsbedarf sind ausreichend berücksichtigt.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.11 Erwerbsnebenkosten und ggf. Sanierungsbedarf sind ausreichend berücksichtigt.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.11 Erwerbsnebenkosten und ggf. Sanierungsbedarf sind NICHT ausreichend berücksichtigt, da …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant ",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.12",
+   "section": "vorhaben",
+   "frage": "Abgabegrund",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Altersgründe",
+     "text": "2.12 Abgabegrund Altersgründe.",
+     "comment": false
+    },
+    {
+     "label": "Umzug",
+     "text": "2.12 Abgabegrund Umzug.",
+     "comment": false
+    },
+    {
+     "label": "Krankheit/ Todesfall",
+     "text": "2.12 Abgabegrund Krankheit/ Todesfall.",
+     "comment": false
+    },
+    {
+     "label": "Andere - Bitte kommentieren",
+     "text": "2.12 Abgabegrund ist …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.13",
+   "section": "vorhaben",
+   "frage": "Beteiligungsquote",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Bitte berechnen und eintragen ",
+     "text": "2.13 Die Beteiligungsquote ist …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.14",
+   "section": "vorhaben",
+   "frage": "Abgeber Kunde apoBank",
+   "hinweis": "Bitte, wenn relevant Stamm-Nr. angeben.",
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu - Bitte kommentieren (Benennung BP-Nummer Abgeber)",
+     "text": "2.14 Der Abgeber ist Kunde der apoBank. Stammnummer EINTRAGEN …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu ",
+     "text": "2.14 Der Abgeber ist KEIN apoBank Kunde.",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.15",
+   "section": "vorhaben",
+   "frage": "Kaufpreis = x-fache des erwarteten BCF \nbitte Zahl eingeben: [   ]",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Bitte Zahl eintragen",
+     "text": "2.15 Kaufpreis = … -fache des erwarteten BCF.",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.16",
+   "section": "vorhaben",
+   "frage": "Das Gründungskonzept liegt vor und ist schlüssig.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.16 Das Gründungskonzept liegt vor und ist schlüssig.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.16 Das Gründungskonzept liegt NICHT bzw. ist NICHT schlüssig vor, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.17",
+   "section": "vorhaben",
+   "frage": "Besonderheiten aus der Standortanalyse liegen vor.",
+   "hinweis": "Wenn Besonderheiten zur Standortanalyse vorliegen sind diese zu detaillieren.",
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu - Bitte kommentieren",
+     "text": "2.17 Folgende Besonderheiten aus der Standortanalyse liegen vor: …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.17 Besonderheiten aus Standortanalyse liegen NICHT vor.",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.18",
+   "section": "vorhaben",
+   "frage": "Wie ist der Zustand der Praxis/ Apotheke (Ausstattung, Einrichtung, etc.)?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Gut",
+     "text": "2.18 Die Praxis/ Apotheke (Ausstattung, Einrichtung, etc.) ist im guten Zustand.",
+     "comment": false
+    },
+    {
+     "label": "Mittel - Bitte kommentieren",
+     "text": "2.18 Die Praxis/ Apotheke (Ausstattung, Einrichtung, etc.) ist im durchschnittlichen Zustand, da …",
+     "comment": true
+    },
+    {
+     "label": "Schlecht - Bitte kommentieren",
+     "text": "2.18 Die Praxis/ Apotheke (Ausstattung, Einrichtung, etc.) ist im schlechten Zustand, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.19",
+   "section": "vorhaben",
+   "frage": "Wie ist der Zustand der vorhandenen medizinischen Geräte?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Gut",
+     "text": "2.19 Die vorhandenen medizinischen Geräte sind im guten Zustand.",
+     "comment": false
+    },
+    {
+     "label": "Mittel - Bitte kommentieren",
+     "text": "2.19 Die vorhandenen medizinischen Geräte sind im durchschnittlichen Zustand, da …",
+     "comment": true
+    },
+    {
+     "label": "Schlecht - Bitte kommentieren",
+     "text": "2.19 Die vorhandenen medizinischen Geräte sind im schlechten Zustand, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.20",
+   "section": "vorhaben",
+   "frage": "Wie ist die Erreichbarkeit der Praxis/ Apotheke (z.B. Parkplätze, öffentliche Verkehrsmittel, etc.)?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Gut",
+     "text": "2.20 Die Praxis/ Apotheke (z.B. Parkplätze, öffentliche Verkehrsmittel, etc.) ist gut erreichbar.",
+     "comment": false
+    },
+    {
+     "label": "Mittel - Bitte kommentieren",
+     "text": "2.20 Die Praxis/ Apotheke (z.B. Parkplätze, öffentliche Verkehrsmittel, etc.) ist durchschnittlich erreichbar, da …",
+     "comment": true
+    },
+    {
+     "label": "Schlecht - Bitte kommentieren",
+     "text": "2.20 Die Praxis/ Apotheke (z.B. Parkplätze, öffentliche Verkehrsmittel, etc.) ist schlecht erreichbar, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.21",
+   "section": "vorhaben",
+   "frage": "Anzahl Mitarbeiter und davon angestellte Ärzte/ Apotheker",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Bitte eintragen",
+     "text": "2.21 Anzahl Mitarbeiter: [ … ] davon angestellte Ärzte/ Apotheker (Vollzeit): [ … ]",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.22",
+   "section": "vorhaben",
+   "frage": "Anzahl Fachgruppen und Anzahl KV-Sitze - bei mehreren kommentieren (Benennung der Fachgruppen)",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Bitte eintragen",
+     "text": "2.22 Anzahl Fachgruppen: [ … ] - bei mehreren kommentieren (Benennung der Fachgruppen)",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.23",
+   "section": "vorhaben",
+   "frage": "Anzahl zu übernehmender Sitze",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Bitte Zahl eintragen",
+     "text": "2.23 Anzahl zu übernehmender Sitze: [ … ]",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.24",
+   "section": "vorhaben",
+   "frage": "Anzahl Betriebsstätten insg. und Nennung der Orte",
+   "hinweis": "Nennung der Anzahl der Betriebsstätten insgesamt sowie Nennung der Orte notwendig.",
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Bitte Zahl und Ort eintragen",
+     "text": "2.24 Anzahl Betriebsstätten: [ … ], in …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.25",
+   "section": "vorhaben",
+   "frage": "Die Übernahme des vorhandenen Personals ist gegeben.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.25 Das vorhandene Personal wird übernommen.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.25 Das vorhandene Personal wird NICHT übernommen, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.26",
+   "section": "vorhaben",
+   "frage": "Ein gut geschultes Personal ist vorhanden.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.26 Gut geschultes Personal ist vorhanden.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.26 Gut geschultes Personal ist NICHT vorhanden, da …",
+     "comment": true
+    },
+    {
+     "label": "Nicht bekannt - Bitte kommentieren",
+     "text": "2.26 Es liegen keine Kenntnisse zum Qualifizierungsstand des Personal vor, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.27",
+   "section": "vorhaben",
+   "frage": "Restlaufzeit des Mietvertrags (inkl. Verlängerungsoptionen) in Jahren",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Bitte Jahre eintragen",
+     "text": "2.27 Restlaufzeit Mietvertrag (inkl. Verlängerungsoptionen): [ … ] Jahre",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.28",
+   "section": "vorhaben",
+   "frage": "Ist mit dem Kunden die Vergleichsrechnung Direkttilgung vs. Tilgungsaussetzung besprochen worden?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu - Bitte kommentieren",
+     "text": "2.28 Mit dem Kunden ist die Vergleichsrechnung Direkttilgung vs. Tilgungsaussetzung besprochen worden. \nFolgendes Tilungsmodell wurde vereinbart: …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.28 Mit dem Kunden ist die Vergleichsrechnung Direkttilgung vs. Tilgungsaussetzung besprochen worden. \nAus folgenden Gründen wurde die variante Direkttilung vereinbart: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.29",
+   "section": "vorhaben",
+   "frage": "Hat der Kunde eine im Verhältnis zum Einkommen und der Verschuldung ausreichende Berufsunfähigkeitsabsicherung?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.29 Der Kunde hat eine im Verhältnis zum Einkommen und der Verschuldung ausreichende Berufsunfähigkeitsabsicherung.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.29 Der Kunde hat KEINE im Verhältnis zum Einkommen und der Verschuldung ausreichende Berufsunfähigkeitsabsicherung. \nDie Verschuldung ist wie folgt abgesichert: … [Was wurde mit dem Kunden besprochen]\nEin Lead an die apoFinanz kann vorgenommen werden [Ja/ Nein/ …]",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "2.30",
+   "section": "vorhaben",
+   "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Keine Anmerkungen",
+     "text": "2.30 Keine sonstigen entscheidungsrelevanten Anmerkungen.",
+     "comment": false
+    },
+    {
+     "label": "Sonstige Anmerkungen",
+     "text": "2.30 Sonstige entscheidungsrelevante ANMERKUNGEN: …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.31",
+   "section": "vorhaben",
+   "frage": "Ist für das Vorhaben eine angemessene Führungserfahrung vorhanden?",
+   "hinweis": "Beschreiben Sie, welche Führungserfahrung vorhanden ist, und inwiefern Sie dies als angemessen empfinden",
+   "feedback": null,
+   "variants": [
+    3,
+    4,
+    9,
+    10
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.31 Für das Vorhaben ist eine angemessene Führungserfahrung vorhanden. […]",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.31 Für das Vorhaben ist keine angemessene Führungserfahrung vorhanden. …",
+     "comment": true
+    },
+    {
+     "label": "nicht relevant da Obligo < 100 T€",
+     "text": "2.31 nicht relevant da Obligo < 100 T€",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.32",
+   "section": "vorhaben",
+   "frage": "Ist eine ausreichende Einarbeitungs- und Übergangsphase mit der Abgeberin / dem Abgeber in Bezug auf die kaufmännischen und personellen Themen vorgesehen?",
+   "hinweis": "Beschreiben Sie, wie die Einarbeitungs- und Übergangsphase gestaltet wird, und wie Sie deren Angemessenheit beurteilen",
+   "feedback": null,
+   "variants": [
+    3,
+    4,
+    9,
+    10
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.32 Es ist eine ausreichende Einarbeitungs- und Übergangsphase mit der Abgeberin / dem Abgeber in Bezug auf die kaufmännischen und personellen Themen vorgesehen. […]",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.32 Es ist keine ausreichende Einarbeitungs- und Übergangsphase mit der Abgeberin / dem Abgeber in Bezug auf die kaufmännischen und personellen Themen vorgesehen. …",
+     "comment": true
+    },
+    {
+     "label": "nicht relevant da Obligo < 100 T€ oder Neugründung",
+     "text": "2.32 nicht relevant da Obligo < 100 T€ oder Neugründung",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.33",
+   "section": "vorhaben",
+   "frage": "Ist die folgende Aussage zutreffend: „Es sind keine wesentlichen personellen Veränderungen (z. B. Altersteilzeit, Schwangerschaften, Rückkehr aus Elternzeit) geplant“?",
+   "hinweis": "Beschreiben Sie, warum es plausibel erscheint, dass keine relevanten Änderungen erforderlich sind, oder welche personellen Veränderungen geplant sind",
+   "feedback": null,
+   "variants": [
+    3,
+    4,
+    9,
+    10
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.33 Es sind keine wesentlichen personellen Veränderungen (z. B. Altersteilzeit, Schwangerschaften, Rückkehr aus Elternzeit) geplant. […]",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.33 Es sind wesentliche personelle Veränderungen (z. B. Altersteilzeit, Schwangerschaften, Rückkehr aus Elternzeit) geplant. …",
+     "comment": true
+    },
+    {
+     "label": "nicht relevant da Obligo < 100 T€ oder Neugründung",
+     "text": "2.32 nicht relevant da Obligo < 100 T€ oder Neugründung",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.34",
+   "section": "vorhaben",
+   "frage": "Liegt ein aussagefähiger Businessplan vor?",
+   "hinweis": "Beschreiben Sie kurz, warum der Businessplan überzeugend wirkt, und gehen Sie bei Bedarf auf die wesentlichen Inhalte ein",
+   "feedback": null,
+   "variants": [
+    3,
+    4,
+    9,
+    10
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "2.34 Ein aussagefähiger Businessplan liegt vor. […]",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "2.34 Ein aussagefähiger Businessplan liegt nicht vor.  …",
+     "comment": true
+    },
+    {
+     "label": "nicht relevant da Obligo < 100 T€ oder Übernahme ohne wesentliche Änderungen",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "2.35",
+   "section": "vorhaben",
+   "frage": "Keine zulässige Kombination",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    4,
+    10
+   ],
+   "answers": []
+  },
+  {
+   "nr": "3.0",
+   "section": "entwicklung",
+   "frage": "Die apoBank ist Hauptbankverbindung des Kunden.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "3.0 Die apoBank ist Hauptbankverbindung des Kunden.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "3.0 Die apoBank ist NICHT Hauptbankverbindung des Kunden, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "3.1",
+   "section": "entwicklung",
+   "frage": "Eine Bankauskunft (für Ablösungen Fremdbank relevant) bzw. Auskunft der Creditreform (sonstige Kunden) ohne Negativmerkmale liegt vor .",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "3.1 Eine Bankauskunft ohne Negativmerkmale liegt vor.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "3.1 Eine Bankauskunft MIT Negativmerkmalen liegt vor, da …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant - Bitte kommentieren",
+     "text": "3.1 Eine Bankauskunft ist nicht relevant, da keine Ablösung vorliegt.",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "3.2",
+   "section": "entwicklung",
+   "frage": "Die apoBank wird Hauptbankverbindung des Kunden.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "3.2 Die apoBank wird Hauptbankverbindung des Kunden.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "3.2 Die apoBank wird NICHT Hauptbankverbindung des Kunden, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "3.2.1",
+   "section": "entwicklung",
+   "frage": "Kunde ist bereits Mitglied der apoBank bzw. hat Anteil(e) neu gezeichnet?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "3.2.1 Kunde ist bereits Mitglied der apoBank bzw. hat Anteil(e) neu gezeichnet.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "3.2.1 Kunde ist NICHT Mitglied der apoBank bzw. hat KEINE Anteil(e) neu gezeichnet, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "3.3",
+   "section": "entwicklung",
+   "frage": "Es gibt bestehende Kreditengagements bei der apoBank.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu  - Bitte kommentieren (Benennung und Erläuterung)",
+     "text": "3.3 Folgende Kreditengagements bestehen bei der apoBank: …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "3.3 Es bestehen keine weiteren Kreditengagements bei der apoBank. ",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "3.4",
+   "section": "entwicklung",
+   "frage": "Es gibt keine Auffälligkeiten in der Kredithistorie (Umschuldungen, Steuerfinanzierungen, etc.).",
+   "hinweis": "zu kommentieren sind z.B. Umschuldungen, Steuerfinanzierungen u.ä.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "3.4 Es gibt keine Auffälligkeiten in der Kredithistorie (Umschuldungen, Steuerfinanzierungen, etc.).",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Auffälligkeiten)",
+     "text": "3.4 Folgende Auffälligkeiten in der Kredithistorie (Umschuldungen, Steuerfinanzierungen, etc.): …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "3.5",
+   "section": "entwicklung",
+   "frage": "Die Konto- und Engagementsführung ist ohne Auffälligkeiten.",
+   "hinweis": "zu kommentieren sind z.B. Überziehungen, steigende Inanspruchnahmen; Pfändungen u.ä.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "3.5 Die Konto- und Engagementsführung ist ohne Auffälligkeiten.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "3.5 Die Konto- und Engagementsführung ist MIT folgenden Auffälligkeiten: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "3.6",
+   "section": "entwicklung",
+   "frage": "Die bisherige Erfüllung von Auflagen bzw. Einreichung von Unterlagen ist termingerecht.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "3.6 Die bisherige Erfüllung von Auflagen bzw. Einreichung von Unterlagen ist termingerecht.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "3.6 Die bisherige Erfüllung von Auflagen bzw. Einreichung von Unterlagen ist NICHT termingerecht, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "3.7",
+   "section": "entwicklung",
+   "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Keine Anmerkungen",
+     "text": "3.7. Keine sonstigen entscheidungsrelevanten Anmerkungen.",
+     "comment": false
+    },
+    {
+     "label": "Sonstige Anmerkungen",
+     "text": "3.7. Sonstige entscheidungsrelevante ANMERKUNGEN: …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "3.8",
+   "section": "entwicklung",
+   "frage": "Keine zulässige Kombination",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    4,
+    10
+   ],
+   "answers": []
+  },
+  {
+   "nr": "4.0",
+   "section": "liquiditaet",
+   "frage": "Die internen und externen Offenlegungspflichten sind erfüllt.",
+   "hinweis": "Abweichungen zu den Offenlegungsvorgaben nach \"AR K1-5 Wirtschaftliche Verhältnisse\"  sind darzulegen und zu begründen. Eine Eräuterung, warum die vorhandenen Unterlagen zur Entscheidungsfindung ausreichen, ist notwendig.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.0 Die internen und externen Offenlegungspflichten sind erfüllt.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Benennung der fehlenden Unterlagen und Begründung, warum qualifizierte Entscheidung trotz Verzicht auf die Unterlagen möglich ist.)",
+     "text": "4.0 Die internen und externen Offenlegungspflichten sind NICHT erfüllt, da …",
+     "comment": true
+    },
+    {
+     "label": "Bitte prüfen",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.1",
+   "section": "liquiditaet",
+   "frage": "Es gibt keine Auffälligkeiten in den wirtschaftlichen Unterlagen (BWA, EÜR, Gehalt, etc.).",
+   "hinweis": "Wesentliche Veränderungen oder Schwankungen sind zu erläutern.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.1 Es gibt keine Auffälligkeiten in den wirtschaftlichen Unterlagen (BWA, EÜR, Gehalt, etc.).",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "4.1 Folgende Auffälligkeiten in wirtschaftlichen Unterlagen (BWA, EÜR, Gehalt, etc.): …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.2",
+   "section": "liquiditaet",
+   "frage": "Die Abgeberzahlen sind plausibel.",
+   "hinweis": "Eine Erläuterung, wenn Abgeberzahlen nicht ohne weiteres nachvollziehbar sind, ist notwenig.",
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.2 Die Abgeberzahlen sind plausibel.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "4.2 Abgeberzahlen sind NICHT plausibel, da …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": "4.2 Abgeberzahlen sind NICHT relevant, da …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.3",
+   "section": "liquiditaet",
+   "frage": "Die Planzahlen sind plausibel.",
+   "hinweis": "Eine Erläuterung, wenn Planzahlen nicht ohne weiteres nachvollziehbar sind, ist notwenig.",
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.3 Die Planzahlen sind plausibel.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "4.3 Planzahlen sind NICHT plausibel, da …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.4",
+   "section": "liquiditaet",
+   "frage": "Was ist die Basis/ Quelle der Planzahlen?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "InKo",
+     "text": "4.4 INKO ist die Basis/ Quelle der Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Abgeberzahlen",
+     "text": "4.4 Abgeberzahlen ist die Basis/ Quelle der Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Sonstige Planunterlagen - Bitte kommentieren",
+     "text": "4.4 Die Basis/ Quelle der Planzahlen ist …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.5",
+   "section": "liquiditaet",
+   "frage": "Es gibt keine wesentlichen Abweichungen der Kennzahlen zum Fachgruppendurchschnitt (mit GMP Serviceportal abgeglichen).",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.5 Es gibt keine wesentlichen Abweichungen der Kennzahlen zum Fachgruppendurchschnitt (mit GMP Serviceportal abgeglichen).",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - (z.B. Apotheker (Relation Umsatz zu Wareneinsatz/ Personal); Zahnarzt (Fremdlabor); Arzt (Umsatz/Betriebsergebnis)",
+     "text": "4.5 Es gibt wesentlichen Abweichungen der Kennzahlen zum Fachgruppendurchschnitt (mit GMP Serviceportal abgeglichen): …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.6",
+   "section": "liquiditaet",
+   "frage": "Wie sind die erwarteten Planzahlen im Verhältnis zu den Abgeberzahlen?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Auf dem gleichen Niveau - Bitte kommentieren",
+     "text": "4.6 Die erwarteten Planzahlen sind auf dem gleichen Niveau wie die Abgeberzahlen, da …",
+     "comment": true
+    },
+    {
+     "label": "Übersteigen die Abgeberzahlen deutlich - Bitte kommentieren",
+     "text": "4.6 Die erwarteten Planzahlen übersteigen die Abgeberzahlen deutlich, da …",
+     "comment": true
+    },
+    {
+     "label": "Unterschreiten die Abgeberzahlen deutlich - Bitte kommentieren",
+     "text": "4.6 Die erwarteten Planzahlen unterschreiten die Abgeberzahlen deutlich, da …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant - Bitte kommentieren",
+     "text": "4.6 Das Verhältnis der erwarteten Planzahlen zu den Abgeberzahlen ist nicht relevant, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.7",
+   "section": "liquiditaet",
+   "frage": "Was sind Gründe für geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen?",
+   "hinweis": null,
+   "feedback": "Nicht relevant",
+   "variants": [
+    3,
+    9
+   ],
+   "answers": [
+    {
+     "label": "Altersgründe",
+     "text": "4.7 Altersgründe erklären die geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Erweitertes Leistungsspektrum",
+     "text": "4.7 Erweitertes Leistungsspektrum erklärt die geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Unterdurchschnittliche Honorare",
+     "text": "4.7 Unterdurchschnittliche Honorare erklären die geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Steigerung Privatliquidation",
+     "text": "4.7 Steigerung Privatliquidation erklärt die geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Erweiterte Öffnungszeiten",
+     "text": "4.7 Erweiterte Öffnungszeiten erklären die geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Reduzierte Personalkosten",
+     "text": "4.7 Reduzierte Personalkosten erklären die geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Reduzierte Raumkosten",
+     "text": "4.7 Reduzierte Raumkosten erklären die geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen.",
+     "comment": false
+    },
+    {
+     "label": "Andere - Bitte kommentieren",
+     "text": "4.7 Folgende Gründe erklären die geplante Umsatz- und Gewinnsteigerung zwischen Abgeber- und Planzahlen: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.8",
+   "section": "liquiditaet",
+   "frage": "Wie ist die Entwicklung der Praxis/ Apotheke?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Positiv",
+     "text": "4.8 Die Entwicklung der Praxis/ Apotheke ist positiv.",
+     "comment": false
+    },
+    {
+     "label": "Konstant",
+     "text": "4.8 Die Entwicklung der Praxis/ Apotheke ist konstant.",
+     "comment": false
+    },
+    {
+     "label": "Sprunghaft - Bitte kommentieren",
+     "text": "4.8 Die Entwicklung der Praxis/ Apotheke ist sprunghaft, da …",
+     "comment": true
+    },
+    {
+     "label": "Rückläufig - Bitte kommentieren",
+     "text": "4.8 Die Entwicklung der Praxis/ Apotheke ist rückläufig, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.9",
+   "section": "liquiditaet",
+   "frage": "Die Relation zwischen Überschuss aus HHR, Tilgung und Gesamtverschuldung ist angemessen.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    5,
+    7,
+    11
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.9 Die Relation zwischen Überschuss aus HHR, Tilgung und Gesamtverschuldung ist angemessen. Der Überschuss aus HHR ist ausreichend.",
+     "comment": false
+    },
+    {
+     "label": "Triff nicht zu - Bitte kommentieren",
+     "text": "4.9 Der Überschuss aus HHR ist NICHT ausreichend, aber …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.9a",
+   "section": "liquiditaet",
+   "frage": "Sensitivitätsanalyse für risikorelevantes Geschäft  - Bitte Daten aus HHR einfügen.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    5,
+    7,
+    11
+   ],
+   "answers": [
+    {
+     "label": "HHR nach Sensitivitätsanalyse positiv",
+     "text": null,
+     "comment": false
+    },
+    {
+     "label": "HHR nach Sensitivitätsanalyse negativ",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.9b",
+   "section": "liquiditaet",
+   "frage": "Kommentierung der Sensitivitätsanalyse für risikorelevantes Geschäft ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    5,
+    7,
+    11
+   ],
+   "answers": [
+    {
+     "label": "HHR nach Sensitivitätsanalyse positiv",
+     "text": "4.9b Die HHR ist auch nach Sensitivitätsanalyse positiv.",
+     "comment": false
+    },
+    {
+     "label": "HHR nach Sensitivitätsanalyse negativ",
+     "text": "4.9b Die HHR ist nach Sensitivitätsanalyse negative, eine Kreditvergabe ist aus folgenden Gründen dennoch vertretbar ...\n",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.10",
+   "section": "liquiditaet",
+   "frage": "Die Relation zwischen freier Liqui, Tilgung und Gesamtverschuldung ist angemessen.",
+   "hinweis": "Es ist immer eine \"Echt-Liqui\" im Markt zu erstellen; lfd. Nr. der zu Grunde liegenden Liqui und ggf. abweichende Stammnummer ist zu nennen.",
+   "feedback": null,
+   "variants": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "Die Relation zwischen freier Liqui, Tilgung und Gesamtverschuldung ist angemessen.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "Die Relation zwischen freier Liqui, Tilgung und Gesamtverschuldung ist NICHT angemessen, aber …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.10a",
+   "section": "liquiditaet",
+   "frage": "Sensitivitätsanalyse für risikorelevantes Geschäft - Bitte Daten aus Liqui-Rechnung einfügen.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Liqui nach Sensitivitätsanalyse positiv",
+     "text": null,
+     "comment": false
+    },
+    {
+     "label": "Liqui nach Sensitivitätsanalyse negativ",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.10b",
+   "section": "liquiditaet",
+   "frage": "Kommentierung der Sensitivitätsanalyse für risikorelevantes Geschäft ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Liqui nach Sensitivitätsanalyse positiv",
+     "text": "4.10b Die Liqui ist auch nach Sensitivitätsanalyse positiv.",
+     "comment": false
+    },
+    {
+     "label": "Liqui nach Sensitivitätsanalyse negativ",
+     "text": "4.10b Die Liqui ist nach Sensitivitätsanalyse negative, eine Kreditvergabe ist aus folgenden Gründen dennoch vertretbar ...\n",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.11",
+   "section": "liquiditaet",
+   "frage": "Es bestehen weitere, nicht in der HHR berücksichtigte Sondereinkünfte.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    5,
+    7,
+    11
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu - Bitte kommentieren (Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+     "text": "4.11 Es bestehen folgende, nicht in der HHR berücksichtigte Sondereinkünfte: …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "4.11 Es bestehen KEINE weiteren, nicht in der HHR berücksichtigte Sondereinkünfte.",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.12",
+   "section": "liquiditaet",
+   "frage": "Es bestehen weitere, nicht in der Liqui-Rechnung berücksichtigte Sondereinkünfte.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu - Bitte kommentieren \n(Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+     "text": "4.12 Es bestehen folgende, nicht in der Liqui-Rechnung berücksichtigte Sondereinkünfte: …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "4.12 Es bestehen KEINE weiteren, nicht in der Liqui-Rechnung berücksichtigte Sondereinkünfte.",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.13",
+   "section": "liquiditaet",
+   "frage": "Eine Einkommenssteigerung wird erwartet.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.13 Eine Einkommenssteigerung wird erwartet.",
+     "comment": false
+    },
+    {
+     "label": "Trifft zu - Bitte kommentieren (wann, wie viel und wie wahrscheinlich)",
+     "text": "4.13 KEINE Einkommenssteigerung erwartet, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.14",
+   "section": "liquiditaet",
+   "frage": "Lebenshaltungskosten/ Ausgabeverhalten/ Privatentnahmen stehen in einem angemessenen Verhältnis zur freien Liquidität",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu - ggf. bitte kommentieren (Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+     "text": "4.14 Lebenshaltungskosten/ Ausgabeverhalten/ Privatentnahmen stehen in einem angemessenen Verhältnis zur freien Liquidität.",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "4.14 Lebenshaltungskosten/ Ausgabeverhalten/ Privatentnahmen stehen NICHT in einem angemessenen Verhältnis zur freien Liquidität, aber …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant (Liqui-Rechnung erstellt)",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.15",
+   "section": "liquiditaet",
+   "frage": "Bei Immobiliar-Verbraucherdarlehen (IVD) wurde eine kalkulatorische Mindestannuität von 5% p.a. berücksichtigt.",
+   "hinweis": "Berücksichtigung einer kalkulatorischen Mindestannuität bei Immobiliar-Verbraucherdarlehen (IVD) von 5%.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.15 Es wurde eine kalkulatorische Mindestannuität von 5% p.a. berücksichtigt.",
+     "comment": false
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.16",
+   "section": "liquiditaet",
+   "frage": "Vermögensüberschuss",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Bitte in TEUR eintragen",
+     "text": "4.16 Vermögensüberschuss:  in TEUR [ … ]   ",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.17",
+   "section": "liquiditaet",
+   "frage": "Das Vermögen ist angemessen/ realistisch bewertet.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.17 Das Vermögen ist angemessen/ realistisch bewertet.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "4.17 Das Vermögen ist NICHT angemessen/ realistisch bewertet, aber …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.18",
+   "section": "liquiditaet",
+   "frage": "Darstellung des Entschuldungskonzeptes.",
+   "hinweis": "I.d.R.bis Ende aktive Arbeitsphase (67. Lebensjahr); eine Abweichung ist zu begründen. Darstellung in 10 T€. Rückführung Restengagement ist unter Punkt 4.18 zu erläutern/ \"Renten-Liqui\" zu erstellen.\nDie Gesamtschuld umfasst auch Fremdverbindlichkeiten bei anderen Banken.\nAls liquides Vermögen gelten Kontoguthaben (auch Depot) und Rückkaufswerte, aber nicht Entschuldungspotenzial aus Immobilien oder Praxisverkauf. Minimale Nettoschuld 0 (keinen negativen Wert angeben)\n",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Entschuldung bis zum 67. Lebensjahr möglich",
+     "text": "4.18 Das Entschuldungskonzept sieht wie folgt aus: \nGesamtverschuldung in TEUR [ … ]  ./. bestehendes liquides Vermögen zur Entschuldung in TEUR [ … ] = Nettoschuld in TEUR [ … ] \nNettoschuld in TEUR [ … ] / aktuelle Tilgungsleistung in TEUR [ … ] = Entschuldung nach ## Jahren\nEine Entschuldung ist bis zum 67. Lebensjahr des Kreditnehmers möglich.\nFolgende Punkte sind zudem zu beachten: ...\n",
+     "comment": false
+    },
+    {
+     "label": "Entschuldung bis zum 67. Lebensjahr nicht möglich",
+     "text": "4.18 Das Entschuldungskonzept sieht wie folgt aus: \nGesamtverschuldung in TEUR [ … ]  ./. bestehendes liquides Vermögen zur Entschuldung in TEUR [ … ] = Nettoschuld in TEUR [ … ] \nNettoschuld in TEUR [ … ] / aktuelle Tilgungsleistung in TEUR [ … ] = Entschuldung nach ## Jahren\nEine Entschuldung ist bis zum 67. Lebensjahr des Kreditnehmers NICHT möglich.\nFolgende Punkte sind zudem zu beachten: ...\n",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.19",
+   "section": "liquiditaet",
+   "frage": "Verbleibendes Restengagement laut Entschuldungskonzept.",
+   "hinweis": "Aus Renten- und sonstigen Einkünften ist eine Haushaltsrechnung zu erstellen. Die Annuität des Restengagements ist mit 5% anzusetzen.",
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.19 Es verbleibt kein RESTengagement laut Entschuldungskonzept. ",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "4.19 Es verbleibt ein Restengagement laut Entschuldungskonzept. HAUSHALTSRECHNUNG EINFÜGEN UND GGF. KOMMENTIEREN.",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.20",
+   "section": "liquiditaet",
+   "frage": "Der Verschuldungsgrad unterhalb des 5-fachen Gesamtjahresbruttoeinkommen ist gegeben.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.20 Der Verschuldungsgrad unterhalb des 5-fachen Gesamtjahresbruttoeinkommen ist gegeben.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "4.20 Der Verschuldungsgrad oberhalb des 5-fachen Gesamtjahresbruttoeinkommen ist gegeben, aber …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.21",
+   "section": "liquiditaet",
+   "frage": "Eine Unterhaltsverpflichtung liegt nicht vor.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.21 Unterhaltsverpflichtungen liegen nicht vor.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (z.B. Zeitraum, Veränderungen der Zahlungsverpflichtungen, etc.)",
+     "text": "4.21 Unterhaltsverpflichtungen liegen vor, i.H.v.: in TEUR [ … ]   ",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.22",
+   "section": "liquiditaet",
+   "frage": "Steuerverbindlichkeiten sind nicht vorhanden.",
+   "hinweis": "Zu erwartende Steuerverbindlichkeiten/ -nachzahlungen sind zu prüfen und ggf. zu kommentieren. Zu beachten ist, ob die Einkommensentwicklung stabil ist und Nachzahlungen zu leisten sind.",
+   "feedback": null,
+   "variants": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.22 Die steuerlichen Vorauszahlungen sind angemessen bzw. es sind angemessene Rücklagen gebildet. Weitere Steuerverbindlichkeiten sind nicht vorhanden.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Höhe, Fälligkeit und mögliche Zahlung)",
+     "text": "4.22 Es wurden bisher KEINE Steuervorauszahlungen geleistet oder Rücklagen gebildet für Steuerverbindlichkeiten i.H.v.: in TEUR [ … ]",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "4.23",
+   "section": "liquiditaet",
+   "frage": "Die Renditeimmobilie trägt sich aus Mieten selbst.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    7,
+    8
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "4.23 Die Renditeimmobilie trägt sich aus Mieten selbst.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "4.23 Die Renditeimmobilie trägt sich NICHT selbst aus den Mieten, aber …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.24",
+   "section": "liquiditaet",
+   "frage": "Für alle nicht-natürlichen Personen mit einem Kreditengagement größer TEUR 25 sind für die AnaCredit-Meldung nachfolgenden Unternehmensattribute zu erheben: ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "relevant",
+     "text": "4.24 Mitarbeiteranzahl: \n         Jahresumsatz:\n         Bilanzsumme der bilanzierenden Unternehmen:",
+     "comment": false
+    },
+    {
+     "label": "Nicht relevant",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.25",
+   "section": "liquiditaet",
+   "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Keine Anmerkungen",
+     "text": "4.25 Keine sonstigen entscheidungsrelevanten Anmerkungen.",
+     "comment": false
+    },
+    {
+     "label": "Sonstige Anmerkungen",
+     "text": "4.25 Sonstige entscheidungsrelevante ANMERKUNGEN: …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "4.26",
+   "section": "liquiditaet",
+   "frage": "Kein zulässige Kombination",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    4,
+    10
+   ],
+   "answers": []
+  },
+  {
+   "nr": "5.0",
+   "section": "rating",
+   "frage": "Das Rating bildet das Risiko sachgerecht ab.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "5.0 Das Rating bildet das Risiko sachgerecht ab.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Unregelmäßigkeiten)",
+     "text": "5.0 Das Rating bildet das Risiko NICHT sachgerecht ab, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "5.1",
+   "section": "rating",
+   "frage": "Es sind keine Punktabzüge im Rating vorhanden.",
+   "hinweis": "Punktabzügen im Rating und Risikomerkmale sind zu erläutern.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "5.1 Es sind keine Punktabzüge im Rating vorhanden.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Punktabzüge)",
+     "text": "5.1 Folgende PUNKTABZÜGE sind im Rating vorhanden: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "5.2",
+   "section": "rating",
+   "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Keine Anmerkungen",
+     "text": "5.2. Keine sonstigen entscheidungsrelevanten Anmerkungen.",
+     "comment": false
+    },
+    {
+     "label": "Sonstige Anmerkungen",
+     "text": "5.2. Sonstige entscheidungsrelevante ANMERKUNGEN: …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "5.3",
+   "section": "rating",
+   "frage": "Keine zulässige Kombination",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    4,
+    10
+   ],
+   "answers": []
+  },
+  {
+   "nr": "6.0",
+   "section": "sicherheit",
+   "frage": "Standardsicherheiten liegen vor bzw. werden vereinbart.",
+   "hinweis": "Ein Verzicht auf (Standard-) Sicherheiten ist zu dokumentierern und zu begründen.\nBaufi: AR K 6-3 Grundpfandrechte; AR K 6-4 Einkommensabtretung; AR K 6-5 Bürgschaften; AR K 6-6; Lebens/Rentenversicherung\nExi: AR K 6-4 Einkommensabtretung; AR K 6-5 Bürgschaften; AR K 6-6 Lebens/Rentenversicherung; AR K 6-8 Sicherungsübereignung\nSofi: AR K 6-4 Einkommensabtretung; AR K 6-5 Bürgschaften; AR K 6-6 Lebens/Rentenversicherung",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "6.0. Standardsicherheiten liegen vor bzw. werden vereinbart.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "6.0. Folgende Sicherheiten liegen vor bzw. werden vereinbart: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "6.1",
+   "section": "sicherheit",
+   "frage": "Eine angemessene Todesfallabsicherung liegt vor.",
+   "hinweis": "Die Angemessenheit ist abhängig vom jeweiligen Investment, von der Bonität und Vermögenslage und der allgemeinen Lebenssituation des Kreditnehmers. \n",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "6.1. Eine angemessene Todesfallabsicherung liegt vor.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "6.1. Eine angemessene Todesfallabsicherung liegt NICHT vor, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "6.2",
+   "section": "sicherheit",
+   "frage": "Sonstige entscheidungsrelevante Anmerkungen",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Keine Anmerkungen",
+     "text": "6.2. Keine sonstigen entscheidungsrelevanten Anmerkungen.",
+     "comment": false
+    },
+    {
+     "label": "Sonstige Anmerkungen",
+     "text": "6.2. Sonstige entscheidungsrelevante ANMERKUNGEN: …",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "6.3",
+   "section": "sicherheit",
+   "frage": "Keine zulässige Kombination",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    4,
+    10
+   ],
+   "answers": []
+  },
+  {
+   "nr": "7.0",
+   "section": "votum",
+   "frage": "Deckungsbeitrag II",
+   "hinweis": "Es ist der DB des Vorjahres anzugeben.",
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Bitte in TEUR eintragen",
+     "text": "7.0 Deckungsbeitrag II: in TEUR [ … ]   ",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "7.1",
+   "section": "votum",
+   "frage": "Marge - Kundenzins abzüglich Einstandszins in % (Provision bei VP angeben)",
+   "hinweis": "Anzugeben ist immer die Soll-Marge des Geschäftes, sowie die tatsächlich beim Geschäft realisierte Marge. Negative Abweichungen zwischen SOLL-Marge und IST-Marge sind zu erläutern.",
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Bitte eintragen",
+     "text": "7.1 Die Soll-Marge gem. Konditionsrechner beträgt [ … % ].\nDie Ist-Marge gem. Konditionsrechner beträgt [ … % ].\nMinderertrag im 1. Jahr gem. Konditionsrechner  [ … TEUR ].\nEs liegen folgende Gründe/ Vertriebsansätze für die Abweichung von der Zielmarge vor: …\n\nProvision Vermittler [ … % ]  (nur bei VP-Geschäft)",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "7.2",
+   "section": "votum",
+   "frage": "Es gibt keine Abweichung zur Geschäfts- und Risikostrategie.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "7.2 Es gibt keine Abweichung zur Geschäfts- und Risikostrategie.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Erklärung warum trotzdem attraktiv)",
+     "text": "7.2 Es liegen ABWEICHUNGEN zur Geschäfts- und Risikostrategie vor, aber …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "7.3",
+   "section": "votum",
+   "frage": "Das Finanzierungsvorhaben ist schlüssig.",
+   "hinweis": "Vorhaben passt zur Einkommenssituation, Lebensphase und den Gesamtverhältnissen des Kunden.",
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "7.3 Das Finanzierungsvorhaben ist schlüssig.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "7.3 Da Finanzierungsvorhaben ist NICHT schlüssig, aber …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "7.4",
+   "section": "votum",
+   "frage": "Die Kapitaldienstfähigkeit ist gegeben. Die wirtschaftlichen Verhältnisse lassen die Kreditgewährung zu.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "7.4 Die Kapitaldienstfähigkeit ist gegeben. Die wirtschaftlichen Verhältnisse lassen die Kreditgewährung zu.",
+     "comment": false
+    },
+    {
+     "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+     "text": "7.4 Die Kapitaldienstfähigkeit ist EINGESCHRÄNKT gegeben, da …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "7.4 Die Kapitaldienstfähigkeit ist NICHT gegeben, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "7.5",
+   "section": "votum",
+   "frage": "Das Entschuldungskonzept ist nachvollziehbar.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "7.5 Das Entschuldungskonzept ist nachvollziehbar.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "7.5 Das Entschuldungskonzept ist NICHT nachvollziehbar.",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "7.6",
+   "section": "votum",
+   "frage": "Bei der Finanzierung bestehen keine (weiteren) wesentlichen Risiken.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "7.6 Bei der Finanzierung bestehen keine (weiteren) wesentlichen Risiken.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Risiken)",
+     "text": "7.6 Bei der Finanzierung bestehen WEITERE wesentliche Risiken: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "7.7",
+   "section": "votum",
+   "frage": "Es bestehen keine Auflagen aus dem Vorprotokoll.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "7.7 Es bestehen keine Auflagen aus dem Vorprotokoll.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "7.7 Es bestehen AUFLAGEN aus dem Vorprotokoll, …",
+     "comment": false
+    },
+    {
+     "label": "Bitte prüfen",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "7.8",
+   "section": "votum",
+   "frage": "Keine weiteren Auflagen sind notwendig.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "7.8 Es sind keine weiteren Auflagen notwendig.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Definition der Auflagen)",
+     "text": "7.8 Folgende WEITERE Auflagen sind notwendig: …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "7.9",
+   "section": "votum",
+   "frage": "Entsprechend dem Kundenwunsch erfolgt der Vertragsversand",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "per Post an Kunden.",
+     "text": "7.9 Vertragsversand per Post an Kunden.",
+     "comment": false
+    },
+    {
+     "label": "per Email an Berater.",
+     "text": "7.9 Vertragsversand per eMail an Berater.",
+     "comment": false
+    },
+    {
+     "label": "per Post an Filiale/ Berater.",
+     "text": "7.8 Vertragsversand per Post an Filiale/ Berater.",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "7.10",
+   "section": "votum",
+   "frage": "ESG – Risiken | Für den Kunden (und seine Standorte sowie die und allenfalls finanzierten oder zu finanzierenden Immobilien) bestehen auf Basis der bekannten Daten umweltbedingte physische oder transitorische Risiken. ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu (bitte kommentieren)",
+     "text": "7.10 ESG: Nach aktuellem Kenntnisstand bestehen für den Kunden (und seine Standorte sowie die und allenfalls finanzierten oder zu finanzierenden Immobilien) auf Basis der bekannten Daten die folgenden umweltbedingten physischen oder transitorische Risiken: [....]",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu  ",
+     "text": "7.10 ESG: Nach aktuellem Kenntnisstand bestehen für den Kunden (und seine Standorte sowie die und allenfalls finanzierten oder zu finanzierenden Immobilien) auf Basis der bekannten Daten KEINE umweltbedingten physischen oder transitorische Risiken. ",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "7.11",
+   "section": "votum",
+   "frage": "ESG – Risiken |  Bestehen für den Kunden auf Basis der bekannten Daten soziale Risiken?",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [],
+   "answers": [
+    {
+     "label": "Trifft zu (bitte kommentieren)",
+     "text": "7.11 ESG: Nach aktuellem Kenntnisstand bestehen für den Kunden auf Basis der bekannten Daten die folgenden sozialen Risiken, da …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu  ",
+     "text": "7.11 ESG: Nach aktuellem Kenntnisstand bestehen für den Kunden KEINE sozialen-Risiken.",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "7.12",
+   "section": "votum",
+   "frage": "ESG – Risiken | Ermittelter ESG-Gesamt Score (RISIKO-Sicht) aus CredaRate",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "ESG-Gesamt-Score (Scoreklasse) aus RISIKO-Sicht",
+     "text": "7.12 ESG: Ermittelter ESG-Gesamt-Score (Risiko-Sicht) aus CredaRate: [bitte zutreffende Scoreklasse angeben ...] \nGesamt-Score: [A-G]\n",
+     "comment": false
+    },
+    {
+     "label": "n/a",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "7.13",
+   "section": "votum",
+   "frage": "ESG – Risiken | Ermittelte ESG-Gesamt-Score (IMPACT-Sicht) aus CredaRate",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "ESG-Gesamt-Score (Scoreklasse) aus IMPACT-Sicht",
+     "text": "7.13 ESG: Ermittelter ESG-Gesamt-Score (Impact-Sicht) aus CredaRate: [bitte zutreffende Scoreklasse angeben ...] \nGesamt-Score: [A-G]\n",
+     "comment": false
+    },
+    {
+     "label": "n/a",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "7.14",
+   "section": "votum",
+   "frage": "ESG-Risiken | Das ESG-Scoring bewegt sich nicht im roten Bereich (Scoreklasse nicht F oder G); für den Kunden sind keine hohen ESG.Risiken erkennbar",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu ",
+     "text": "7.14 Das ESG-Scoring bewegt sich nicht im roten Bereich (Scoreklasse nicht F oder G); für den Kunden sind keine hohen ESG-Risiken erkennbar",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu (bitte kommentieren)",
+     "text": "7.14 Das ESG-Scoring bewegt sich im roten Bereich (Scoreklasse F oder G), da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "7.15",
+   "section": "votum",
+   "frage": "Keine zulässige Kombination",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    4,
+    10
+   ],
+   "answers": []
+  },
+  {
+   "nr": "8.",
+   "section": "entscheidung",
+   "frage": "Genehmigung",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12
+   ],
+   "answers": [
+    {
+     "label": "Einzelkompetenz",
+     "text": "8. Entscheidung: Genehmigt in Eigenkompetenz.",
+     "comment": false
+    },
+    {
+     "label": "Kreditreserve",
+     "text": "8. Entscheidung: Genehmigt aus freier Kreditreserve. Die Rahmenbedingungen der Richtlinie \"Kreditreserve (Definition)\" sind eingehalten.",
+     "comment": false
+    },
+    {
+     "label": "Genehmigung Markt (Zweivotenfall) ",
+     "text": "8. Entscheidung: Genehmigung Markt (Zweitvotum durch Marktfolge erforderlich).",
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "K.0",
+   "section": "kompakt",
+   "frage": "Kriterien für Finanzierung Konpakt sind erfüllt",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.0 Kriterien für Finanzierung Konpakt sind erfüllt",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "K.0 Kriterien für Finanzierung Konpakt sind nicht erfüllt - \"Finanzierung Kompakt\" kann nicht verwendet werden.",
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.1",
+   "section": "kompakt",
+   "frage": "Die Stammdaten und das Rating sind geprüft und korrekt.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.1 Persönliche Daten, berufliche Situation und Adressen sind geprüft und aktuell im System hinterlegt.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.1 Persönliche Daten, berufliche Situation und Adressen sind NICHT geprüft und aktuell im System hinterlegt. Da …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.2",
+   "section": "kompakt",
+   "frage": "Die Kreditnehmereinheit / Gruppe verbundener Kunden ist geprüft und richtig gebildet.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.2 Die Kreditnehmereinheit / Gruppe verbundener Kunden ist korrekt gebildet.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.2 Die Kreditnehmereinheit / Gruppe verbundener Kunden ist NICHT korrekt gebildet, da …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.3",
+   "section": "kompakt",
+   "frage": "Die persönliche Kreditwürdigkeit des Kreditnehmers ist gegeben  - es sind keine Risikofaktoren erkennbar.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.3 Die persönliche Kreditwürdigkeit des Kreditnehmers ist gegeben  - es sind keine Risikofaktoren erkennbar.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.3 Die persönliche Kreditwürdigkeit des Kreditnehmers ist NICHT gegeben, da ...\nEs sind die folgenden Risikofaktoren erkennbar: \n…..",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.4",
+   "section": "kompakt",
+   "frage": "Das Rückführungskonzept ermöglicht eine Entschuldung bis zum 67. Lebensjahr.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.4 Das Rückführungskonzept ermöglicht eine Entschuldung bis zum 67. Lebensjahr.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.4 Das Rückführungskonzept ermöglicht KEINE Entschuldung bis zum 67. Lebensjahr, da …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.5",
+   "section": "kompakt",
+   "frage": "Um welches Vorhaben handelt es sich?",
+   "hinweis": "Mietaval: \nObjektanschrift / Kennzeichen Auf ersten anfordern / Mit Verzicht auf Hinterlegung sind dem Mietvertrag zu entnehmen und entsprechend in der Verbindlichkeit zu pflegen\n\nSonstige Investition:\napoInvestitionsfinanzierung/apoFörderdarlehen/apoPrivatfinanzierung & kurze Beschreibung des Vorhabens \n\nTA Konzept? Ja/nein (Wenn ja, dann Details: Rate, Laufzeit, Ablaufleistung)",
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Überziehungslimit",
+     "text": "K.5 Einräumung / Erhöhung Überziehungslimit um … T€\nHintergrund der Erhöhung: \nDie KK-Linie ist mit Bezug auf Umsatz / Einkommen angemessen.",
+     "comment": false
+    },
+    {
+     "label": "Mietaval (privat)",
+     "text": "K.5 Mietaval privat i.H.v.: € für (Verwendungszweck): ...\n\n",
+     "comment": false
+    },
+    {
+     "label": "Mietaval (gewerblich)",
+     "text": "K.5 Mietaval gewerblich i.H.v.: € für (Verwendungszweck): ...",
+     "comment": false
+    },
+    {
+     "label": "Mietaval (gewerblich) - Standortverlegung",
+     "text": "K.5 Mietaval gewerblich mit Standortverlegung i.H.v.: € für (Verwendungszweck): ...\n\nMotivation der Standortverlegung: ...\nEntfernung zum bisherigen Standort:  ...\nBewertung des neuen Standorts durch Berater: ...\n\n",
+     "comment": false
+    },
+    {
+     "label": "Darlehen",
+     "text": "K.5 Darlehenszweck / Vorhabensbeschreibung:",
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.6",
+   "section": "kompakt",
+   "frage": "Es gibt keine Auffälligkeiten in der Kredithistorie (Umschuldungen, Steuerfinanzierungen, etc.).",
+   "hinweis": "zu kommentieren sind z.B. Umschuldungen, Steuerfinanzierungen u.ä.",
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.6 Es gibt keine Auffälligkeiten in der Kredithistorie (Umschuldungen, Steuerfinanzierungen, etc.).",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Benennung der Auffälligkeiten)",
+     "text": "K.6 Folgende Auffälligkeiten in der Kredithistorie (Umschuldungen, Steuerfinanzierungen, etc.): …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.7",
+   "section": "kompakt",
+   "frage": "Die Konto- und Engagementsführung ist ohne Auffälligkeiten.",
+   "hinweis": "zu kommentieren sind z.B. Überziehungen, steigende Inanspruchnahmen; Pfändungen u.ä.",
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.7 Die Konto- und Engagementsführung ist ohne Auffälligkeiten.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.7 Die Konto- und Engagementsführung ist MIT folgenden Auffälligkeiten: …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.8",
+   "section": "kompakt",
+   "frage": "Die internen und externen Offenlegungspflichten sind erfüllt ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.8 Die internen und externen Offenlegungspflichten sind erfüllt ",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.8 Die internen und externen Offenlegungspflichten sind NICHT erfüllt, da ... ",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.9",
+   "section": "kompakt",
+   "frage": "Es gibt keine Auffälligkeiten in den wirtschaftlichen Unterlagen (BWA, EÜR, Gehalt, etc.).",
+   "hinweis": "Wesentliche Veränderungen oder Schwankungen sind zu erläutern.",
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.9 Es gibt keine Auffälligkeiten in den wirtschaftlichen Unterlagen (BWA, EÜR, Gehalt, etc.).",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.9 Folgende Auffälligkeiten in wirtschaftlichen Unterlagen (BWA, EÜR, Gehalt, etc.): …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.10",
+   "section": "kompakt",
+   "frage": "Die Relation zwischen Überschuss aus HHR, Tilgung und Gesamtverschuldung ist angemessen.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    15
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.10 Die Relation zwischen Überschuss aus HHR, Tilgung und Gesamtverschuldung ist angemessen. Der Überschuss aus HHR ist ausreichend.",
+     "comment": false
+    },
+    {
+     "label": "Triff nicht zu - Bitte kommentieren",
+     "text": "K.10 Der Überschuss aus HHR ist NICHT ausreichend, aber …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.11",
+   "section": "kompakt",
+   "frage": "Die Relation zwischen freier Liqui, Tilgung und Gesamtverschuldung ist angemessen.",
+   "hinweis": "Es ist immer eine \"Echt-Liqui\" im Markt zu erstellen; lfd. Nr. der zu Grunde liegenden Liqui und ggf. abweichende Stammnummer ist zu nennen.",
+   "feedback": null,
+   "variants": [
+    14,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.11 Die Relation zwischen freier Liqui, Tilgung und Gesamtverschuldung ist angemessen.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.11 Die Relation zwischen freier Liqui, Tilgung und Gesamtverschuldung ist NICHT angemessen, aber …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.12",
+   "section": "kompakt",
+   "frage": "Kommentierung der Sensitivitätsanalyse für risikorelevantes Geschäft ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    14,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Liqui nach Sensitivitätsanalyse positiv",
+     "text": "K.12 Die Liqui ist auch nach Sensitivitätsanalyse positiv.",
+     "comment": false
+    },
+    {
+     "label": "Liqui nach Sensitivitätsanalyse negativ",
+     "text": "K.12 Die Liqui ist nach Sensitivitätsanalyse negative, eine Kreditvergabe ist aus folgenden Gründen dennoch vertretbar ...\n",
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.13",
+   "section": "kompakt",
+   "frage": "Lebenshaltungskosten/ Ausgabeverhalten/ Privatentnahmen stehen in einem angemessenen Verhältnis zur freien Liquidität / Gehalt",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu - ggf. bitte kommentieren (Art/ Hintergrund nicht berücksichtigter Sondereinkünfte)",
+     "text": "K.13 Lebenshaltungskosten/ Ausgabeverhalten/ Privatentnahmen stehen in einem angemessenen Verhältnis zur freien Liquidität.",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.13 Lebenshaltungskosten/ Ausgabeverhalten/ Privatentnahmen stehen NICHT in einem angemessenen Verhältnis zur freien Liquidität, aber …",
+     "comment": true
+    },
+    {
+     "label": "Nicht relevant (Liqui-Rechnung erstellt)",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "K.14",
+   "section": "kompakt",
+   "frage": "Kommentierung der Sensitivitätsanalyse für risikorelevantes Geschäft ",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    15
+   ],
+   "answers": [
+    {
+     "label": "HHR nach Sensitivitätsanalyse positiv",
+     "text": "K.14 Die HHR ist auch nach Sensitivitätsanalyse positiv.",
+     "comment": false
+    },
+    {
+     "label": "HHR nach Sensitivitätsanalyse negativ",
+     "text": "K.14 Die HHR ist nach Sensitivitätsanalyse negative, eine Kreditvergabe ist aus folgenden Gründen dennoch vertretbar ...\n",
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.15",
+   "section": "kompakt",
+   "frage": "Das Vermögen ist angemessen/ realistisch bewertet.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.15 Das Vermögen ist angemessen/ realistisch bewertet.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.15 Das Vermögen ist NICHT angemessen/ realistisch bewertet, aber …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.16",
+   "section": "kompakt",
+   "frage": "Darstellung des Entschuldungskonzeptes.",
+   "hinweis": "I.d.R.bis Ende aktive Arbeitsphase (67. Lebensjahr); eine Abweichung ist zu begründen. Darstellung in 10 T€. Rückführung Restengagement ist unter Punkt 4.18 zu erläutern/ \"Renten-Liqui\" zu erstellen.\nDie Gesamtschuld umfasst auch Fremdverbindlichkeiten bei anderen Banken.\nAls liquides Vermögen gelten Kontoguthaben (auch Depot) und Rückkaufswerte, aber nicht Entschuldungspotenzial aus Immobilien oder Praxisverkauf. Minimale Nettoschuld 0 (keinen negativen Wert angeben)\n",
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Entschuldung bis zum 67. Lebensjahr möglich",
+     "text": "K.16 Das Entschuldungskonzept sieht wie folgt aus: \nGesamtverschuldung in TEUR [ … ]  ./. bestehendes liquides Vermögen zur Entschuldung in TEUR [ … ] = Nettoschuld in TEUR [ … ] \nNettoschuld in TEUR [ … ] / aktuelle Tilgungsleistung in TEUR [ … ] = Entschuldung nach ## Jahren\nEine Entschuldung ist bis zum 67. Lebensjahr des Kreditnehmers möglich.\nFolgende Punkte sind zudem zu beachten: ...\n",
+     "comment": false
+    },
+    {
+     "label": "Entschuldung bis zum 67. Lebensjahr nicht möglich",
+     "text": "K.16 Das Entschuldungskonzept sieht wie folgt aus: \nGesamtverschuldung in TEUR [ … ]  ./. bestehendes liquides Vermögen zur Entschuldung in TEUR [ … ] = Nettoschuld in TEUR [ … ] \nNettoschuld in TEUR [ … ] / aktuelle Tilgungsleistung in TEUR [ … ] = Entschuldung nach ## Jahren\nEine Entschuldung ist bis zum 67. Lebensjahr des Kreditnehmers NICHT möglich.\nFolgende Punkte sind zudem zu beachten: ...\n",
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.17",
+   "section": "kompakt",
+   "frage": "Standardsicherheiten liegen vor bzw. werden vereinbart.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Neukunde",
+     "text": "K.17 Neukunde: Abtretung Arbeitseinkommen wurde als Sicherheit in diesem Kreditantrag angelegt.",
+     "comment": false
+    },
+    {
+     "label": "Bestandskunde",
+     "text": "K.17 Bestandskunde, daher keine neuen Sicherheiten vorausgesetzt, da die Abtretung Arbeitseinkommen schon vorhanden ist.",
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.18",
+   "section": "kompakt",
+   "frage": "Das Rating wurde geprüft. Es liegen keine Negativmerkmale vor.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.18 Das Interimsrating wurde geprüft und bildet das Risiko sachgerecht ab, es bestehen keine Negativmerkmale.\n",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.18 Das Interimsrating wurde NICHT geprüft.",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.19",
+   "section": "kompakt",
+   "frage": "Es gibt keine Abweichung zur Geschäfts- und Risikostrategie.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.19 Es gibt keine Abweichung zur Geschäfts- und Risikostrategie.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren (Erklärung warum trotzdem attraktiv)",
+     "text": "K.19 Es liegen ABWEICHUNGEN zur Geschäfts- und Risikostrategie vor, aber …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.20",
+   "section": "kompakt",
+   "frage": "Die Kapitaldienstfähigkeit ist gegeben. Die wirtschaftlichen Verhältnisse lassen die Kreditgewährung zu.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.20 Die Kapitaldienstfähigkeit ist gegeben. Die wirtschaftlichen Verhältnisse lassen die Kreditgewährung zu.",
+     "comment": false
+    },
+    {
+     "label": "Trifft eingeschränkt zu - Bitte kommentieren",
+     "text": "K.20 Die Kapitaldienstfähigkeit ist EINGESCHRÄNKT gegeben, da …",
+     "comment": true
+    },
+    {
+     "label": "Trifft nicht zu - Bitte kommentieren",
+     "text": "K.20  Die Kapitaldienstfähigkeit ist NICHT gegeben, da …",
+     "comment": true
+    }
+   ]
+  },
+  {
+   "nr": "K.21",
+   "section": "kompakt",
+   "frage": "Es bestehen keine Auflagen aus dem Vorprotokoll.",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu",
+     "text": "K.21 Es bestehen keine Auflagen aus dem Vorprotokoll.",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu",
+     "text": "K.21 Es bestehen AUFLAGEN aus dem Vorprotokoll, …",
+     "comment": false
+    },
+    {
+     "label": "Bitte prüfen",
+     "text": null,
+     "comment": false
+    }
+   ]
+  },
+  {
+   "nr": "K.22",
+   "section": "kompakt",
+   "frage": "Genehmigung",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Einzelkompetenz",
+     "text": "K.22 Der Antrag wird mit Blick auf die gegebene Kapitaldienstfähigkeit und persönliche Kreditwürdigkeit marktseitig genehmigt.\nVertragsversand an: ",
+     "comment": false
+    },
+    {
+     "label": "Kreditreserve",
+     "text": "K.22 Entscheidung: Genehmigt aus freier Kreditreserve. Die Rahmenbedingungen der Richtlinie \"Kreditreserve (Definition)\" sind eingehalten.",
+     "comment": false
+    },
+    {
+     "label": "Genehmigung Markt (Zweivotenfall) ",
+     "text": "K.15 Entscheidung: Genehmigung Markt (Zweitvotum durch Marktfolge erforderlich).",
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.23",
+   "section": "kompakt",
+   "frage": "ESG – Risiken | Ermittelter ESG-Gesamt Score (RISIKO-Sicht) aus CredaRate",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    14,
+    16
+   ],
+   "answers": [
+    {
+     "label": "ESG-Gesamt-Score (Scoreklasse) aus RISIKO-Sicht",
+     "text": "K.23 ESG: Ermittelter ESG-Gesamt-Score (Risiko-Sicht) aus CredaRate: [bitte zutreffende Scoreklasse angeben ...] \nGesamt-Score: [A-G]\n",
+     "comment": false
+    },
+    {
+     "label": "n/a",
+     "text": null,
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.24",
+   "section": "kompakt",
+   "frage": "ESG – Risiken | Ermittelte ESG-Gesamt-Score (IMPACT-Sicht) aus CredaRate",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    14,
+    16
+   ],
+   "answers": [
+    {
+     "label": "ESG-Gesamt-Score (Scoreklasse) aus IMPACT-Sicht",
+     "text": "K.24 ESG: Ermittelter ESG-Gesamt-Score (Impact-Sicht) aus CredaRate: [bitte zutreffende Scoreklasse angeben ...] \nGesamt-Score: [A-G]\n",
+     "comment": false
+    },
+    {
+     "label": "n/a",
+     "text": null,
+     "comment": false
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  },
+  {
+   "nr": "K.25",
+   "section": "kompakt",
+   "frage": "ESG-Risiken | Das ESG-Scoring bewegt sich nicht im roten Bereich (Scoreklasse nicht F oder G); für den Kunden sind keine hohen ESG.Risiken erkennbar",
+   "hinweis": null,
+   "feedback": null,
+   "variants": [
+    14,
+    16
+   ],
+   "answers": [
+    {
+     "label": "Trifft zu ",
+     "text": "K.25 Das ESG-Scoring bewegt sich nicht im roten Bereich (Scoreklasse nicht F oder G); für den Kunden sind keine hohen ESG-Risiken erkennbar",
+     "comment": false
+    },
+    {
+     "label": "Trifft nicht zu (bitte kommentieren)",
+     "text": "K.25 Das ESG-Scoring bewegt sich im roten Bereich (Scoreklasse F oder G), da …",
+     "comment": true
+    },
+    {
+     "label": "Bitte auswählen",
+     "placeholder": true
+    }
+   ]
+  }
+ ]
+};

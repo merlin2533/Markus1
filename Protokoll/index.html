@@ -14,23 +14,66 @@
       <span class="app-header__sub" id="appSub">Markt einschließlich Finanzierung (Kompakt)</span>
     </div>
     <div class="app-header__actions">
-      <button type="button" id="btnSave"   class="btn">💾 Datensatz speichern</button>
-      <button type="button" id="btnLoad"   class="btn">📂 Datensatz laden</button>
+      <button type="button" id="btnKi"       class="btn btn--ki">🤖 KI-Export</button>
+      <button type="button" id="btnAutoSave" class="btn">🔁 Auto-Speichern</button>
+      <button type="button" id="btnSave"     class="btn">💾 Datensatz speichern</button>
+      <button type="button" id="btnLoad"     class="btn">📂 Datensatz laden</button>
       <input type="file" id="fileLoad" accept="application/json,.json" hidden />
-      <button type="button" id="btnReset"  class="btn btn--ghost">🗑 Zurücksetzen</button>
+      <button type="button" id="btnReset"    class="btn btn--ghost">🗑 Zurücksetzen</button>
     </div>
   </header>
 
+  <!-- ===================== KI-Export-Dialog ===================== -->
+  <div class="modal no-print" id="kiModal" hidden>
+    <div class="modal__backdrop" data-close-ki></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="kiTitle">
+      <div class="modal__head">
+        <h2 id="kiTitle">KI-Export</h2>
+        <span class="modal__scope" id="kiScope"></span>
+        <button type="button" class="modal__close" data-close-ki aria-label="Schließen">✕</button>
+      </div>
+      <div class="ki-tabs">
+        <button type="button" class="ki-tab is-active" data-kitab="fragen">Fragen &amp; Auswahlmöglichkeiten</button>
+        <button type="button" class="ki-tab" data-kitab="prompt">KI-Prompt</button>
+      </div>
+      <div class="ki-panel" data-kipanel="fragen">
+        <p class="ki-desc">Alle Fragen mit den möglichen Antworten in Kurzform – als Grundlage, um der KI
+          den Fall zu schildern. <button type="button" class="btn-copy" id="btnKiCopyFragen">📋 Kopieren</button></p>
+        <textarea id="kiFragen" class="ki-text" readonly spellcheck="false"></textarea>
+      </div>
+      <div class="ki-panel" data-kipanel="prompt" hidden>
+        <p class="ki-desc">Fertiger, strikter Prompt. Setze <b>oben deinen diktierten Falltext</b> ein,
+          danach folgt diese Anweisung. <button type="button" class="btn-copy" id="btnKiCopyPrompt">📋 Kopieren</button></p>
+        <textarea id="kiPrompt" class="ki-text" readonly spellcheck="false"></textarea>
+      </div>
+    </div>
+  </div>
+
   <!-- ===================== Navigation ===================== -->
   <nav class="tabs no-print" id="tabs"></nav>
+  <div class="kbd-help no-print" id="kbdHelp">
+    ⌨ <b>Alt + → / ←</b> Reiter wechseln ·
+    <b>Alt + ↓ / ↑</b> Frage wechseln ·
+    <b>Enter</b> weiter zur nächsten Frage ·
+    <b>Alt + C</b> Reiter kopieren ·
+    <b>Alt + P</b> Drucken/PDF
+  </div>
+  <div class="progress no-print" id="progressBar" hidden>
+    <div class="progress__track"><div class="progress__fill" id="progressFill"></div></div>
+    <span class="progress__label" id="progressLabel"></span>
+  </div>
 
   <main class="layout">
     <!-- ===================== Eingabe ===================== -->
     <section class="panel no-print" id="inputPanel">
 
       <!-- Cover / Stammauswahl -->
-      <div class="card" id="coverCard">
-        <h2>Auswahl &amp; Stammdaten</h2>
+      <div class="card collapsible" id="coverCard">
+        <button type="button" class="card__toggle" data-collapse="cover">
+          <span>Auswahl &amp; Stammdaten</span>
+          <span class="chev">▾</span>
+        </button>
+        <div class="card__body">
         <div class="grid">
           <label class="field">
             <span>Neu-/Bestandskunde</span>
@@ -56,11 +99,44 @@
           <label class="field"><span>Stammnummer</span><input type="text" id="hdrStammnummer" /></label>
           <label class="field"><span>Datum</span><input type="text" id="hdrDatum" placeholder="TT.MM.JJJJ" /></label>
           <label class="field"><span>Berater (KB)</span><input type="text" id="hdrBerater" /></label>
+          <label class="field"><span>Bearbeiter</span><input type="text" id="hdrBearbeiter" /></label>
           <label class="field"><span>Obligo / Volumen</span><input type="text" id="hdrObligo" /></label>
+          <label class="field field--wide"><span>Bemerkung</span><input type="text" id="hdrBemerkung" /></label>
+        </div>
+        </div>
+      </div>
+
+      <!-- Textbausteine-Bibliothek -->
+      <div class="card collapsible is-collapsed" id="bausteineCard">
+        <button type="button" class="card__toggle" data-collapse="bausteine">
+          <span>Textbausteine <span class="hint-inline">– Standard-Begründungen je Frage</span></span>
+          <span class="bs-status" id="bsStatus">keine Bausteine geladen</span>
+          <span class="chev">▾</span>
+        </button>
+        <div class="card__body">
+        <p class="bs-info">
+          Vorhandene ausgefüllte Datensätze hochladen, um daraus eine Bausteine-Datei zu
+          erzeugen. Geladene Bausteine erscheinen über dem jeweiligen Begründungsfeld und
+          können per Klick eingefügt werden. Lege die Datei als <code>bausteine.json</code>
+          im Ordner ab, damit sie automatisch geladen wird.
+        </p>
+        <div class="bs-actions">
+          <button type="button" id="btnBsGen"  class="btn btn--alt">⚙️ Aus Datensätzen generieren</button>
+          <button type="button" id="btnBsLoad" class="btn btn--alt">📥 Bausteine laden</button>
+          <button type="button" id="btnBsSave" class="btn btn--alt">💾 Bausteine speichern</button>
+          <button type="button" id="btnBsClear" class="btn btn--ghost btn--alt">✖ Leeren</button>
+          <input type="file" id="fileBsGen"  accept="application/json,.json" multiple hidden />
+          <input type="file" id="fileBsLoad" accept="application/json,.json" hidden />
+        </div>
         </div>
       </div>
 
       <!-- Fragen -->
+      <div class="filter-bar no-print" id="filterBar">
+        <input type="search" id="qSearch" class="filter-search" placeholder="🔍 Fragen durchsuchen (Nummer oder Text) …" />
+        <label class="chk"><input type="checkbox" id="qOnlyOpen" /> nur offene</label>
+        <span class="filter-info" id="filterInfo"></span>
+      </div>
       <div id="questionContainer"></div>
     </section>
 
@@ -68,19 +144,19 @@
     <section class="panel" id="outputPanel">
       <div class="card">
         <div class="output-toolbar no-print">
-          <h2>Protokoll-Ausgabe</h2>
+          <h2>Protokoll-Ausgabe <span class="hint-inline">– reiterweise kopierbar</span></h2>
           <div class="output-toolbar__actions">
-            <label class="chk"><input type="checkbox" id="chkLiveEdit" /> Text manuell bearbeitbar</label>
+            <label class="chk"><input type="checkbox" id="chkLiveEdit" /> bearbeitbar</label>
             <button type="button" id="btnRebuild" class="btn btn--ghost">↻ Neu aufbauen</button>
-            <button type="button" id="btnCopy"  class="btn">📋 Kopieren</button>
+            <button type="button" id="btnCopyAll" class="btn">📋 Alles kopieren</button>
             <button type="button" id="btnPrint" class="btn btn--primary">🖨 Drucken / PDF</button>
           </div>
         </div>
 
         <div id="validationHint" class="validation-hint no-print" hidden></div>
 
-        <!-- Editierbare Rohausgabe -->
-        <textarea id="outputText" class="output-text no-print" spellcheck="false" readonly></textarea>
+        <!-- Reiterweise Ausgabe-Abschnitte -->
+        <div id="outputSections" class="out-sections no-print"></div>
       </div>
 
       <!-- Druck-/PDF-Ansicht -->
@@ -90,6 +166,10 @@
 
   <div id="toast" class="toast" hidden></div>
 
+  <!-- Daten als eingebettete Skripte: funktioniert auch lokal per Doppelklick (file://) ohne Webserver -->
+  <script src="data/protocol-data.js"></script>
+  <script src="config.js"></script>
+  <script src="bausteine.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

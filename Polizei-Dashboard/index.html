@@ -35,11 +35,15 @@
       <nav id="sidebarNav" class="nav"></nav>
       <div class="sidebar-foot" id="dataStatus">Lade Daten …</div>
     </aside>
+    <div id="navBackdrop" class="nav-backdrop no-print"></div>
 
     <!-- Hauptbereich -->
     <div class="main">
       <header class="topbar no-print">
-        <h1 id="currentTitle">Cockpit / Lagebild</h1>
+        <div class="topbar-left">
+          <button id="navToggle" class="btn btn-ghost nav-toggle" type="button" aria-label="Menü ein-/ausblenden" title="Menü">☰</button>
+          <h1 id="currentTitle">Cockpit / Lagebild</h1>
+        </div>
         <div class="topbar-actions">
           <label class="btn btn-ghost" title="Bereichs-Excel laden (Dateiname mit personal/finanzen/fuhrpark/einsatz)">
             Excel-Import

@@ -54,7 +54,8 @@
         '<p class="rep-stand">Berichtsstand: <strong>' + stand + '</strong> · erstellt am ' +
           new Date().toLocaleDateString('de-DE') + '</p>' +
         '<div class="rep-actions no-print">' +
-          '<button class="btn" id="repPrint">🖨️ Drucken / als PDF speichern</button>' +
+          '<button class="btn btn-primary" id="repPdf">⬇️ Als PDF herunterladen</button>' +
+          '<button class="btn" id="repPrint">🖨️ Drucken</button>' +
           '<span class="hint">Bewertungstexte werden lokal gespeichert.</span></div>' +
       '</div>' +
       '<section class="rep-block print-keep"><h3>Executive Summary</h3>' +
@@ -68,12 +69,16 @@
         }).join('') + '</ul>' : '') +
       '</section>' +
       POL.BEREICHE.map(bereichBlock).join('') +
+      budgetBlock() +
       '<section class="rep-block print-keep"><h3>📉 Personalrisiko</h3>' +
         '<p>' + personalrisikoText() + '</p></section>' +
       '<p class="rep-foot">Demodaten – nicht zur dienstlichen Verwendung. Erstellt mit dem PTLS POL Dashboard.</p>';
 
     POL._afterRender = function () {
       document.getElementById('repPrint').addEventListener('click', function () { window.print(); });
+      document.getElementById('repPdf').addEventListener('click', function () {
+        POL.pdf(wrap, 'PTLS-POL_Management-Bericht_' + POL.data.meta.stand + '.pdf', 'portrait');
+      });
       wrap.querySelectorAll('textarea[data-bereich]').forEach(function (ta) {
         ta.addEventListener('input', function () {
           try { localStorage.setItem('pol_bericht_' + ta.getAttribute('data-bereich'), ta.value); } catch (e) {}
@@ -82,6 +87,38 @@
     };
     return wrap;
   };
+
+  function budgetBlock() {
+    var rows = POL.data.bereiche.finanzen.budget || [];
+    if (!rows.length) return '';
+    var jahr = (POL.data.meta.stand || '').split('-')[0];
+    var agg = {}, order = [], ges = { Plan: 0, Ist: 0, Abgerechnet: 0 };
+    rows.forEach(function (r) {
+      if (String(r.Monat).indexOf(jahr) !== 0) return;
+      if (!agg[r.Referat]) { agg[r.Referat] = { Plan: 0, Ist: 0, Abgerechnet: 0 }; order.push(r.Referat); }
+      agg[r.Referat].Plan += r.Plan; agg[r.Referat].Ist += r.Ist; agg[r.Referat].Abgerechnet += r.Abgerechnet;
+      ges.Plan += r.Plan; ges.Ist += r.Ist; ges.Abgerechnet += r.Abgerechnet;
+    });
+    var body = order.map(function (k) {
+      var o = agg[k], verf = o.Plan - o.Ist, aus = o.Plan ? (o.Ist / o.Plan) * 100 : 0;
+      return '<tr><td>' + POL.ampelDot(POL.budgetAmpel(aus)) + ' ' + k + '</td>' +
+        '<td class="num">' + POL.fmt.eur(o.Plan) + '</td><td class="num">' + POL.fmt.eur(o.Ist) + '</td>' +
+        '<td class="num">' + POL.fmt.eur(o.Abgerechnet) + '</td>' +
+        '<td class="num ' + (verf < 0 ? 'bad' : 'good') + '">' + POL.fmt.eur(verf) + '</td>' +
+        '<td class="num">' + POL.fmt.dec(aus, 1) + ' %</td></tr>';
+    }).join('');
+    var verfG = ges.Plan - ges.Ist, ausG = ges.Plan ? (ges.Ist / ges.Plan) * 100 : 0;
+    return '<section class="rep-block print-keep"><h3>💰 Budget nach Referat (' + jahr + ', kumuliert)</h3>' +
+      '<table class="rep-table"><thead><tr><th>Referat</th><th class="num">Plan</th><th class="num">Ist</th>' +
+      '<th class="num">Abgerechnet</th><th class="num">Verfügbar</th><th class="num">Ausschöpf.</th></tr></thead>' +
+      '<tbody>' + body +
+      '<tr class="rep-sum"><td><strong>Gesamt</strong></td><td class="num"><strong>' + POL.fmt.eur(ges.Plan) +
+      '</strong></td><td class="num"><strong>' + POL.fmt.eur(ges.Ist) + '</strong></td>' +
+      '<td class="num"><strong>' + POL.fmt.eur(ges.Abgerechnet) + '</strong></td>' +
+      '<td class="num ' + (verfG < 0 ? 'bad' : 'good') + '"><strong>' + POL.fmt.eur(verfG) + '</strong></td>' +
+      '<td class="num"><strong>' + POL.fmt.dec(ausG, 1) + ' %</strong></td></tr>' +
+      '</tbody></table></section>';
+  }
 
   function personalrisikoText() {
     var monat = POL.data.meta.stand;

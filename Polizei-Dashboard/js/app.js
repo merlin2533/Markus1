@@ -36,6 +36,7 @@
   }
 
   function boot() {
+    POL.loadSettings();
     POL.loadData().then(function () {
       setStatus();
       initImport();

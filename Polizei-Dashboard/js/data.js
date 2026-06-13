@@ -10,7 +10,9 @@
       var s = wb.Sheets[name];
       return s ? XLSX.utils.sheet_to_json(s, { defval: null }) : [];
     }
-    return { ziele: sheet('Ziele'), zeitreihe: sheet('Zeitreihe'), fakten: sheet('Fakten') };
+    var out = { ziele: sheet('Ziele'), zeitreihe: sheet('Zeitreihe'), fakten: sheet('Fakten') };
+    if (wb.Sheets['Budget']) out.budget = sheet('Budget'); // nur Finanzen
+    return out;
   }
 
   function loadXlsx(name) {
@@ -61,6 +63,20 @@
     }
     return Promise.reject(new Error('Keine Daten verfügbar (' + grund + ')'));
   }
+
+  // Exportiert die aktuell geladenen Daten eines Bereichs als Excel (Round-Trip:
+  // herunterladen -> bearbeiten -> wieder importieren). Funktioniert auch offline.
+  POL.exportBereich = function (bereich) {
+    if (typeof XLSX === 'undefined') { alert('SheetJS nicht verfügbar.'); return; }
+    var b = POL.data.bereiche[bereich];
+    if (!b) return;
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(b.ziele || []), 'Ziele');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(b.zeitreihe || []), 'Zeitreihe');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(b.fakten || []), 'Fakten');
+    if (b.budget) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(b.budget), 'Budget');
+    XLSX.writeFile(wb, bereich + '_' + (POL.data.meta.stand || '') + '.xlsx');
+  };
 
   // Optionaler manueller Import einer Bereichs-Excel über den Topbar-Button.
   POL.importFile = function (bereich, file, done) {

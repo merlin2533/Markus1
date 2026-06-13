@@ -74,8 +74,24 @@
     render(hash);
   };
 
+  // Mobile: Sidebar per ☰-Button ein-/ausblenden
+  POL.initSidebar = function () {
+    var sidebar = document.querySelector('.sidebar');
+    var toggle = document.getElementById('navToggle');
+    var backdrop = document.getElementById('navBackdrop');
+    if (!sidebar || !toggle) return;
+    function open() { sidebar.classList.add('open'); if (backdrop) backdrop.classList.add('show'); }
+    function close() { sidebar.classList.remove('open'); if (backdrop) backdrop.classList.remove('show'); }
+    toggle.addEventListener('click', function () {
+      sidebar.classList.contains('open') ? close() : open();
+    });
+    if (backdrop) backdrop.addEventListener('click', close);
+    sidebar.addEventListener('click', function (e) { if (e.target.closest('.nav-item')) close(); });
+  };
+
   POL.initRouter = function () {
     POL.buildNav();
+    POL.initSidebar();
     window.addEventListener('hashchange', POL.route);
     POL.route();
   };

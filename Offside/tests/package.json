@@ -1,0 +1,12 @@
+{
+  "name": "offside-tests",
+  "private": true,
+  "type": "module",
+  "description": "End-to-End Smoke-Tests für die Offside Kommunikationsplan-App",
+  "scripts": {
+    "test": "node smoke.test.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  }
+}

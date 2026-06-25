@@ -22,6 +22,9 @@ const ExcelIO = (() => {
       Hierarchie: e.hierarchie,
       Frequenz: e.frequenz,
       Kanal: e.kanal,
+      Status: (STATUS[e.status] || {}).label || '',
+      StatusKey: e.status || 'offen',
+      Termin: e.termin || '',
       Teilnehmer: (e.teilnehmer || []).join(', '),
       Notiz: e.notiz,
       X: Math.round(e.x), Y: Math.round(e.y)
@@ -94,6 +97,8 @@ const ExcelIO = (() => {
           hierarchie: r.Hierarchie || '',
           frequenz: r.Frequenz || '',
           kanal: r.Kanal || '',
+          status: statusKey(r.StatusKey || r.Status),
+          termin: terminStr(r.Termin),
           teilnehmer: (r.Teilnehmer || '').split(',').map(s => s.trim()).filter(Boolean),
           notiz: r.Notiz || '',
           x: num(r.X, 100), y: num(r.Y, 100)
@@ -144,6 +149,21 @@ const ExcelIO = (() => {
     return found ? found.key : 'informieren';
   }
   function num(v, d) { const n = parseFloat(v); return isFinite(n) ? n : d; }
+  function statusKey(v) {
+    if (!v) return 'offen';
+    if (STATUS[v]) return v;
+    const f = Object.keys(STATUS).find(k => STATUS[k].label.toLowerCase() === String(v).toLowerCase());
+    return f || 'offen';
+  }
+  function terminStr(v) {
+    if (v === '' || v == null) return '';
+    // Excel-Datumsserien in ISO-Datum wandeln
+    if (typeof v === 'number' && XLSX.SSF) {
+      const dt = XLSX.SSF.parse_date_code(v);
+      if (dt) return `${dt.y}-${String(dt.m).padStart(2, '0')}-${String(dt.d).padStart(2, '0')}`;
+    }
+    return String(v).slice(0, 10);
+  }
   function demoSkeleton() {
     return { meta: {}, elemente: [], verbindungen: [], teilnehmer: [], hierarchie: [] };
   }

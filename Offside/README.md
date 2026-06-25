@@ -24,10 +24,22 @@ einzeln gespeichert. So können mehrere Kommunikationspläne parallel gepflegt w
   Pfeile zeigen den Kommunikationsfluss, **Labels** je Verbindung editierbar
 - **Auswählen** per Klick → Bearbeitung im Detail-Panel rechts; **Esc** hebt auf
 - **Zoom** (`＋ / − / Fit`, Strg+Mausrad) und **Undo/Redo** (`↶ ↷`, Strg+Z / Strg+Y)
+- **Element duplizieren** (Strg+D), **Pfeiltasten** verschieben die Auswahl,
+  **Snap-to-Grid** beim Loslassen, **Hover-Tooltip** mit Volltext
+- **Verbindungen**: Label editierbar, **Richtung umkehren** (⇄), gebogene Linien
 - **Auto-Layout / Swimlanes**: Karten automatisch in Bahnen nach **Hierarchie**
   oder **Person/Thema** anordnen
-- **Suchen & Filtern** nach Text, Aktionsart, Medium, Hierarchie-Ebene und
-  Person/Thema (nicht passende Karten werden ausgegraut)
+- **Suchen & Filtern** nach Text, Aktionsart, Medium, **Status**, Hierarchie-Ebene
+  und Person/Thema (nicht passende Karten werden ausgegraut)
+
+### Status & Termine
+Jedes Element hat einen **Status** (Offen/In Arbeit/Erledigt/Kritisch, farbiger
+Punkt auf der Karte) und ein **Termin/Frist**-Datum. Eine eigene **Timeline**-
+Ansicht listet alle Kommunikationen chronologisch.
+
+### Datensicherung (alle Pläne)
+**💾 Backup** sichert den **gesamten Arbeitsbereich** (alle Pläne) als JSON-Datei,
+**♻ Restore** stellt ihn wieder her – Schutz vor Verlust des Browser-Speichers.
 
 ### Zuordnung pro Element
 Jedes Element ist genau **einer Person oder einem Themengebiet** zugeordnet
@@ -104,7 +116,17 @@ Offside/
     ├── excel.js        # Excel Export/Import
     ├── image.js        # PNG-Export
     └── app.js          # UI-Steuerung (Pläne, Pflege, Auswertung, Filter)
+└── tests/
+    ├── smoke.test.mjs  # End-to-End-Test (Playwright/Chromium)
+    └── check-env.sh    # Umgebungsprüfung (optional als SessionStart-Hook)
 ```
+
+## Tests
+```bash
+node Offside/tests/smoke.test.mjs   # 18 End-to-End-Checks
+```
+In der Web-Umgebung sind Playwright/Chromium vorhanden. Lokal:
+`cd Offside/tests && npm install`.
 
 ## DEMO-Daten
 Fiktives „Polizeipräsidium München" mit 9 Kommunikations-Elementen, 8

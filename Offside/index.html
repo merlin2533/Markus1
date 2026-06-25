@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offside · Kommunikationsplan</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS für Excel-Import/-Export (lokal eingebunden → offline lauffähig) -->
+  <script src="vendor/xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🛡️</span>
+      <div>
+        <h1>Offside</h1>
+        <span class="tagline">Kommunikationsplan · Behörde</span>
+      </div>
+    </div>
+    <div class="title-block">
+      <div id="plan-titel" class="plan-titel">Kommunikationsplan</div>
+      <div id="plan-sub" class="plan-sub"></div>
+    </div>
+    <span class="demo-flag">DEMO</span>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn primary" id="btn-add">＋ Element</button>
+    <button class="btn" id="btn-connect">🔗 Verbinden</button>
+    <span class="sep"></span>
+    <button class="btn" id="btn-export-xlsx">⬇ Excel</button>
+    <button class="btn" id="btn-export-png">🖼 Bild (PNG)</button>
+    <button class="btn" id="btn-import">⬆ Excel importieren</button>
+    <input type="file" id="file-import" accept=".xlsx,.xls" hidden>
+    <span class="sep"></span>
+    <button class="btn ghost" id="btn-reset">↺ DEMO zurücksetzen</button>
+    <div class="legende" id="legende"></div>
+  </div>
+
+  <main class="layout">
+    <section class="canvas-wrap">
+      <div class="canvas-scroll">
+        <svg id="chart" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="canvas-hint">Karten verschieben: ziehen · auswählen: klicken · verbinden: Modus „Verbinden" → zwei Karten klicken</div>
+    </section>
+
+    <aside class="sidebar">
+      <nav class="tabs">
+        <button class="tab active" data-tab="detail">Detail</button>
+        <button class="tab" data-tab="uebersicht">Übersicht</button>
+        <button class="tab" data-tab="teilnehmer">Teilnehmer</button>
+        <button class="tab" data-tab="hierarchie">Hierarchie</button>
+      </nav>
+      <div id="panel" class="panel"></div>
+    </aside>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/excel.js"></script>
+  <script src="js/image.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

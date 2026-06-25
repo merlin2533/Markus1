@@ -1,0 +1,151 @@
+/* =============================================================
+   Offside · Styles  ·  Polizei-Blau Farbwelt
+   ============================================================= */
+:root {
+  --blau-900: #0a2c52;
+  --blau-800: #0f3d73;
+  --blau-700: #1e5aa8;
+  --blau-500: #2f8fd6;
+  --blau-100: #e7f0fa;
+  --grau-bg:  #f4f7fb;
+  --grau-100: #eef2f7;
+  --grau-300: #c7d6ea;
+  --grau-500: #6a7c93;
+  --text:     #15263b;
+  --rot:      #c0392b;
+  --gruen:    #1e8a5a;
+  --shadow:   0 2px 8px rgba(15, 61, 115, .12);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--text);
+  background: var(--grau-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex; align-items: center; gap: 24px;
+  background: linear-gradient(90deg, var(--blau-900), var(--blau-700));
+  color: #fff; padding: 10px 20px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo { font-size: 28px; }
+.brand h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
+.tagline { font-size: 12px; opacity: .8; }
+.title-block { margin-left: auto; text-align: right; }
+.plan-titel { font-size: 15px; font-weight: 600; }
+.plan-sub { font-size: 12px; opacity: .82; }
+.demo-flag {
+  background: var(--rot); color: #fff; font-weight: 800; letter-spacing: 2px;
+  padding: 6px 14px; border-radius: 6px; font-size: 13px;
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Toolbar ---------- */
+.toolbar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px 16px; background: #fff; border-bottom: 1px solid var(--grau-300);
+}
+.btn {
+  border: 1px solid var(--grau-300); background: #fff; color: var(--blau-800);
+  padding: 7px 13px; border-radius: 7px; cursor: pointer; font-size: 13px;
+  font-weight: 600; transition: .15s;
+}
+.btn:hover { background: var(--blau-100); }
+.btn.primary { background: var(--blau-700); color: #fff; border-color: var(--blau-700); }
+.btn.primary:hover { background: var(--blau-800); }
+.btn.ghost { color: var(--grau-500); }
+.btn.danger { background: var(--rot); color: #fff; border-color: var(--rot); width: 100%; }
+.btn.active { background: var(--blau-500); color: #fff; border-color: var(--blau-500); }
+.sep { width: 1px; height: 24px; background: var(--grau-300); margin: 0 4px; }
+.legende { display: flex; gap: 12px; flex-wrap: wrap; margin-left: auto; align-items: center; }
+.leg-item { font-size: 11px; color: var(--grau-500); display: flex; align-items: center; gap: 4px; cursor: help; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* ---------- Layout ---------- */
+.layout { flex: 1; display: flex; min-height: 0; }
+.canvas-wrap { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.canvas-scroll {
+  flex: 1; overflow: auto; background:
+    radial-gradient(circle, #d8e3f0 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--grau-bg);
+}
+#chart { display: block; }
+.canvas-hint {
+  padding: 6px 14px; font-size: 11px; color: var(--grau-500);
+  background: #fff; border-top: 1px solid var(--grau-300);
+}
+
+/* ---------- Chart-Knoten ---------- */
+.node { cursor: grab; }
+.node:active { cursor: grabbing; }
+.node-bg { fill: #fff; stroke: var(--grau-300); stroke-width: 1.5; filter: drop-shadow(0 2px 4px rgba(15,61,115,.10)); }
+.node.selected .node-bg { stroke: var(--blau-700); stroke-width: 2.5; }
+.node.connect-from .node-bg { stroke: var(--blau-500); stroke-width: 3; stroke-dasharray: 5 3; }
+.node-title { font-size: 13px; font-weight: 700; fill: var(--text); }
+.node-sub { font-size: 12px; font-weight: 600; fill: var(--blau-700); }
+.node-meta { font-size: 10px; fill: var(--grau-500); }
+.node-icon { font-size: 14px; text-anchor: middle; }
+.badge-text { font-size: 10px; font-weight: 700; fill: #fff; text-anchor: middle; }
+.chip-text { font-size: 10px; font-weight: 600; text-anchor: middle; }
+.edge { fill: none; stroke: #7d97b5; stroke-width: 2; }
+.edge-label { font-size: 11px; font-weight: 600; fill: #445; text-anchor: middle; }
+svg.connect-mode .node { cursor: crosshair; }
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: 380px; background: #fff; border-left: 1px solid var(--grau-300);
+  display: flex; flex-direction: column; min-height: 0;
+}
+.tabs { display: flex; border-bottom: 1px solid var(--grau-300); }
+.tab {
+  flex: 1; border: none; background: var(--grau-100); padding: 10px 6px;
+  cursor: pointer; font-size: 12px; font-weight: 600; color: var(--grau-500);
+  border-bottom: 3px solid transparent;
+}
+.tab.active { background: #fff; color: var(--blau-800); border-bottom-color: var(--blau-700); }
+.panel { flex: 1; overflow: auto; padding: 16px; }
+
+/* ---------- Formulare ---------- */
+.form label, .add-form label { display: block; font-size: 12px; font-weight: 600; color: var(--blau-800); margin-bottom: 12px; }
+.form input, .form select, .form textarea,
+.add-form input, .add-form select {
+  width: 100%; margin-top: 4px; padding: 7px 9px; border: 1px solid var(--grau-300);
+  border-radius: 6px; font-size: 13px; font-family: inherit; color: var(--text);
+}
+.form select[multiple] { padding: 4px; }
+.row { display: flex; gap: 10px; }
+.row > * { flex: 1; }
+.aktion-desc { font-size: 11px; color: var(--grau-500); margin: -6px 0 14px; line-height: 1.4; }
+.actions { margin-top: 16px; }
+.empty { text-align: center; color: var(--grau-500); padding: 40px 10px; }
+.empty .hint { font-size: 12px; }
+.hint { font-size: 12px; color: var(--grau-500); }
+
+.verb-list { border-top: 1px solid var(--grau-100); margin-top: 12px; padding-top: 10px; }
+.verb-list h4, .add-form h4 { margin: 0 0 8px; font-size: 13px; color: var(--blau-800); }
+.verb-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 4px 0; }
+.mini { border: none; background: var(--grau-100); color: var(--rot); border-radius: 4px; cursor: pointer; padding: 2px 7px; font-weight: 700; }
+.mini:hover { background: #fde3e0; }
+
+/* ---------- Tabellen (Pflege & Übersicht) ---------- */
+.manage h3 { margin: 0 0 4px; color: var(--blau-800); font-size: 16px; }
+.tbl { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+.tbl th { text-align: left; color: var(--grau-500); border-bottom: 2px solid var(--grau-300); padding: 6px 4px; }
+.tbl td { border-bottom: 1px solid var(--grau-100); padding: 6px 4px; }
+.tbl.small td { cursor: pointer; }
+.tbl.small tr:hover td { background: var(--blau-100); }
+.add-form { background: var(--grau-100); border-radius: 8px; padding: 12px; margin-top: 16px; }
+.add-form .row { margin-bottom: 10px; }
+.add-form input, .add-form select { margin-bottom: 10px; }
+
+@media (max-width: 900px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: auto; max-height: 45vh; }
+}

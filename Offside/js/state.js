@@ -230,6 +230,20 @@ const State = (() => {
       notify();
     },
 
+    /* ---- Gesamt-Backup (ALLE Pläne) ---- */
+    exportWorkspace() { return clone(store); },
+    importWorkspace(obj) {
+      const migrated = migrate(obj);
+      if (!migrated || !migrated.plaene || !Object.keys(migrated.plaene).length) {
+        throw new Error('Datei enthält keine gültigen Pläne.');
+      }
+      store = migrated;
+      ensureValid();
+      selectedId = null;
+      resetHistory();
+      notify();
+    },
+
     /* ---- Undo/Redo ---- */
     undo, redo,
     canUndo() { return undoStack.length > 0; },
@@ -247,6 +261,19 @@ const State = (() => {
     updateElement(id, patch) {
       const el = plan().elemente.find(e => e.id === id);
       if (el) { pushHistory(); Object.assign(el, patch); notify(); }
+    },
+    duplicateElement(id) {
+      const el = plan().elemente.find(e => e.id === id);
+      if (!el) return;
+      pushHistory();
+      const copy = clone(el);
+      copy.id = nextId('E', plan().elemente);
+      copy.titel = el.titel + ' (Kopie)';
+      copy.x = (el.x || 0) + 30; copy.y = (el.y || 0) + 30;
+      plan().elemente.push(copy);
+      selectedId = copy.id;
+      notify();
+      return copy.id;
     },
     moveElement(id, x, y) {
       const el = plan().elemente.find(e => e.id === id);

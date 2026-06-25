@@ -225,10 +225,38 @@ const KANAELE = Object.keys(MEDIEN);
 
 function medium(name) { return MEDIEN[name] || { icon: '🔗', farbe: '#5a7184' }; }
 
+/* ----------------------------------------------------------------
+   STATUS pro Element (Bearbeitungsstand der Kommunikation)
+   ---------------------------------------------------------------- */
+const STATUS = {
+  'offen':     { label: 'Offen',     farbe: '#9aa7b8' },
+  'inArbeit':  { label: 'In Arbeit', farbe: '#d98c1f' },
+  'erledigt':  { label: 'Erledigt',  farbe: '#1e8a5a' },
+  'kritisch':  { label: 'Kritisch',  farbe: '#c0392b' }
+};
+function statusInfo(key) { return STATUS[key] || STATUS['offen']; }
+
+/* DEMO-Stände/Termine den Beispiel-Elementen zuordnen */
+const DEMO_STATUS = {
+  E01: { status: 'erledigt', termin: '2026-06-25' },
+  E02: { status: 'inArbeit', termin: '2026-06-26' },
+  E03: { status: 'offen',    termin: '2026-06-28' },
+  E04: { status: 'offen',    termin: '2026-06-29' },
+  E05: { status: 'inArbeit', termin: '2026-06-27' },
+  E06: { status: 'offen',    termin: '2026-06-30' },
+  E07: { status: 'kritisch', termin: '2026-06-25' },
+  E08: { status: 'inArbeit', termin: '2026-06-26' },
+  E09: { status: 'offen',    termin: '2026-07-01' }
+};
+
 function demoDaten() {
+  const elemente = JSON.parse(JSON.stringify(DEMO_ELEMENTE)).map(e => {
+    const s = DEMO_STATUS[e.id] || { status: 'offen', termin: '' };
+    return Object.assign({ status: s.status, termin: s.termin }, e, s);
+  });
   return {
     meta:          JSON.parse(JSON.stringify(DEMO_META)),
-    elemente:      JSON.parse(JSON.stringify(DEMO_ELEMENTE)),
+    elemente,
     verbindungen:  JSON.parse(JSON.stringify(DEMO_VERBINDUNGEN)),
     teilnehmer:    JSON.parse(JSON.stringify(DEMO_TEILNEHMER)),
     hierarchie:    JSON.parse(JSON.stringify(DEMO_HIERARCHIE))

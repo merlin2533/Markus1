@@ -21,8 +21,10 @@ const Chart = (() => {
   let zoom = 1;
   let baseW = 1000, baseH = 600;
   let lanes = [];         // [{label, y, h}] aus Auto-Layout
-  let filter = { text: '', aktion: '', kanal: '', hierarchie: '', person: '' };
+  let filter = { text: '', aktion: '', kanal: '', hierarchie: '', person: '', status: '' };
   let lastSig = null;     // Struktur-Signatur für Render-Optimierung
+  let currentPlanId = null;
+  const GRID = 10;        // Snap-to-Grid Schrittweite
 
   function init() {
     svg = document.getElementById('chart');
@@ -37,7 +39,14 @@ const Chart = (() => {
     document.getElementById('chart-scroll').addEventListener('wheel', onWheel, { passive: false });
     // Tastatur
     window.addEventListener('keydown', onKey);
-    State.onChange(() => { lanes = lanesValidForPlan() ? lanes : []; render(true); });
+    svg.setAttribute('role', 'application');
+    svg.setAttribute('aria-label', 'Kommunikationsplan – interaktives Diagramm');
+    currentPlanId = State.aktivId();
+    State.onChange(() => {
+      const id = State.aktivId();
+      if (id !== currentPlanId) { currentPlanId = id; lanes = []; } // Bahnen beim Plan-Wechsel zurücksetzen
+      render(true);
+    });
     render(true);
   }
 
@@ -52,7 +61,7 @@ const Chart = (() => {
   }
   function isConnectMode() { return connectMode; }
 
-  function setFilter(f) { filter = Object.assign({ text: '', aktion: '', kanal: '', hierarchie: '', person: '' }, f); render(true); }
+  function setFilter(f) { filter = Object.assign({ text: '', aktion: '', kanal: '', hierarchie: '', person: '', status: '' }, f); render(true); }
 
   /* ---------- Zoom ---------- */
   function applyZoom() {
@@ -117,6 +126,7 @@ const Chart = (() => {
     const f = filter;
     if (f.aktion && e.aktion !== f.aktion) return false;
     if (f.kanal && e.kanal !== f.kanal) return false;
+    if (f.status && (e.status || 'offen') !== f.status) return false;
     if (f.hierarchie && e.hierarchie !== f.hierarchie) return false;
     if (f.person && e.zuordnung !== f.person && !(e.teilnehmer || []).includes(f.person)) return false;
     if (f.text) {
@@ -125,13 +135,13 @@ const Chart = (() => {
     }
     return true;
   }
-  function filterActive() { return !!(filter.text || filter.aktion || filter.kanal || filter.hierarchie || filter.person); }
+  function filterActive() { return !!(filter.text || filter.aktion || filter.kanal || filter.hierarchie || filter.person || filter.status); }
 
   /* ---------- Render ---------- */
   function signature() {
     const d = State.get();
     return JSON.stringify({
-      e: d.elemente.map(e => [e.id, Math.round(e.x), Math.round(e.y), e.aktion, e.titel, e.zuordnung, e.zuordnungTyp, e.hierarchie, e.frequenz, e.kanal]),
+      e: d.elemente.map(e => [e.id, Math.round(e.x), Math.round(e.y), e.aktion, e.titel, e.zuordnung, e.zuordnungTyp, e.hierarchie, e.frequenz, e.kanal, e.status, e.termin]),
       v: d.verbindungen.map(v => [v.id, v.von, v.bis, v.label]),
       lanes, connectFrom, connectMode
     });
@@ -207,10 +217,17 @@ const Chart = (() => {
     if (!a || !b) return;
     const x1 = a.x + NODE_W / 2, y1 = a.y + NODE_H / 2;
     const x2 = b.x + NODE_W / 2, y2 = b.y + NODE_H / 2;
-    const [ex, ey] = edgePoint(x1, y1, x2, y2, b);
-    layerEdges.appendChild(el('path', { d: `M${x1},${y1} L${ex},${ey}`, class: 'edge', 'marker-end': 'url(#arrow)' }));
+    const [sx, sy] = edgePoint(x2, y2, x1, y1, a); // Startpunkt am Quell-Rand
+    const [ex, ey] = edgePoint(x1, y1, x2, y2, b); // Endpunkt am Ziel-Rand
+    // leichte Kurve (Bezier) – Gegenrichtung wird versetzt, damit Pfeile sich nicht überlagern
+    const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+    const dx = ex - sx, dy = ey - sy;
+    const len = Math.hypot(dx, dy) || 1;
+    const off = Math.min(40, len * 0.12);
+    const cx = mx + (-dy / len) * off, cy = my + (dx / len) * off;
+    layerEdges.appendChild(el('path', { d: `M${sx},${sy} Q${cx},${cy} ${ex},${ey}`, class: 'edge', 'marker-end': 'url(#arrow)' }));
     if (v.label) {
-      const t = el('text', { x: (x1 + ex) / 2, y: (y1 + ey) / 2 - 6, class: 'edge-label' });
+      const t = el('text', { x: cx, y: cy - 4, class: 'edge-label' });
       t.textContent = v.label;
       layerEdges.appendChild(t);
     }
@@ -229,10 +246,19 @@ const Chart = (() => {
 
   function drawNode(e) {
     const art = AKTIONSARTEN[e.aktion] || AKTIONSARTEN.informieren;
-    const g = el('g', { class: 'node', transform: `translate(${e.x},${e.y})`, 'data-id': e.id });
+    const st = statusInfo(e.status);
+    const g = el('g', { class: 'node', transform: `translate(${e.x},${e.y})`, 'data-id': e.id, tabindex: '0', role: 'button' });
+
+    // Voll-Text-Tooltip (Hover) + ARIA
+    const tip = el('title');
+    tip.textContent = `${e.titel}\n${art.label} · ${st.label}${e.termin ? ' · Termin ' + e.termin : ''}\nZuordnung: ${e.zuordnung || '—'}${e.notiz ? '\n' + e.notiz : ''}`;
+    g.appendChild(tip);
+    g.setAttribute('aria-label', `${e.titel}, ${art.label}, ${st.label}`);
 
     g.appendChild(el('rect', { class: 'node-bg', width: NODE_W, height: NODE_H, rx: 10, ry: 10 }));
     g.appendChild(el('rect', { class: 'node-stripe', width: 8, height: NODE_H, rx: 4, ry: 4, fill: art.farbe }));
+    // Status-Punkt (oben rechts)
+    g.appendChild(el('circle', { cx: NODE_W - 36, cy: 19, r: 5, fill: st.farbe }));
 
     const badge = el('g', { transform: 'translate(18,14)' });
     badge.appendChild(el('rect', { width: badgeWidth(art.kuerzel), height: 18, rx: 9, ry: 9, fill: art.farbe }));
@@ -251,7 +277,7 @@ const Chart = (() => {
     sub.textContent = truncate(e.zuordnung || '—', 30); g.appendChild(sub);
 
     const meta = el('text', { x: 18, y: 84, class: 'node-meta' });
-    meta.textContent = `${e.hierarchie || ''} · ${e.frequenz || ''}`; g.appendChild(meta);
+    meta.textContent = `${e.hierarchie || ''}${e.termin ? ' · 📅 ' + e.termin : ''}`; g.appendChild(meta);
 
     const med = medium(e.kanal);
     const chipW = badgeWidth(e.kanal || '');
@@ -307,7 +333,11 @@ const Chart = (() => {
   }
 
   function pointerUp() {
-    if (drag && drag.moved) State.moveElement(drag.id, drag.lastX, drag.lastY);
+    if (drag && drag.moved) {
+      const sx = Math.round(drag.lastX / GRID) * GRID; // Snap-to-Grid
+      const sy = Math.round(drag.lastY / GRID) * GRID;
+      State.moveElement(drag.id, sx, sy);
+    }
     drag = null;
   }
 
@@ -321,13 +351,35 @@ const Chart = (() => {
     // Undo/Redo
     if ((ev.ctrlKey || ev.metaKey) && !ev.shiftKey && ev.key.toLowerCase() === 'z') { ev.preventDefault(); State.undo(); return; }
     if ((ev.ctrlKey || ev.metaKey) && (ev.key.toLowerCase() === 'y' || (ev.shiftKey && ev.key.toLowerCase() === 'z'))) { ev.preventDefault(); State.redo(); return; }
-    // nicht löschen, während in einem Eingabefeld getippt wird
+    // nicht reagieren, während in einem Eingabefeld getippt wird
     const tag = (ev.target.tagName || '').toLowerCase();
     const typing = tag === 'input' || tag === 'textarea' || tag === 'select';
     if (ev.key === 'Escape') { if (connectMode) setConnectMode(false); else State.select(null); return; }
-    if ((ev.key === 'Delete' || ev.key === 'Backspace') && !typing) {
+    if (typing) return;
+    // Element duplizieren (Strg+D)
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'd') {
+      const sel = State.selected();
+      if (sel) { ev.preventDefault(); State.duplicateElement(sel.id); }
+      return;
+    }
+    // Löschen
+    if (ev.key === 'Delete' || ev.key === 'Backspace') {
       const sel = State.selected();
       if (sel && confirm('Element „' + sel.titel + '" löschen?')) State.deleteElement(sel.id);
+      return;
+    }
+    // Pfeiltasten: ausgewähltes Element verschieben (Shift = große Schritte)
+    if (ev.key.startsWith('Arrow')) {
+      const sel = State.selected();
+      if (!sel) return;
+      ev.preventDefault();
+      const step = ev.shiftKey ? GRID : 1;
+      let nx = sel.x || 0, ny = sel.y || 0;
+      if (ev.key === 'ArrowLeft') nx -= step;
+      if (ev.key === 'ArrowRight') nx += step;
+      if (ev.key === 'ArrowUp') ny -= step;
+      if (ev.key === 'ArrowDown') ny += step;
+      State.moveElement(sel.id, Math.max(0, nx), Math.max(0, ny));
     }
   }
 

@@ -37,6 +37,9 @@ const App = (() => {
     on('btn-print', 'click', () => window.print());
     on('btn-import', 'click', () => document.getElementById('file-import').click());
     on('file-import', 'change', onImport);
+    on('btn-backup', 'click', exportWorkspace);
+    on('btn-restore', 'click', () => document.getElementById('file-restore').click());
+    on('file-restore', 'change', onRestore);
     on('btn-reset', 'click', () => { if (confirm('Aktiven Plan auf DEMO-Daten zurücksetzen? Änderungen gehen verloren.')) State.resetAktiv(); });
 
     // Plan-Verwaltung
@@ -75,6 +78,30 @@ const App = (() => {
     });
   }
 
+  /* ---- Gesamt-Backup (alle Pläne) als JSON ---- */
+  function exportWorkspace() {
+    const data = State.exportWorkspace();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Offside_Backup_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  function onRestore(ev) {
+    const file = ev.target.files[0];
+    if (!file) return;
+    if (!confirm('Backup wiederherstellen? Der aktuelle Arbeitsbereich (alle Pläne) wird ersetzt.')) { ev.target.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      try { State.importWorkspace(JSON.parse(e.target.result)); alert('Backup wiederhergestellt.'); }
+      catch (err) { alert('Wiederherstellung fehlgeschlagen: ' + err.message); }
+      ev.target.value = '';
+    };
+    reader.onerror = () => { alert('Datei konnte nicht gelesen werden.'); ev.target.value = ''; };
+    reader.readAsText(file);
+  }
+
   function addElement() {
     const d = State.get();
     const offset = (d.elemente.length % 6) * 30;
@@ -82,7 +109,7 @@ const App = (() => {
       titel: 'Neue Kommunikation', aktion: 'informieren',
       zuordnungTyp: 'person', zuordnung: (d.teilnehmer.find(t => t.typ === 'person') || {}).name || '',
       hierarchie: (d.hierarchie[0] || {}).ebene || '', frequenz: 'Anlassbezogen', kanal: 'E-Mail',
-      teilnehmer: [], notiz: '', x: 60 + offset, y: 60 + offset
+      status: 'offen', termin: '', teilnehmer: [], notiz: '', x: 60 + offset, y: 60 + offset
     });
     switchTab('detail');
   }
@@ -98,7 +125,34 @@ const App = (() => {
     else if (activeTab === 'teilnehmer') renderTeilnehmer();
     else if (activeTab === 'hierarchie') renderHierarchie();
     else if (activeTab === 'auswertung') renderAuswertung();
+    else if (activeTab === 'timeline') renderTimeline();
     else if (activeTab === 'plan') renderPlanTab();
+  }
+
+  /* ---------------- Timeline (nach Termin sortiert) ---------------- */
+  function renderTimeline() {
+    const box = document.getElementById('panel');
+    const d = State.get();
+    const withDate = d.elemente.filter(e => e.termin).sort((a, b) => a.termin.localeCompare(b.termin));
+    const without = d.elemente.filter(e => !e.termin);
+    const row = e => {
+      const a = AKTIONSARTEN[e.aktion] || {};
+      const st = statusInfo(e.status);
+      return `<div class="tl-row" data-go="${e.id}">
+        <span class="tl-date">${esc(e.termin || '—')}</span>
+        <span class="tl-dot" style="background:${a.farbe}"></span>
+        <span class="tl-titel">${esc(e.titel)}</span>
+        <span class="tl-status" style="background:${st.farbe}">${esc(st.label)}</span>
+      </div>`;
+    };
+    box.innerHTML = `
+      <div class="manage">
+        <h3>Timeline</h3>
+        <p class="hint">Kommunikationen nach Termin/Frist. Klick springt zum Element.</p>
+        ${withDate.length ? withDate.map(row).join('') : '<p class="hint">Keine Termine gesetzt.</p>'}
+        ${without.length ? `<h4>Ohne Termin</h4>${without.map(row).join('')}` : ''}
+      </div>`;
+    document.querySelectorAll('[data-go]').forEach(r => r.addEventListener('click', () => { State.select(r.dataset.go); switchTab('detail'); }));
   }
 
   /* ---------------- Detail-Panel ---------------- */
@@ -139,6 +193,10 @@ const App = (() => {
           <label>Frequenz<select id="f-freq">${optsArr(FREQUENZEN, el.frequenz)}</select></label>
         </div>
         <label>Medium / Kanal<select id="f-kanal">${optsMedien(el.kanal)}</select></label>
+        <div class="row">
+          <label>Status<select id="f-status">${optsStatus(el.status || 'offen')}</select></label>
+          <label>Termin / Frist<input id="f-termin" type="date" value="${esc(el.termin || '')}"></label>
+        </div>
         <label>Teilnehmer (Mehrfachauswahl)
           <select id="f-teilnehmer" multiple size="5">
             ${d.teilnehmer.map(t => `<option ${(el.teilnehmer || []).includes(t.name) ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}
@@ -146,7 +204,10 @@ const App = (() => {
         </label>
         <label>Notiz<textarea id="f-notiz" rows="3">${esc(el.notiz || '')}</textarea></label>
         <div class="verb-list"><h4>Verbindungen ab/zu dieser Karte</h4>${verbHtml(el.id)}</div>
-        <div class="actions"><button class="btn danger" id="f-delete">🗑 Element löschen</button></div>
+        <div class="actions row">
+          <button class="btn" id="f-dup">⧉ Duplizieren</button>
+          <button class="btn danger" id="f-delete">🗑 Löschen</button>
+        </div>
       </div>`;
 
     const save = patch => State.updateElement(el.id, patch);
@@ -157,15 +218,22 @@ const App = (() => {
     bind('f-hier', 'change', v => save({ hierarchie: v }));
     bind('f-freq', 'change', v => save({ frequenz: v }));
     bind('f-kanal', 'change', v => save({ kanal: v }));
+    bind('f-status', 'change', v => save({ status: v }));
+    bind('f-termin', 'change', v => save({ termin: v }));
     bind('f-notiz', 'input', v => save({ notiz: v }));
     document.getElementById('f-teilnehmer').addEventListener('change', e =>
       save({ teilnehmer: Array.from(e.target.selectedOptions).map(o => o.value) }));
     document.getElementById('f-delete').addEventListener('click', () => {
       if (confirm('Element „' + el.titel + '" löschen?')) State.deleteElement(el.id);
     });
+    document.getElementById('f-dup').addEventListener('click', () => State.duplicateElement(el.id));
     document.querySelectorAll('[data-delverb]').forEach(b => b.addEventListener('click', () => State.deleteVerbindung(b.dataset.delverb)));
     document.querySelectorAll('[data-lblverb]').forEach(inp =>
       inp.addEventListener('change', () => State.updateVerbindung(inp.dataset.lblverb, { label: inp.value })));
+    document.querySelectorAll('[data-flipverb]').forEach(b => b.addEventListener('click', () => {
+      const v = State.get().verbindungen.find(x => x.id === b.dataset.flipverb);
+      if (v) State.updateVerbindung(v.id, { von: v.bis, bis: v.von });
+    }));
   }
 
   function verbHtml(id) {
@@ -177,6 +245,7 @@ const App = (() => {
       <div class="verb-row">
         <span class="verb-dir">${v.von === id ? '→' : '←'} ${esc(name(v.von === id ? v.bis : v.von))}</span>
         <input class="verb-label" data-lblverb="${v.id}" value="${esc(v.label || '')}" placeholder="Label">
+        <button class="mini blue" data-flipverb="${v.id}" title="Richtung umkehren">⇄</button>
         <button class="mini" data-delverb="${v.id}">✕</button>
       </div>`).join('');
   }
@@ -311,6 +380,7 @@ const App = (() => {
     const aktionM = countBy(e => (AKTIONSARTEN[e.aktion] || {}).label || e.aktion);
     const medM = countBy(e => e.kanal);
     const hierM = countBy(e => e.hierarchie);
+    const statusM = countBy(e => statusInfo(e.status).label);
 
     // Beteiligungs-Matrix: Teilnehmer × Aktionsart (Zuordnung ODER Teilnehmer)
     const namen = d.teilnehmer.map(t => t.name);
@@ -326,6 +396,7 @@ const App = (() => {
       <div class="manage">
         <h3>Auswertung</h3>
         <p class="hint">${d.elemente.length} Elemente · ${d.verbindungen.length} Verbindungen · ${d.teilnehmer.length} Teilnehmer</p>
+        <h4>Nach Status</h4>${barChart(statusM, key => (Object.values(STATUS).find(s => s.label === key) || {}).farbe || '#9aa7b8')}
         <h4>Nach Aktionsart</h4>${barChart(aktionM, key => (Object.values(AKTIONSARTEN).find(a => a.label === key) || {}).farbe || '#1e5aa8')}
         <h4>Nach Medium</h4>${barChart(medM, key => medium(key).farbe)}
         <h4>Nach Hierarchie-Ebene</h4>${barChart(hierM, () => '#0f3d73')}
@@ -379,19 +450,17 @@ const App = (() => {
 
   /* ---------------- Filterleiste ---------------- */
   function bindFilter() {
+    const ids = ['flt-text', 'flt-aktion', 'flt-kanal', 'flt-status', 'flt-hier', 'flt-person'];
     const apply = () => Chart.setFilter({
       text: val('flt-text'), aktion: val('flt-aktion'), kanal: val('flt-kanal'),
-      hierarchie: val('flt-hier'), person: val('flt-person')
+      status: val('flt-status'), hierarchie: val('flt-hier'), person: val('flt-person')
     });
     // Optionen befüllen
     State.onChange(populateFilterOptions);
     populateFilterOptions();
-    ['flt-text', 'flt-aktion', 'flt-kanal', 'flt-hier', 'flt-person'].forEach(id => {
-      const ev = id === 'flt-text' ? 'input' : 'change';
-      on(id, ev, apply);
-    });
+    ids.forEach(id => on(id, id === 'flt-text' ? 'input' : 'change', apply));
     on('flt-clear', 'click', () => {
-      ['flt-text', 'flt-aktion', 'flt-kanal', 'flt-hier', 'flt-person'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+      ids.forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
       apply();
     });
   }
@@ -399,6 +468,7 @@ const App = (() => {
     const d = State.get();
     setOpts('flt-aktion', 'Alle Aktionsarten', Object.values(AKTIONSARTEN).map(a => a.label), Object.keys(AKTIONSARTEN), val('flt-aktion'));
     setOpts('flt-kanal', 'Alle Medien', KANAELE, KANAELE, val('flt-kanal'));
+    setOpts('flt-status', 'Alle Status', Object.values(STATUS).map(s => s.label), Object.keys(STATUS), val('flt-status'));
     setOpts('flt-hier', 'Alle Ebenen', d.hierarchie.map(h => h.ebene), d.hierarchie.map(h => h.ebene), val('flt-hier'));
     setOpts('flt-person', 'Alle Personen/Themen', d.teilnehmer.map(t => t.name), d.teilnehmer.map(t => t.name), val('flt-person'));
   }
@@ -430,6 +500,7 @@ const App = (() => {
   function optsArr(arr, sel) { return ['<option value="">— wählen —</option>'].concat(arr.map(v => `<option ${v === sel ? 'selected' : ''}>${esc(v)}</option>`)).join(''); }
   function optsObj(obj, sel, lbl) { return Object.values(obj).map(o => `<option value="${o.key}" ${o.key === sel ? 'selected' : ''}>${esc(lbl(o))}</option>`).join(''); }
   function optsMedien(sel) { return Object.keys(MEDIEN).map(k => `<option value="${esc(k)}" ${k === sel ? 'selected' : ''}>${medium(k).icon} ${esc(k)}</option>`).join(''); }
+  function optsStatus(sel) { return Object.keys(STATUS).map(k => `<option value="${k}" ${k === sel ? 'selected' : ''}>${esc(STATUS[k].label)}</option>`).join(''); }
 
   return { init };
 })();

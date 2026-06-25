@@ -84,6 +84,16 @@ body {
 .lane.alt { fill: #f6f9fd; }
 .lane-label { font-size: 12px; font-weight: 700; fill: var(--blau-800); }
 .node.dimmed { opacity: .22; }
+.node:focus { outline: none; }
+.node:focus .node-bg { stroke: var(--blau-500); stroke-width: 2.5; }
+
+/* Timeline */
+.tl-row { display: flex; align-items: center; gap: 8px; padding: 7px 4px; border-bottom: 1px solid var(--grau-100); cursor: pointer; font-size: 12px; }
+.tl-row:hover { background: var(--blau-100); }
+.tl-date { width: 92px; font-weight: 700; color: var(--blau-800); }
+.tl-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.tl-titel { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tl-status { color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
 .legende { display: flex; gap: 12px; flex-wrap: wrap; margin-left: auto; align-items: center; }
 .leg-item { font-size: 11px; color: var(--grau-500); display: flex; align-items: center; gap: 4px; cursor: help; }
 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }

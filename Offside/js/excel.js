@@ -47,8 +47,9 @@ const ExcelIO = (() => {
     }));
     addSheet(wb, 'Hierarchie', hier);
 
-    /* --- Meta --- */
-    const meta = Object.entries(d.meta || {}).map(([Feld, Wert]) => ({ Feld, Wert }));
+    /* --- Meta (inkl. Plan-Name) --- */
+    const metaObj = Object.assign({ Plan: d.name }, d.meta || {});
+    const meta = Object.entries(metaObj).map(([Feld, Wert]) => ({ Feld, Wert }));
     addSheet(wb, 'Meta', meta.length ? meta : [{ Feld: '—', Wert: '—' }]);
 
     /* --- Legende Aktionsarten --- */
@@ -57,7 +58,8 @@ const ExcelIO = (() => {
     }));
     addSheet(wb, 'Legende', legende);
 
-    const name = 'Offside_Kommunikationsplan_' + (d.meta.stand || 'DEMO') + '.xlsx';
+    const safe = String(d.name || 'Plan').replace(/[^\w\-]+/g, '_');
+    const name = 'Offside_' + safe + '_' + (d.meta.stand || 'DEMO') + '.xlsx';
     XLSX.writeFile(wb, name);
   }
 
@@ -113,7 +115,11 @@ const ExcelIO = (() => {
 
         const metaRows = sheet(wb, 'Meta');
         data.meta = {};
-        metaRows.forEach(r => { if (r.Feld && r.Feld !== '—') data.meta[r.Feld] = r.Wert; });
+        metaRows.forEach(r => {
+          if (!r.Feld || r.Feld === '—') return;
+          if (r.Feld === 'Plan') data.name = r.Wert;   // Plan-Name separat
+          else data.meta[r.Feld] = r.Wert;
+        });
 
         if (!data.elemente.length) throw new Error('Keine Elemente im Blatt „Elemente" gefunden.');
         onDone(null, data);

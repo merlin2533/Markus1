@@ -38,6 +38,12 @@ body {
 .logo { font-size: 28px; }
 .brand h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
 .tagline { font-size: 12px; opacity: .8; }
+/* Plan-Leiste in der Topbar */
+.plan-bar { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.12); padding: 5px 8px; border-radius: 8px; }
+.plan-lbl { font-size: 11px; opacity: .85; }
+.plan-bar select { border: none; border-radius: 5px; padding: 5px 8px; font-size: 13px; font-weight: 600; color: var(--blau-800); max-width: 220px; }
+.ico { border: none; background: rgba(255,255,255,.18); color: #fff; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+.ico:hover { background: rgba(255,255,255,.34); }
 .title-block { margin-left: auto; text-align: right; }
 .plan-titel { font-size: 15px; font-weight: 600; }
 .plan-sub { font-size: 12px; opacity: .82; }
@@ -63,7 +69,21 @@ body {
 .btn.ghost { color: var(--grau-500); }
 .btn.danger { background: var(--rot); color: #fff; border-color: var(--rot); width: 100%; }
 .btn.active { background: var(--blau-500); color: #fff; border-color: var(--blau-500); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
 .sep { width: 1px; height: 24px; background: var(--grau-300); margin: 0 4px; }
+.grp-lbl { font-size: 11px; color: var(--grau-500); }
+
+/* Filterleiste */
+.filterbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 16px; background: var(--blau-100); border-bottom: 1px solid var(--grau-300); }
+.flt-lbl { font-size: 12px; font-weight: 700; color: var(--blau-800); }
+.filterbar input, .filterbar select { border: 1px solid var(--grau-300); border-radius: 6px; padding: 6px 8px; font-size: 12px; background: #fff; color: var(--text); }
+.flt-text { min-width: 160px; }
+
+/* Swimlanes */
+.lane { fill: #eef3fa; stroke: #dde7f3; }
+.lane.alt { fill: #f6f9fd; }
+.lane-label { font-size: 12px; font-weight: 700; fill: var(--blau-800); }
+.node.dimmed { opacity: .22; }
 .legende { display: flex; gap: 12px; flex-wrap: wrap; margin-left: auto; align-items: center; }
 .leg-item { font-size: 11px; color: var(--grau-500); display: flex; align-items: center; gap: 4px; cursor: help; }
 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
@@ -130,9 +150,30 @@ svg.connect-mode .node { cursor: crosshair; }
 
 .verb-list { border-top: 1px solid var(--grau-100); margin-top: 12px; padding-top: 10px; }
 .verb-list h4, .add-form h4 { margin: 0 0 8px; font-size: 13px; color: var(--blau-800); }
-.verb-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 4px 0; }
+.verb-row { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 0; }
+.verb-dir { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.verb-label { width: 90px; padding: 4px 6px; border: 1px solid var(--grau-300); border-radius: 5px; font-size: 11px; }
 .mini { border: none; background: var(--grau-100); color: var(--rot); border-radius: 4px; cursor: pointer; padding: 2px 7px; font-weight: 700; }
 .mini:hover { background: #fde3e0; }
+.mini.blue { color: var(--blau-700); }
+.mini.blue:hover { background: var(--blau-100); }
+.nowrap { white-space: nowrap; }
+tr.editing td { background: var(--blau-100); padding: 8px; }
+tr.editing .row { margin-bottom: 8px; }
+tr.editing input, tr.editing select { width: 100%; padding: 6px 8px; border: 1px solid var(--grau-300); border-radius: 5px; font-size: 12px; }
+
+/* Auswertung: Balken & Matrix */
+.bars { margin-bottom: 14px; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin: 3px 0; font-size: 12px; }
+.bar-label { width: 120px; text-align: right; color: var(--grau-500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar { flex: 1; background: var(--grau-100); border-radius: 4px; height: 14px; overflow: hidden; }
+.bar-fill { display: block; height: 100%; border-radius: 4px; }
+.bar-val { width: 24px; font-weight: 700; color: var(--blau-800); }
+.matrix-wrap { overflow-x: auto; }
+.tbl.matrix th { text-align: center; font-size: 10px; }
+.tbl.matrix .rowhead { font-size: 11px; max-width: 130px; }
+.tbl.matrix .cell { text-align: center; font-weight: 700; font-size: 11px; min-width: 26px; }
+.manage h4 { margin: 14px 0 6px; font-size: 13px; color: var(--blau-800); }
 
 /* ---------- Tabellen (Pflege & Übersicht) ---------- */
 .manage h3 { margin: 0 0 4px; color: var(--blau-800); font-size: 16px; }

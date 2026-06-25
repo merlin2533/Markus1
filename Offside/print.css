@@ -1,0 +1,29 @@
+/* =============================================================
+   Offside · Druck-/PDF-Layout
+   Blendet Bedien-Elemente aus und druckt Kopf + Chart sauber.
+   Aktivierung über: <link rel="stylesheet" href="print.css" media="print">
+   ============================================================= */
+@page { size: landscape; margin: 12mm; }
+
+.toolbar, .filterbar, .sidebar, .canvas-hint, .demo-flag, .plan-bar { display: none !important; }
+
+body { background: #fff !important; }
+
+.topbar { background: #fff !important; color: var(--blau-800) !important; border-bottom: 2px solid var(--blau-700); }
+.topbar h1, .tagline, .plan-titel, .plan-sub { color: var(--blau-800) !important; }
+
+.layout { display: block !important; }
+.canvas-wrap { display: block !important; }
+.canvas-scroll {
+  overflow: visible !important; background: #fff !important;
+  height: auto !important;
+}
+#chart { width: 100% !important; height: auto !important; }
+
+/* dezentes DEMO-Wasserzeichen im Druck */
+.canvas-wrap::after {
+  content: "DEMO";
+  position: fixed; top: 45%; left: 35%;
+  font-size: 120px; font-weight: 800; color: rgba(30, 90, 168, .08);
+  transform: rotate(-18deg); pointer-events: none;
+}

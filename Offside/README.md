@@ -11,13 +11,23 @@ einer Behörde (Polizeipräsidium, DEMO-Daten). Farbwelt in **Polizei-Blau**.
 
 ## Funktionen
 
+### Mehrere Pläne verwalten
+Oben links lassen sich **beliebig viele Pläne** anlegen, **duplizieren**,
+**umbenennen** und **löschen** und per Dropdown umschalten – jeder Plan wird
+einzeln gespeichert. So können mehrere Kommunikationspläne parallel gepflegt werden.
+
 ### Interaktives Chart (Canvas-Board)
-- **Verschieben** der Elemente per Drag & Drop
+- **Verschieben** der Elemente per Drag & Drop (Maus **und Touch/Tablet**)
 - **Hinzufügen** neuer Kommunikations-Elemente (`＋ Element`)
-- **Löschen** über das Detail-Panel
+- **Löschen** über das Detail-Panel oder Taste **Entf**
 - **Verbinden** zweier Elemente (Modus *Verbinden* → zwei Karten anklicken);
-  Pfeile zeigen den Kommunikationsfluss
-- **Auswählen** per Klick → Bearbeitung im Detail-Panel rechts
+  Pfeile zeigen den Kommunikationsfluss, **Labels** je Verbindung editierbar
+- **Auswählen** per Klick → Bearbeitung im Detail-Panel rechts; **Esc** hebt auf
+- **Zoom** (`＋ / − / Fit`, Strg+Mausrad) und **Undo/Redo** (`↶ ↷`, Strg+Z / Strg+Y)
+- **Auto-Layout / Swimlanes**: Karten automatisch in Bahnen nach **Hierarchie**
+  oder **Person/Thema** anordnen
+- **Suchen & Filtern** nach Text, Aktionsart, Medium, Hierarchie-Ebene und
+  Person/Thema (nicht passende Karten werden ausgegraut)
 
 ### Zuordnung pro Element
 Jedes Element ist genau **einer Person oder einem Themengebiet** zugeordnet
@@ -46,10 +56,24 @@ Eigener Reiter zum Anlegen/Löschen von **Personen** und **Themengebieten**
 inkl. Organisationseinheit, Hierarchie-Ebene und Kontakt. Diese stehen in den
 Elementen als Zuordnung und als Mehrfach-Teilnehmer zur Verfügung.
 
-### Hierarchie-Pflege
-Eigener Reiter für die **Hierarchie-Ebenen** (Rang 1 = oben). Jeder Ebene ist
-ein Rang zugeordnet; die Ebene ist **pro Element zuordenbar**, um den Plan besser
-zu steuern (z. B. Eskalationsrichtung).
+### Teilnehmer- & Hierarchie-Pflege (bearbeitbar)
+Teilnehmer (Personen/Themengebiete) und Hierarchie-Ebenen lassen sich anlegen,
+**bearbeiten (✎)** und löschen. **Referenzielle Integrität**: Wird ein Teilnehmer
+oder eine Ebene umbenannt, werden alle Verweise in den Elementen automatisch
+mitgeführt; beim Löschen bleiben keine „toten" Verweise zurück.
+
+### Hierarchie pro Element
+Jeder Ebene ist ein **Rang** zugeordnet (1 = oben); die Ebene ist **pro Element
+zuordenbar**, um den Plan besser zu steuern (z. B. Eskalationsrichtung).
+
+### Auswertung
+Eigener Reiter mit **Statistik** (Anzahl je Aktionsart, Medium, Hierarchie als
+Balken) und einer **Beteiligungs-Matrix** (Teilnehmer × Aktionsart) für einen
+RACI-artigen Überblick.
+
+### Plan-Eigenschaften
+Reiter *Plan*: Plan-Name sowie **Meta-Kopf** (Titel, Behörde, Stand, Ersteller)
+sind frei editierbar.
 
 ### Export & Import
 - **⬇ Excel** – exportiert den kompletten Plan als `.xlsx` mit den Blättern
@@ -57,6 +81,7 @@ zu steuern (z. B. Eskalationsrichtung).
   Die Datei ist in Excel **bearbeitbar** und wieder importierbar.
 - **⬆ Excel importieren** – liest eine bearbeitete `.xlsx` wieder ein.
 - **🖼 Bild (PNG)** – exportiert das Chart als PNG (mit DEMO-Wasserzeichen).
+- **🖨 Drucken/PDF** – druckoptimierte Ansicht (Browser-Druck → „Als PDF speichern").
 
 ### Persistenz
 Alle Änderungen werden automatisch im **localStorage** des Browsers gespeichert.
@@ -69,15 +94,16 @@ Alle Änderungen werden automatisch im **localStorage** des Browsers gespeichert
 Offside/
 ├── index.html          # Einstiegspunkt
 ├── styles.css          # Polizei-Blau Design
+├── print.css           # Druck-/PDF-Layout
 ├── vendor/
 │   └── xlsx.full.min.js # SheetJS (lokal, offline)
 └── js/
     ├── data.js         # Stammdaten, Aktionsarten, Medien, DEMO-Daten
-    ├── state.js        # Zustand + localStorage
-    ├── chart.js        # interaktives SVG-Board (Drag/Connect)
+    ├── state.js        # Multi-Plan-Zustand, localStorage, Integrität, Undo/Redo
+    ├── chart.js        # interaktives SVG-Board (Drag/Touch/Zoom/Filter/Swimlanes)
     ├── excel.js        # Excel Export/Import
     ├── image.js        # PNG-Export
-    └── app.js          # UI-Steuerung
+    └── app.js          # UI-Steuerung (Pläne, Pflege, Auswertung, Filter)
 ```
 
 ## DEMO-Daten

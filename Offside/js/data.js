@@ -234,3 +234,15 @@ function demoDaten() {
     hierarchie:    JSON.parse(JSON.stringify(DEMO_HIERARCHIE))
   };
 }
+
+/* Leerer Plan – übernimmt die Hierarchie-Ebenen als sinnvolle Vorlage,
+   startet aber ohne Elemente/Verbindungen/Teilnehmer. */
+function leererPlan(name) {
+  return {
+    meta: { titel: name || 'Neuer Plan', behoerde: '', stand: '', ersteller: '' },
+    elemente: [],
+    verbindungen: [],
+    teilnehmer: [],
+    hierarchie: JSON.parse(JSON.stringify(DEMO_HIERARCHIE))
+  };
+}

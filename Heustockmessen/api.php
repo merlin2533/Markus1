@@ -70,6 +70,7 @@ function db(): PDO {
         fehler('Datenbank nicht erreichbar: ' . $e->getMessage(), 500);
     }
     schemaAnlegen($pdo);
+    migriere($pdo);
     return $pdo;
 }
 
@@ -119,12 +120,87 @@ function schemaAnlegen(PDO $pdo): void {
             schluessel TEXT PRIMARY KEY,
             wert       TEXT NOT NULL
         );
-        CREATE INDEX IF NOT EXISTS idx_hallen_stelle ON hallen(messstelle_id);
-        CREATE INDEX IF NOT EXISTS idx_orte_halle    ON orte(halle_id);
-        CREATE INDEX IF NOT EXISTS idx_reihen_stelle ON messreihen(messstelle_id);
-        CREATE INDEX IF NOT EXISTS idx_werte_reihe   ON messwerte(messreihe_id);
-        CREATE INDEX IF NOT EXISTS idx_werte_ort     ON messwerte(ort_id);
     SQL);
+}
+
+// Spaltennamen einer Tabelle.
+function spalten(PDO $pdo, string $tabelle): array {
+    $rows = $pdo->query('PRAGMA table_info(' . $tabelle . ')')->fetchAll();
+    return array_map(static fn($r) => $r['name'], $rows);
+}
+
+function tabelleExistiert(PDO $pdo, string $name): bool {
+    $s = $pdo->prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?");
+    $s->execute([$name]);
+    return (bool)$s->fetch();
+}
+
+/**
+ * Migration: hebt alte Datenbanken (2-Ebenen-Modell Messstelle→Ebene, ohne
+ * messstelle_id) auf das aktuelle Schema (Messstelle→Halle→Ort) – inkl. Daten.
+ * Idempotent: bei bereits aktuellem Schema passiert nichts.
+ */
+function migriere(PDO $pdo): void {
+    // 1. messreihen.messstelle_id ergänzen
+    $spR = spalten($pdo, 'messreihen');
+    if ($spR && !in_array('messstelle_id', $spR, true)) {
+        $pdo->exec('ALTER TABLE messreihen ADD COLUMN messstelle_id INTEGER');
+    }
+
+    // Altes Modell erkennen: messwerte.ebene_id ohne ort_id
+    $spW = spalten($pdo, 'messwerte');
+    $altesModell = $spW && in_array('ebene_id', $spW, true) && !in_array('ort_id', $spW, true);
+
+    // 2. Alte 'ebenen' nach hallen/orte überführen (eine Default-Halle je Messstelle)
+    if ($altesModell && tabelleExistiert($pdo, 'ebenen')) {
+        $leer = ((int)$pdo->query('SELECT COUNT(*) c FROM orte')->fetch()['c']) === 0;
+        if ($leer) {
+            $ebenen = $pdo->query('SELECT id, messstelle_id, bezeichnung, sortierung FROM ebenen ORDER BY id')->fetchAll();
+            $halleFuer = [];
+            $insH = $pdo->prepare("INSERT INTO hallen (messstelle_id, name, beschreibung, sortierung) VALUES (?, 'Halle', '', 0)");
+            $insO = $pdo->prepare('INSERT INTO orte (id, halle_id, bezeichnung, sortierung) VALUES (?,?,?,?)');
+            foreach ($ebenen as $e) {
+                $sid = (int)$e['messstelle_id'];
+                if (!isset($halleFuer[$sid])) {
+                    $insH->execute([$sid]);
+                    $halleFuer[$sid] = (int)$pdo->lastInsertId();
+                }
+                $insO->execute([(int)$e['id'], $halleFuer[$sid], $e['bezeichnung'], (int)$e['sortierung']]);
+            }
+        }
+    }
+
+    // 3. messwerte auf ort_id umbauen (ort_id = bisheriges ebene_id)
+    if ($altesModell) {
+        $pdo->exec('PRAGMA foreign_keys = OFF');
+        $pdo->exec('CREATE TABLE messwerte_neu (
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            messreihe_id INTEGER NOT NULL REFERENCES messreihen(id) ON DELETE CASCADE,
+            ort_id       INTEGER NOT NULL REFERENCES orte(id) ON DELETE CASCADE,
+            temperatur   REAL,
+            notiz        TEXT DEFAULT \'\'
+        )');
+        $pdo->exec('INSERT INTO messwerte_neu (id, messreihe_id, ort_id, temperatur, notiz)
+                    SELECT id, messreihe_id, ebene_id, temperatur, notiz FROM messwerte');
+        $pdo->exec('DROP TABLE messwerte');
+        $pdo->exec('ALTER TABLE messwerte_neu RENAME TO messwerte');
+        $pdo->exec('PRAGMA foreign_keys = ON');
+    }
+
+    // 4. messstelle_id der Reihen aus den Werten herleiten
+    $pdo->exec('UPDATE messreihen SET messstelle_id = (
+        SELECT h.messstelle_id FROM messwerte w
+        JOIN orte o   ON o.id = w.ort_id
+        JOIN hallen h ON h.id = o.halle_id
+        WHERE w.messreihe_id = messreihen.id LIMIT 1)
+      WHERE messstelle_id IS NULL');
+
+    // 5. Indizes (jetzt existieren alle Spalten)
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_hallen_stelle ON hallen(messstelle_id)');
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_orte_halle    ON orte(halle_id)');
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_reihen_stelle ON messreihen(messstelle_id)');
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_werte_reihe   ON messwerte(messreihe_id)');
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_werte_ort     ON messwerte(ort_id)');
 }
 
 // ---------------------------------------------------------------------------

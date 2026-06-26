@@ -158,6 +158,30 @@ function verlangeAuth(): void {
     }
 }
 
+// CSRF-Token gegen gefälschte POST-Anfragen (Cookie-Session).
+function csrfToken(): string {
+    if (empty($_SESSION['csrf'])) {
+        $_SESSION['csrf'] = bin2hex(random_bytes(16));
+    }
+    return $_SESSION['csrf'];
+}
+function verlangeCsrf(array $in): void {
+    $tok = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($in['csrf'] ?? '');
+    if (!hash_equals($_SESSION['csrf'] ?? '', (string)$tok)) {
+        fehler('Ungültiges oder fehlendes CSRF-Token. Bitte Seite neu laden.', 403);
+    }
+}
+
+// Revisionszähler – steigt bei jeder Änderung, dient dem Live-Update.
+function bumpRev(PDO $pdo): void {
+    $pdo->exec("INSERT INTO einstellungen (schluessel, wert) VALUES ('rev', '1')
+                ON CONFLICT(schluessel) DO UPDATE SET wert = CAST(wert AS INTEGER) + 1");
+}
+function holeRev(PDO $pdo): int {
+    $r = $pdo->query("SELECT wert FROM einstellungen WHERE schluessel='rev'")->fetch();
+    return $r ? (int)$r['wert'] : 0;
+}
+
 /** Wert aus Eingabe als float oder null. */
 function zahlOderNull($wert): ?float {
     if ($wert === '' || $wert === null) {
@@ -251,7 +275,8 @@ try {
 
         case 'status':
             db();
-            antwort(['ok' => true, 'angemeldet' => istAngemeldet()]);
+            antwort(['ok' => true, 'angemeldet' => istAngemeldet(),
+                     'csrf' => istAngemeldet() ? csrfToken() : null]);
 
         case 'login': {
             $pdo  = db();
@@ -262,7 +287,7 @@ try {
             }
             session_regenerate_id(true);
             $_SESSION['auth'] = true;
-            antwort(['ok' => true, 'angemeldet' => true]);
+            antwort(['ok' => true, 'angemeldet' => true, 'csrf' => csrfToken()]);
         }
 
         case 'logout':
@@ -274,7 +299,17 @@ try {
     // --- Ab hier ist Anmeldung Pflicht ---
     verlangeAuth();
 
+    // Schreibende Anfragen (POST) brauchen ein gültiges CSRF-Token und erhöhen
+    // die Revision (für das Live-Update der anderen Clients).
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        verlangeCsrf($in);
+        bumpRev(db());
+    }
+
     switch ($action) {
+
+        case 'stand':
+            antwort(['ok' => true, 'rev' => holeRev(db())]);
 
         case 'passwort_aendern': {
             $pdo = db();
@@ -300,6 +335,7 @@ try {
             $pdo = db();
             antwort([
                 'ok'          => true,
+                'rev'         => holeRev($pdo),
                 'messstellen' => ladeStammdaten($pdo),
                 'messreihen'  => ladeMessreihen($pdo),
             ]);
@@ -451,6 +487,56 @@ try {
         case 'messreihe_delete': {
             $pdo = db();
             $pdo->prepare('DELETE FROM messreihen WHERE id=?')->execute([(int)($in['id'] ?? 0)]);
+            antwort(['ok' => true]);
+        }
+
+        // ---- Backup einspielen (ersetzt den gesamten Datenbestand) ----
+        case 'restore': {
+            $pdo     = db();
+            $stellen = is_array($in['messstellen'] ?? null) ? $in['messstellen'] : [];
+            $reihen  = is_array($in['messreihen'] ?? null) ? $in['messreihen'] : [];
+
+            $pdo->exec('PRAGMA foreign_keys = OFF');
+            $pdo->beginTransaction();
+            try {
+                foreach (['messwerte', 'messreihen', 'orte', 'hallen', 'messstellen'] as $t) {
+                    $pdo->exec("DELETE FROM $t");
+                }
+                $iStelle = $pdo->prepare('INSERT INTO messstellen (id, name, beschreibung, sortierung) VALUES (?,?,?,?)');
+                $iHalle  = $pdo->prepare('INSERT INTO hallen (id, messstelle_id, name, beschreibung, sortierung) VALUES (?,?,?,?,?)');
+                $iOrt    = $pdo->prepare('INSERT INTO orte (id, halle_id, bezeichnung, sortierung) VALUES (?,?,?,?)');
+                foreach ($stellen as $s) {
+                    $iStelle->execute([(int)$s['id'], (string)($s['name'] ?? ''), (string)($s['beschreibung'] ?? ''), (int)($s['sortierung'] ?? 0)]);
+                    foreach (($s['hallen'] ?? []) as $h) {
+                        $iHalle->execute([(int)$h['id'], (int)$s['id'], (string)($h['name'] ?? ''), (string)($h['beschreibung'] ?? ''), (int)($h['sortierung'] ?? 0)]);
+                        foreach (($h['orte'] ?? []) as $o) {
+                            $iOrt->execute([(int)$o['id'], (int)$h['id'], (string)($o['bezeichnung'] ?? ''), (int)($o['sortierung'] ?? 0)]);
+                        }
+                    }
+                }
+                $iReihe = $pdo->prepare(
+                    'INSERT INTO messreihen (id, messstelle_id, zeitpunkt, aussentemperatur, temp_quelle, geo_lat, geo_lon, wetter_text, messer, notiz)
+                     VALUES (?,?,?,?,?,?,?,?,?,?)'
+                );
+                $iWert = $pdo->prepare('INSERT INTO messwerte (id, messreihe_id, ort_id, temperatur, notiz) VALUES (?,?,?,?,?)');
+                foreach ($reihen as $r) {
+                    $iReihe->execute([
+                        (int)$r['id'], isset($r['messstelle_id']) && $r['messstelle_id'] !== null ? (int)$r['messstelle_id'] : null,
+                        (string)($r['zeitpunkt'] ?? ''), zahlOderNull($r['aussentemperatur'] ?? null),
+                        (string)($r['temp_quelle'] ?? 'manuell'), zahlOderNull($r['geo_lat'] ?? null), zahlOderNull($r['geo_lon'] ?? null),
+                        (string)($r['wetter_text'] ?? ''), (string)($r['messer'] ?? ''), (string)($r['notiz'] ?? ''),
+                    ]);
+                    foreach (($r['messwerte'] ?? []) as $w) {
+                        $iWert->execute([(int)$w['id'], (int)$r['id'], (int)$w['ort_id'], zahlOderNull($w['temperatur'] ?? null), (string)($w['notiz'] ?? '')]);
+                    }
+                }
+                $pdo->commit();
+            } catch (Throwable $e) {
+                $pdo->rollBack();
+                $pdo->exec('PRAGMA foreign_keys = ON');
+                throw $e;
+            }
+            $pdo->exec('PRAGMA foreign_keys = ON');
             antwort(['ok' => true]);
         }
 

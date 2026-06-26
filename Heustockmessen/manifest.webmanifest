@@ -1,0 +1,15 @@
+{
+  "name": "Heustockmessen – Freiwillige Feuerwehr",
+  "short_name": "Heustock",
+  "description": "Temperaturüberwachung von Heustöcken bei der Freiwilligen Feuerwehr.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#7a0c15",
+  "theme_color": "#c1121f",
+  "lang": "de",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

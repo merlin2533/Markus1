@@ -29,11 +29,14 @@ const App = (() => {
     messstellen: [],
     messreihen: [],
     online: false,
+    rev: null,               // Revisionsstand für das Live-Update
     editReiheId: null,       // null = neue Reihe, sonst bestehende bearbeiten
     werte: {},               // ort_id -> { temperatur, notiz }
     wizardStelleId: null,    // aktuell gewählte Messstelle
     wizardSchritt: 0,        // 0 = Kopf, 1..H = Hallen, H+1 = Übersicht
     kopf: leererKopf(),      // Kopfdaten der Messung (über Schritte hinweg)
+    filter: { stelleId: '', halleId: '', von: '', bis: '', nurKritisch: false },
+    diagrammOrtId: null,     // im Diagramm gewählter Ort
   };
 
   function leererKopf() {
@@ -92,6 +95,7 @@ const App = (() => {
       const d = await Api.alles();
       State.messstellen = d.messstellen || [];
       State.messreihen = d.messreihen || [];
+      State.rev = d.rev ?? State.rev;
       State.online = true;
     } catch (e) {
       State.online = false;
@@ -279,6 +283,16 @@ const App = (() => {
       wrap.append(el('div', { class: 'leer hinweis' }, 'Noch keine Temperaturwerte erfasst.'));
     }
 
+    // Vollständigkeitskontrolle
+    const fehl = fehlendeOrte(stelle);
+    if (fehl.length) {
+      wrap.append(el('div', { class: 'leer hinweis' },
+        el('strong', {}, '⚠ Noch nicht gemessen (' + fehl.length + '): '),
+        fehl.join(', ')));
+    } else if (anzahl) {
+      wrap.append(el('div', { class: 'vollstaendig' }, '✓ Alle Orte dieser Messstelle erfasst.'));
+    }
+
     const leiste = el('div', { class: 'aktionsleiste' });
     leiste.append(
       el('button', { class: 'btn', onclick: () => { State.wizardSchritt = hallen.length; renderMessung(); } }, '← Zurück'),
@@ -409,6 +423,15 @@ const App = (() => {
       meldung('Bitte mindestens einen Temperaturwert eingeben.', 'fehler');
       return;
     }
+    // Vollständigkeit: bei fehlenden Orten nachfragen
+    const stelle = stelleById(State.wizardStelleId);
+    if (stelle) {
+      const fehl = fehlendeOrte(stelle);
+      if (fehl.length && !confirm('Es fehlen noch ' + fehl.length + ' Orte:\n' + fehl.join(', ')
+        + '\n\nMessung trotzdem speichern?')) {
+        return;
+      }
+    }
     const auto = k.temp_quelle === 'open-meteo';
     const daten = {
       id: State.editReiheId || undefined,
@@ -433,8 +456,29 @@ const App = (() => {
       renderAlles();
       zeigeView('verlauf');
     } catch (e) {
-      meldung('Speichern fehlgeschlagen: ' + e.message, 'fehler');
+      // Kein Server erreichbar → offline puffern und später synchronisieren
+      if (!navigator.onLine || /erreichbar/i.test(e.message)) {
+        Offline.add(daten);
+        merkeErfasser(daten.messer);
+        aktualisiereOfflineStatus();
+        meldung('Kein Server erreichbar – Messung offline gespeichert ('
+          + Offline.count() + ' warten auf Übertragung).', 'info');
+        neueMessung();
+      } else {
+        meldung('Speichern fehlgeschlagen: ' + e.message, 'fehler');
+      }
     }
+  }
+
+  function fehlendeOrte(stelle) {
+    const fehl = [];
+    for (const h of (stelle.hallen || [])) {
+      for (const o of (h.orte || [])) {
+        const v = State.werte[o.id];
+        if (!(v && v.temperatur != null && !isNaN(v.temperatur))) fehl.push(h.name + '·' + o.bezeichnung);
+      }
+    }
+    return fehl;
   }
 
   // ======================================================================
@@ -556,17 +600,21 @@ const App = (() => {
   function renderVerlauf() {
     const wrap = $('#view-verlauf');
     wrap.innerHTML = '';
-    wrap.append(el('div', { class: 'verlauf-kopf' },
-      el('h2', {}, 'Verlauf & Auswertung'),
-      el('button', { class: 'btn klein', onclick: () => window.print() }, '🖨 Drucken / PDF'),
-    ));
+    wrap.append(verlaufToolbar());
 
     if (!State.messreihen.length) {
       wrap.append(el('p', { class: 'klein-grau' }, 'Noch keine Messungen erfasst.'));
       return;
     }
 
-    for (const r of State.messreihen) {
+    const reihen = gefilterteReihen();
+    if (!reihen.length) {
+      wrap.append(el('p', { class: 'klein-grau' }, 'Keine Messungen für den gewählten Filter.'));
+      return;
+    }
+    const timelines = ortTimelines();
+
+    for (const r of reihen) {
       const det = el('details', { class: 'reihe', open: State.messreihen.length <= 3 ? '' : null });
       const max = r.messwerte.reduce((m, w) => (w.temperatur != null && w.temperatur > m ? w.temperatur : m), -Infinity);
       const stMax = stufeFuer(max === -Infinity ? null : max);
@@ -596,7 +644,7 @@ const App = (() => {
       const tab = el('table', { class: 'werte-tab' });
       tab.append(el('tr', {},
         el('th', {}, 'Halle'), el('th', {}, 'Ort'),
-        el('th', {}, 'Temperatur'), el('th', {}, 'Bewertung'), el('th', {}, 'Notiz')));
+        el('th', {}, 'Temperatur'), el('th', {}, 'Trend'), el('th', {}, 'Bewertung'), el('th', {}, 'Notiz')));
       for (const [halleName, eintraege] of gruppen) {
         eintraege.forEach(({ w, info }, i) => {
           const st = stufeFuer(w.temperatur);
@@ -604,6 +652,7 @@ const App = (() => {
             el('td', { class: 'halle-zelle' }, i === 0 ? halleName : ''),
             el('td', {}, info ? info.ort.bezeichnung : ('Ort #' + w.ort_id)),
             el('td', { class: 'num' }, w.temperatur != null ? w.temperatur.toFixed(1) + ' °C' : '—'),
+            trendZelle(timelines, w.ort_id, r.zeitpunkt, w.temperatur),
             el('td', {}, st ? st.titel : ''),
             el('td', {}, w.notiz || '')));
         });
@@ -654,6 +703,294 @@ const App = (() => {
   }
 
   // ======================================================================
+  //  Verlauf-Werkzeuge: Filter, Trend, Excel, Backup
+  // ======================================================================
+  function stelleNameVon(id) { const s = stelleById(id); return s ? s.name : '—'; }
+
+  function verlaufToolbar() {
+    const kopf = el('div', { class: 'verlauf-kopf' },
+      el('h2', {}, 'Verlauf & Auswertung'),
+      el('div', { class: 'werkzeuge' },
+        el('button', { class: 'btn klein', onclick: () => window.print() }, '🖨 Drucken'),
+        jahrExportSteuerung(),
+        el('button', { class: 'btn klein', onclick: backupHerunterladen }, '⭳ Backup'),
+        wiederherstellenSteuerung(),
+      ),
+    );
+
+    const filter = el('div', { class: 'filterleiste' });
+    const selStelle = el('select', { onchange: (e) => { State.filter.stelleId = e.target.value; State.filter.halleId = ''; renderVerlauf(); } });
+    selStelle.append(el('option', { value: '' }, 'Alle Messstellen'));
+    for (const s of State.messstellen)
+      selStelle.append(el('option', { value: String(s.id), ...(String(s.id) === State.filter.stelleId ? { selected: '' } : {}) }, s.name));
+
+    const selHalle = el('select', { onchange: (e) => { State.filter.halleId = e.target.value; renderVerlauf(); } });
+    selHalle.append(el('option', { value: '' }, 'Alle Hallen'));
+    const aktStelle = State.filter.stelleId ? stelleById(Number(State.filter.stelleId)) : null;
+    const hallen = aktStelle ? (aktStelle.hallen || []) : State.messstellen.flatMap((s) => s.hallen || []);
+    for (const h of hallen)
+      selHalle.append(el('option', { value: String(h.id), ...(String(h.id) === State.filter.halleId ? { selected: '' } : {}) }, h.name));
+
+    const von = el('input', { type: 'date', value: State.filter.von, onchange: (e) => { State.filter.von = e.target.value; renderVerlauf(); } });
+    const bis = el('input', { type: 'date', value: State.filter.bis, onchange: (e) => { State.filter.bis = e.target.value; renderVerlauf(); } });
+    const krit = el('label', { class: 'check' },
+      el('input', { type: 'checkbox', ...(State.filter.nurKritisch ? { checked: '' } : {}),
+        onchange: (e) => { State.filter.nurKritisch = e.target.checked; renderVerlauf(); } }),
+      ' nur kritische (≥ 60 °C)');
+    const reset = el('button', { class: 'btn mini', onclick: () => {
+      State.filter = { stelleId: '', halleId: '', von: '', bis: '', nurKritisch: false }; renderVerlauf();
+    } }, 'Filter zurücksetzen');
+
+    filter.append(feld('Messstelle', selStelle), feld('Halle', selHalle),
+      feld('von', von), feld('bis', bis), krit, reset);
+    return el('div', {}, kopf, filter);
+  }
+
+  function gefilterteReihen() {
+    const f = State.filter;
+    return State.messreihen.filter((r) => {
+      const sid = r.messstelle_id || (r.messwerte[0] ? (ortById(r.messwerte[0].ort_id)?.stelle.id) : null);
+      if (f.stelleId && String(sid) !== f.stelleId) return false;
+      if (f.halleId && !r.messwerte.some((w) => { const i = ortById(w.ort_id); return i && String(i.halle.id) === f.halleId; })) return false;
+      const t = new Date(r.zeitpunkt).getTime();
+      if (f.von && t < new Date(f.von + 'T00:00').getTime()) return false;
+      if (f.bis && t > new Date(f.bis + 'T23:59').getTime()) return false;
+      if (f.nurKritisch) {
+        const max = r.messwerte.reduce((m, w) => (w.temperatur != null && w.temperatur > m ? w.temperatur : m), -Infinity);
+        if (!(max >= 60)) return false;
+      }
+      return true;
+    });
+  }
+
+  // Zeitreihe je Ort (aufsteigend) für Trend und Diagramm.
+  function ortTimelines() {
+    const map = new Map();
+    for (const r of State.messreihen) {
+      const t = new Date(r.zeitpunkt).getTime();
+      for (const w of r.messwerte) {
+        if (w.temperatur == null) continue;
+        if (!map.has(w.ort_id)) map.set(w.ort_id, []);
+        map.get(w.ort_id).push({ t, temp: w.temperatur });
+      }
+    }
+    for (const arr of map.values()) arr.sort((a, b) => a.t - b.t);
+    return map;
+  }
+
+  function trendZelle(map, ortId, zeitpunkt, temp) {
+    if (temp == null) return el('td', {});
+    const arr = map.get(ortId);
+    if (!arr) return el('td', {});
+    const tt = new Date(zeitpunkt).getTime();
+    let prev = null;
+    for (const e of arr) { if (e.t < tt) prev = e; else break; }
+    if (!prev) return el('td', { class: 'klein-grau' }, '—');
+    const d = temp - prev.temp;
+    const pfeil = d > 0.2 ? '▲' : (d < -0.2 ? '▼' : '▶');
+    const kl = d > 0.2 ? 'trend-auf' : (d < -0.2 ? 'trend-ab' : 'trend-gleich');
+    return el('td', { class: 'trend ' + kl, title: 'gegenüber Vormessung' },
+      pfeil + ' ' + (d > 0 ? '+' : '') + d.toFixed(1));
+  }
+
+  // ---- Excel-Export ----
+  function jahrExportSteuerung() {
+    const jahre = [...new Set(State.messreihen.map((r) => new Date(r.zeitpunkt).getFullYear()))]
+      .filter((n) => !isNaN(n)).sort((a, b) => b - a);
+    const sel = el('select', { id: 'export-jahr' });
+    sel.append(el('option', { value: '' }, 'alle Jahre'));
+    for (const j of jahre) sel.append(el('option', { value: String(j) }, String(j)));
+    const btn = el('button', { class: 'btn klein', onclick: () => excelExport(sel.value ? Number(sel.value) : null) }, '⭳ Excel');
+    return el('span', { class: 'export-jahr' }, sel, btn);
+  }
+  function excelExport(jahr) {
+    try {
+      const n = ExcelIO.exportiere(State.messreihen, ortById, stufeFuer, stelleNameVon, jahr);
+      meldung(n + ' Messwerte als Excel exportiert.', 'ok');
+    } catch (e) { meldung('Excel-Export: ' + e.message, 'fehler'); }
+  }
+
+  // ---- Backup / Wiederherstellen (JSON) ----
+  function backupHerunterladen() {
+    const daten = { app: 'heustockmessen', stand: new Date().toISOString(),
+      messstellen: State.messstellen, messreihen: State.messreihen };
+    const blob = new Blob([JSON.stringify(daten, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'heustock-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  function wiederherstellenSteuerung() {
+    const inp = el('input', { type: 'file', accept: 'application/json,.json', style: 'display:none', onchange: wiederherstellen });
+    const btn = el('button', { class: 'btn klein', onclick: () => inp.click() }, '⭱ Wiederherstellen');
+    return el('span', {}, btn, inp);
+  }
+  async function wiederherstellen(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const daten = JSON.parse(await file.text());
+      if (!daten.messstellen || !daten.messreihen) throw new Error('Keine gültigen Heustock-Daten.');
+      if (!confirm('Achtung: Der gesamte aktuelle Datenbestand wird durch das Backup ersetzt. Fortfahren?')) { e.target.value = ''; return; }
+      await Api.restore({ messstellen: daten.messstellen, messreihen: daten.messreihen });
+      await ladeDaten();
+      renderAlles();
+      meldung('Backup wiederhergestellt.', 'ok');
+    } catch (err) {
+      meldung('Wiederherstellen fehlgeschlagen: ' + err.message, 'fehler');
+    }
+    e.target.value = '';
+  }
+
+  // ======================================================================
+  //  Ansicht 4: Diagramm (Temperaturverlauf je Ort)
+  // ======================================================================
+  function renderDiagramm() {
+    const wrap = $('#view-diagramm');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    wrap.append(el('h2', {}, '📈 Temperaturverlauf je Ort'));
+
+    const sel = el('select', { onchange: (e) => { State.diagrammOrtId = Number(e.target.value) || null; renderDiagramm(); } });
+    sel.append(el('option', { value: '' }, '– Ort wählen –'));
+    for (const s of State.messstellen) {
+      for (const h of (s.hallen || [])) {
+        if (!(h.orte || []).length) continue;
+        const og = el('optgroup', { label: s.name + ' · ' + h.name });
+        for (const o of h.orte)
+          og.append(el('option', { value: String(o.id), ...(o.id === State.diagrammOrtId ? { selected: '' } : {}) }, o.bezeichnung));
+        sel.append(og);
+      }
+    }
+    wrap.append(feld('Ort', sel));
+
+    if (!State.diagrammOrtId) { wrap.append(el('p', { class: 'klein-grau' }, 'Bitte einen Ort wählen.')); return; }
+    const tl = ortTimelines().get(State.diagrammOrtId) || [];
+    if (!tl.length) { wrap.append(el('p', { class: 'klein-grau' }, 'Für diesen Ort liegen noch keine Messwerte vor.')); return; }
+    wrap.append(legende());
+    wrap.append(svgChart(tl));
+  }
+
+  function svgChart(points) {
+    const W = 680, H = 280, pad = { l: 42, r: 14, t: 14, b: 42 };
+    const xs = points.map((p) => p.t), ys = points.map((p) => p.temp);
+    const minX = Math.min(...xs), maxX = Math.max(...xs);
+    const minY = Math.min(0, ...ys);
+    const maxY = Math.ceil((Math.max(...ys, 80) + 5) / 10) * 10;
+    const sx = (t) => pad.l + (maxX === minX ? 0.5 : (t - minX) / (maxX - minX)) * (W - pad.l - pad.r);
+    const sy = (v) => H - pad.b - (v - minY) / (maxY - minY) * (H - pad.t - pad.b);
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('class', 'chart');
+    const mk = (name, attrs, txt) => {
+      const n = document.createElementNS(ns, name);
+      for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+      if (txt != null) n.textContent = txt;
+      svg.append(n);
+      return n;
+    };
+    // Schwellen-Linien
+    for (const s of STUFEN) {
+      if (s.ab === -Infinity) continue;
+      const y = sy(s.ab);
+      if (y > pad.t && y < H - pad.b) {
+        mk('line', { x1: pad.l, y1: y, x2: W - pad.r, y2: y, class: 'schwelle s-' + s.klasse });
+        mk('text', { x: W - pad.r - 2, y: y - 3, class: 'schwelle-lbl', 'text-anchor': 'end' }, s.ab + '°');
+      }
+    }
+    // Achsen + Y-Ticks
+    mk('line', { x1: pad.l, y1: pad.t, x2: pad.l, y2: H - pad.b, class: 'achse' });
+    mk('line', { x1: pad.l, y1: H - pad.b, x2: W - pad.r, y2: H - pad.b, class: 'achse' });
+    for (let v = Math.ceil(minY / 20) * 20; v <= maxY; v += 20)
+      mk('text', { x: pad.l - 6, y: sy(v) + 4, class: 'tick', 'text-anchor': 'end' }, String(v));
+    // Linie
+    mk('polyline', { class: 'linie', points: points.map((p) => sx(p.t) + ',' + sy(p.temp)).join(' ') });
+    // Punkte + sparsame X-Beschriftung
+    points.forEach((p, i) => {
+      const st = stufeFuer(p.temp);
+      const c = mk('circle', { cx: sx(p.t), cy: sy(p.temp), r: 4, class: 'pkt' + (st ? ' s-' + st.klasse : '') });
+      const ti = document.createElementNS(ns, 'title');
+      ti.textContent = zeitLesbar(new Date(p.t).toISOString()) + ': ' + p.temp.toFixed(1) + ' °C';
+      c.append(ti);
+      if (i === 0 || i === points.length - 1 || points.length <= 6) {
+        const d = new Date(p.t);
+        mk('text', { x: sx(p.t), y: H - pad.b + 16, class: 'tick', 'text-anchor': 'middle' },
+          ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2));
+      }
+    });
+    return el('div', { class: 'chart-box' }, svg);
+  }
+
+  // ======================================================================
+  //  Offline-Puffer + Live-Update
+  // ======================================================================
+  const Offline = (() => {
+    const KEY = 'heustock_queue';
+    const list = () => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } };
+    const save = (a) => { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) { /* voll */ } };
+    return {
+      list, count: () => list().length,
+      add: (daten) => { const a = list(); a.push({ ...daten, _ts: Date.now() }); save(a); },
+      async sync() {
+        const a = list();
+        if (!a.length) return { ok: 0, rest: 0 };
+        let ok = 0; const rest = [];
+        for (const d of a) {
+          try { await Api.messreiheSave(d); ok++; } catch (e) { rest.push(d); }
+        }
+        save(rest);
+        return { ok, rest: rest.length };
+      },
+    };
+  })();
+
+  function aktualisiereOfflineStatus() {
+    const b = $('#offline-status');
+    const n = Offline.count();
+    b.hidden = n === 0;
+    b.textContent = '⏳ ' + n + ' offline';
+    b.title = n + ' Messung(en) warten auf Übertragung – klicken zum Synchronisieren.';
+  }
+
+  async function syncOffline() {
+    if (!Offline.count()) return;
+    const r = await Offline.sync();
+    aktualisiereOfflineStatus();
+    if (r.ok) {
+      await ladeDaten();
+      renderAlles();
+      meldung(r.ok + ' Messung(en) synchronisiert.' + (r.rest ? ' ' + r.rest + ' noch offen.' : ''), r.rest ? 'info' : 'ok');
+    } else if (r.rest) {
+      meldung(r.rest + ' Messung(en) konnten nicht übertragen werden (Server/Anmeldung prüfen).', 'fehler');
+    }
+  }
+
+  let pollTimer = null;
+  function startPolling() {
+    stopPolling();
+    pollTimer = setInterval(pollStand, 15000);
+  }
+  function stopPolling() { if (pollTimer) clearInterval(pollTimer); pollTimer = null; }
+
+  async function pollStand() {
+    if (document.hidden || !State.online) return;
+    try {
+      const s = await Api.stand();
+      if (s.rev !== State.rev) {
+        const messendAktiv = State.wizardSchritt > 0 || Object.keys(State.werte).length > 0;
+        await ladeDaten();
+        renderVerlauf();
+        renderMessstellen();
+        renderDiagramm();
+        if (!messendAktiv) renderMessung();
+        meldung('Daten aktualisiert (Änderung durch andere Nutzer).', 'info');
+      }
+    } catch (e) { /* vermutlich offline – ignorieren */ }
+  }
+
+  // ======================================================================
   //  Anmeldung / Passwort
   // ======================================================================
   function zeigeLogin(an) {
@@ -699,6 +1036,7 @@ const App = (() => {
   }
 
   async function logout() {
+    stopPolling();
     try { await Api.logout(); } catch (e) { /* egal */ }
     zeigeLogin(true);
   }
@@ -739,11 +1077,15 @@ const App = (() => {
     renderMessung();
     renderMessstellen();
     renderVerlauf();
+    renderDiagramm();
   }
 
   async function starteApp() {
     await ladeDaten();
     renderAlles();
+    aktualisiereOfflineStatus();
+    await syncOffline();
+    startPolling();
   }
 
   async function init() {
@@ -758,6 +1100,12 @@ const App = (() => {
     $('#pw-abbrechen').addEventListener('click', () => pwDialog(false));
 
     window.addEventListener('beforeprint', () => $$('#view-verlauf details').forEach((d) => (d.open = true)));
+
+    // Offline-Puffer: Anzeige, manuelles Synchronisieren, Auto-Sync bei Netz
+    $('#offline-status').addEventListener('click', syncOffline);
+    window.addEventListener('online', () => { syncOffline(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) pollStand(); });
+    aktualisiereOfflineStatus();
 
     await pruefeAnmeldung();
   }

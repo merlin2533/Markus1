@@ -50,11 +50,27 @@ Messstellen, Hallen und Orte sind die **Stammdaten** (einmal anlegen); die
 
   Die Schwellen sind zentral in `js/app.js` (`STUFEN`) anpassbar.
 - **Verlauf & Auswertung**: alle Messreihen, je Reihe der Höchstwert mit
-  Stufen-Badge, Werte-Tabelle, Bearbeiten/Löschen.
-- **Drucken / PDF**: Verlauf als Bericht ausdrucken (`print.css`).
+  Stufen-Badge, Werte-Tabelle (nach Halle gruppiert), Bearbeiten/Löschen.
+- **Trend je Ort**: Pfeil ▲/▼/▶ + Δ°C gegenüber der letzten Messung am selben
+  Ort – der Anstieg ist das wichtigste Warnsignal.
+- **Vollständigkeitskontrolle**: vor dem Speichern wird auf noch nicht gemessene
+  Orte hingewiesen; Speichern ist möglich, aber mit Nachfrage.
+- **Live-Update**: messen mehrere Personen gleichzeitig, aktualisiert sich die
+  Ansicht automatisch (Revisions-Abgleich alle 15 s).
+- **Offline-Puffer**: kein WLAN im Stall? Messungen werden lokal zwischen­ge­speichert
+  und automatisch übertragen, sobald wieder Verbindung besteht (Badge im Kopf).
+- **Filter** im Verlauf: nach Messstelle, Halle, Zeitraum und „nur kritische".
+- **Diagramm**: Temperaturverlauf eines Orts über die Zeit (kleines SVG, mit
+  Schwellen­linien).
+- **Excel-Export** der Messwerte (optional nach Jahr gefiltert; SheetJS lokal).
+- **Backup/Wiederherstellen** des gesamten Datenbestands als JSON-Datei.
+- **PWA**: „Zum Startbildschirm hinzufügen", Vollbild, App-Shell offline
+  (Service Worker), App-Icon.
+- **Drucken / PDF**: Verlauf als Bericht – je Messung eine Seite mit
+  Unterschriftszeile (`print.css`).
 - **Passwortschutz**: gemeinsames Passwort, in der DB als Hash gespeichert.
   **Standard bei Erstinstallation: `Feuerwehr112!`** – in der App unter
-  **⚙ Passwort** änderbar.
+  **⚙ Passwort** änderbar. Schreibende Anfragen sind per **CSRF-Token** geschützt.
 
 ## Installation auf dem Server
 
@@ -97,8 +113,10 @@ node Heustockmessen/tests/smoke.test.mjs
 # bzw. anderer Server:  BASE_URL=http://host:port node tests/smoke.test.mjs
 ```
 
-Der Test prüft Anmeldung (inkl. Fehlversuch), Stammdaten anlegen, Ampel-Färbung,
-Messung speichern, Verlauf, Passwort ändern/zurücksetzen und Logout.
+Der Test (27 Checks) prüft Anmeldung (inkl. Fehlversuch), Stammdaten
+(Messstelle/Halle/Orte), den geführten Ablauf, Ampel-Färbung, Speichern,
+Verlauf inkl. Filter/Trend/Excel/Backup, Diagramm, Passwort ändern/zurücksetzen
+und Logout. Der CSRF-Schutz wird implizit über die erfolgreichen POSTs geprüft.
 
 ## API (`api.php`)
 
@@ -107,31 +125,39 @@ JSON über `GET`/`POST`, Aktion im Feld `action`. Antwort immer
 
 | Aktion | Anmeldung | Zweck |
 |--------|:--------:|-------|
-| `ping`, `status` | – | Erreichbarkeit / Anmeldestatus |
+| `ping`, `status` | – | Erreichbarkeit / Anmeldestatus (liefert CSRF-Token) |
 | `login`, `logout` | – | An-/Abmelden (Session-Cookie) |
+| `stand` | ✓ | Revisionsstand für das Live-Update |
 | `passwort_aendern` | ✓ | Passwort ändern (`alt`, `neu`) |
 | `stammdaten`, `messreihen`, `alles` | ✓ | Daten lesen |
 | `messstelle_save` / `_delete` | ✓ | Messstelle anlegen/ändern/löschen |
 | `halle_save` / `_delete` | ✓ | Halle anlegen/ändern/löschen |
 | `ort_save` / `_delete` | ✓ | Ort anlegen/ändern/löschen |
 | `messreihe_save` / `_delete` | ✓ | Messreihe inkl. Werte (atomar) |
+| `restore` | ✓ | Backup einspielen (ersetzt gesamten Bestand) |
 
 Löschungen kaskadieren (Messstelle → Hallen → Orte → Messwerte) über
-Fremdschlüssel/`ON DELETE CASCADE`.
+Fremdschlüssel/`ON DELETE CASCADE`. Alle schreibenden Aufrufe (POST) erfordern
+das **CSRF-Token** (Header `X-CSRF-Token`, vom Client automatisch gesetzt).
 
 ## Dateien
 
 ```
 Heustockmessen/
-├─ index.html        – Oberfläche (Login, Navigation, drei Ansichten)
-├─ styles.css        – Design (Feuerwehr-Rot), mobil-first
-├─ print.css         – Druck-/PDF-Layout des Verlaufs
-├─ api.php           – PHP-Backend + SQLite (Auth, CRUD, Schema-Auto-Anlage)
+├─ index.html            – Oberfläche (Login, Navigation, vier Ansichten)
+├─ styles.css            – Design (Feuerwehr-Rot), mobil-first
+├─ print.css             – Druck-/PDF-Layout (Seite je Messung, Unterschrift)
+├─ api.php               – PHP-Backend + SQLite (Auth, CSRF, CRUD, Restore, Schema)
+├─ manifest.webmanifest  – PWA-Manifest
+├─ sw.js                 – Service Worker (App-Shell offline)
+├─ icon.svg              – App-Icon
 ├─ js/
-│  ├─ api.js         – fetch-Client
-│  ├─ weather.js     – Standort + Open-Meteo (Außentemperatur automatisch)
-│  └─ app.js         – UI-Logik, Warnstufen
-├─ data/             – SQLite-DB zur Laufzeit (gesperrt, nicht versioniert)
-├─ web.config        – IIS-Schutz für data/
-└─ tests/smoke.test.mjs – End-to-End-Test
+│  ├─ api.js             – fetch-Client (CSRF-Handling)
+│  ├─ weather.js         – Standort + Open-Meteo (Außentemperatur automatisch)
+│  ├─ excel.js           – Excel-Export (SheetJS)
+│  └─ app.js             – UI-Logik, Wizard, Filter, Trend, Diagramm, Offline
+├─ vendor/xlsx.full.min.js – SheetJS (lokal, offline)
+├─ data/                 – SQLite-DB zur Laufzeit (gesperrt, nicht versioniert)
+├─ web.config            – IIS-Schutz für data/
+└─ tests/smoke.test.mjs  – End-to-End-Test (27 Checks)
 ```

@@ -113,6 +113,24 @@ try {
     await page.locator('#view-verlauf .reihe summary .badge.s-rot').count() === 1);
   ok('Werte-Tabelle hat 2 Wertezeilen', await page.locator('#view-verlauf .werte-tab tr').count() === 3); // inkl. Kopf
 
+  // --- Verlauf-Werkzeuge & Filter ---
+  ok('Excel-Export vorhanden', await page.locator('#view-verlauf .export-jahr .btn').count() === 1);
+  ok('Filterleiste vorhanden', await page.locator('#view-verlauf .filterleiste').count() === 1);
+  ok('Trend-Spalte vorhanden', (await page.locator('#view-verlauf .werte-tab th').allTextContents()).includes('Trend'));
+  ok('Backup-Button vorhanden', await page.locator('#view-verlauf .werkzeuge .btn:has-text("Backup")').count() === 1);
+
+  // Filter „nur kritische" greift (75°C ist kritisch → Reihe bleibt sichtbar)
+  await page.check('#view-verlauf .check input[type="checkbox"]');
+  await page.waitForTimeout(150);
+  ok('Filter nur-kritische zeigt die Reihe', await page.locator('#view-verlauf .reihe').count() === 1);
+  await page.uncheck('#view-verlauf .check input[type="checkbox"]');
+  await page.waitForTimeout(150);
+
+  // --- Diagramm ---
+  await page.click('.nav-btn[data-view="diagramm"]');
+  await page.waitForTimeout(200);
+  ok('Diagramm-Ortauswahl vorhanden', await page.locator('#view-diagramm select').count() === 1);
+
   // --- Passwort ändern und zurücksetzen ---
   await page.click('#btn-einstellungen');
   await page.waitForTimeout(150);

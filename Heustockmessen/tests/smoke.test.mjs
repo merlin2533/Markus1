@@ -81,6 +81,7 @@ try {
   await page.waitForTimeout(200);
   // Schritt 1: Kopfdaten
   ok('Wizard-Schritt 1 (Messstelle wählbar)', await page.locator('#m-stelle').count() === 1);
+  ok('Foto-Feld vorhanden', await page.locator('#view-messung input[type="file"]').count() === 1);
   await page.fill('#m-temp', '20');
   await page.fill('#m-messer', 'Tester');
   await page.click('#view-messung .aktionsleiste .btn.primaer'); // Weiter →
@@ -89,6 +90,8 @@ try {
   // Schritt 2: Halle 1 mit ihren Orten
   const felder = page.locator('#view-messung .ebene-zeile .temp-feld');
   ok('2 Orte-Felder in Halle', await felder.count() === 2);
+  ok('Sondentiefe-Feld je Ort', await page.locator('#view-messung .tiefe-feld').count() === 2);
+  await page.locator('#view-messung .tiefe-feld').first().fill('150 cm');
   await felder.nth(0).fill('75');
   await page.waitForTimeout(100);
   ok('75°C wird rot markiert', (await felder.nth(0).getAttribute('class')).includes('s-rot'));
@@ -130,6 +133,29 @@ try {
   await page.click('.nav-btn[data-view="diagramm"]');
   await page.waitForTimeout(200);
   ok('Diagramm-Ortauswahl vorhanden', await page.locator('#view-diagramm select').count() === 1);
+
+  // --- Dashboard ---
+  await page.click('.nav-btn[data-view="dashboard"]');
+  await page.waitForTimeout(200);
+  ok('Dashboard zeigt Messstelle', await page.locator('#view-dashboard .dash-karte').count() === 1);
+  ok('Dashboard-Badge (rot) sichtbar', await page.locator('#view-dashboard .dash-karte .badge.s-rot').count() === 1);
+
+  // --- Schwellenwerte konfigurieren ---
+  await page.click('#view-dashboard .werkzeuge .btn:has-text("Schwellenwerte")');
+  await page.waitForTimeout(150);
+  ok('Schwellen-Dialog offen', await page.locator('#schwellen-overlay').isVisible());
+  await page.click('#sw-stroh');
+  ok('Preset Stroh setzt 65 °C', await page.locator('#sw-rot').inputValue() === '65');
+  await page.click('#sw-speichern');
+  await page.locator('#schwellen-overlay').waitFor({ state: 'hidden', timeout: 4000 }).catch(() => {});
+  ok('Schwellen gespeichert', await page.locator('#schwellen-overlay').isHidden());
+
+  // --- Messstelle duplizieren ---
+  await page.click('.nav-btn[data-view="messstellen"]');
+  await page.waitForTimeout(150);
+  await page.click('.stelle-kopf .btn:has-text("Duplizieren")');
+  await page.waitForTimeout(400);
+  ok('Messstelle dupliziert', await page.locator('.stelle-karte').count() === 2);
 
   // --- Passwort ändern und zurücksetzen ---
   await page.click('#btn-einstellungen');

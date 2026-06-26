@@ -34,4 +34,37 @@
   .badge { color: #000 !important; background: none !important; border: 1px solid #000; }
   .werte-tab th, .werte-tab td { border-bottom: 1px solid #ccc; }
   .trend { color: #000 !important; }
+
+  /* ---- Tagesbericht: nur dieser wird gedruckt ---- */
+  body.drucke-bericht #app { display: none !important; }
+  body.drucke-bericht #bericht-druck { display: block !important; }
+
+  .bericht { color: #000; font-size: 12px; }
+  .b-kopf { display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 3px solid #c1121f; padding-bottom: 8px; margin-bottom: 14px; }
+  .b-logo { font-size: 12px; color: #c1121f; font-weight: 700; }
+  .b-kopf h1 { margin: 2px 0 0; font-size: 21px; }
+  .b-datum { font-size: 14px; font-weight: 700; text-align: right; }
+  .b-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .b-sum { border: 1px solid #bbb; border-radius: 6px; padding: 6px 12px; min-width: 110px; }
+  .b-sum-l { font-size: 9px; text-transform: uppercase; letter-spacing: .03em; color: #666; }
+  .b-sum-w { font-size: 14px; font-weight: 700; }
+  .b-reihe { margin-bottom: 16px; page-break-inside: avoid; }
+  .b-reihe h2 { font-size: 15px; margin: 0 0 2px; color: #7a0c15; }
+  .b-meta { font-size: 11px; color: #444; margin-bottom: 6px; }
+  .b-tab { width: 100%; border-collapse: collapse; }
+  .b-tab th, .b-tab td { border: 1px solid #c8c8c8; padding: 4px 7px; text-align: left; font-size: 11px; }
+  .b-tab th { background: #f1f1f1; font-size: 9px; text-transform: uppercase; letter-spacing: .03em; }
+  .b-tab td.num { text-align: right; font-weight: 700; }
+  .b-tab tr.s-rot td.num { color: #c1121f; }
+  .b-tab tr.s-orange td.num { color: #b85a00; }
+  .b-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+  .b-dot.s-gruen { background: #2e7d32; } .b-dot.s-gelb { background: #c9a227; }
+  .b-dot.s-orange { background: #e8740c; } .b-dot.s-rot { background: #d32f2f; }
+  .b-notiz { font-size: 11px; margin-top: 4px; }
+  .b-foto { max-width: 220px; margin-top: 8px; border: 1px solid #ccc; border-radius: 4px; }
+  .b-fuss { margin-top: 28px; display: flex; gap: 50px; }
+  .b-sign { font-size: 12px; }
+  .b-line { display: inline-block; width: 190px; border-bottom: 1px solid #000; }
+  .b-gen { margin-top: 12px; font-size: 9px; color: #999; }
 }

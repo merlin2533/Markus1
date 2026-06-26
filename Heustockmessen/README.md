@@ -72,17 +72,23 @@ Messstellen, Hallen und Orte sind die **Stammdaten** (einmal anlegen); die
   und automatisch übertragen, sobald wieder Verbindung besteht (Badge im Kopf).
 - **Filter** im Verlauf: nach Messstelle, Halle, Zeitraum und „nur kritische".
 - **Diagramm**: Temperaturverlauf **aller Orte einer Messstelle** (oder einer
-  Halle) gemeinsam – je Ort eine farbige Linie mit Legende und Schwellenlinien.
+  Halle) gemeinsam – je Ort eine farbige, weiche Kurve mit End-Wert, dazu
+  farbige Gefahren-Zonen im Hintergrund, Schwellen-Beschriftung und Legende.
 - **Reihenfolge** der Hallen und Orte per ▲/▼ sortierbar.
 - **Plausibilitätsprüfung**: unrealistische Temperaturen (< −20 / > 150 °C)
   werden markiert und vor dem Speichern abgefragt (Tippfehler).
 - **Excel-Export** der Messwerte (optional nach Jahr gefiltert; SheetJS lokal).
 - **Backup/Wiederherstellen** des gesamten Datenbestands als JSON-Datei.
 - **PWA**: „Zum Startbildschirm hinzufügen", Vollbild, App-Shell offline
-  (Service Worker), App-Icon.
+  (Service Worker), App-Icon. Ein **Installations-Banner** erscheint, sobald
+  der Browser die Installation anbietet.
 - **Für Smartphone und Desktop optimiert**: große Touch-Felder, beim Erfassen
   unten andockende Bedienleiste, sticky Navigation, horizontal scrollbare
   Tabellen, Berücksichtigung der Geräte-Ränder (Notch/Safe-Area).
+- **Tagesbericht (HTML/PDF)**: sauber aufbereiteter Bericht für einen
+  gewählten Tag – Kopf mit Datum, Zusammenfassung (Messungen, Höchstwert,
+  kritische Werte), je Messstelle eine Tabelle (Halle/Ort/Tiefe/Temperatur/
+  Bewertung/Notiz) und Unterschriftszeile. Über „📄 Tagesbericht" im Verlauf.
 - **Drucken / PDF**: Verlauf als Bericht – je Messung eine Seite mit
   Unterschriftszeile (`print.css`).
 - **Passwortschutz**: gemeinsames Passwort, in der DB als Hash gespeichert.

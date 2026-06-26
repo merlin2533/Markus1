@@ -132,6 +132,14 @@ try {
   ok('Trend-Spalte vorhanden', (await page.locator('#view-verlauf .werte-tab th').allTextContents()).includes('Trend'));
   ok('Backup-Button vorhanden', await page.locator('#view-verlauf .werkzeuge .btn:has-text("Backup")').count() === 1);
 
+  // Tagesbericht erzeugen (Druck unterdrücken)
+  ok('Tagesbericht-Knopf vorhanden', await page.locator('#view-verlauf .werkzeuge .btn:has-text("Tagesbericht")').count() === 1);
+  await page.evaluate(() => { window.print = () => {}; });
+  await page.click('#view-verlauf .werkzeuge .btn:has-text("Tagesbericht")');
+  await page.waitForTimeout(200);
+  ok('Tagesbericht enthält Messstelle', await page.locator('#bericht-druck .b-reihe').count() >= 1);
+  await page.evaluate(() => document.body.classList.remove('drucke-bericht'));
+
   // Filter „nur kritische" greift (75°C ist kritisch → Reihe bleibt sichtbar)
   await page.check('#view-verlauf .check input[type="checkbox"]');
   await page.waitForTimeout(150);
@@ -145,6 +153,16 @@ try {
   ok('Diagramm: Messstelle + Halle wählbar', await page.locator('#view-diagramm select').count() === 2);
   ok('Diagramm zeichnet Punkte', await page.locator('#view-diagramm svg.chart .pkt').count() >= 1);
   ok('Diagramm-Legende je Ort', await page.locator('#view-diagramm .diag-leg-eintrag').count() === 2);
+  ok('Diagramm: Gefahren-Zonen gezeichnet', await page.locator('#view-diagramm svg.chart rect').count() >= 3);
+
+  // --- PWA-Installations-Banner (simuliertes Event) ---
+  await page.evaluate(() => {
+    const e = new Event('beforeinstallprompt');
+    e.prompt = () => {}; e.userChoice = Promise.resolve({ outcome: 'dismissed' });
+    window.dispatchEvent(e);
+  });
+  await page.waitForTimeout(100);
+  ok('Install-Banner erscheint', await page.locator('#install-banner').isVisible());
 
   // --- Dashboard ---
   await page.click('.nav-btn[data-view="dashboard"]');

@@ -76,6 +76,12 @@ try {
   await page.waitForTimeout(250);
   ok('2 Orte angelegt', await page.locator('.ort-edit').count() === 2);
 
+  // Sortierung: zweiten Ort (Mitte) nach oben
+  ok('Sortier-Knöpfe vorhanden', await page.locator('.ort-edit .sort-knoepfe').count() === 2);
+  await page.locator('.ort-edit').nth(1).locator('.sort-knoepfe .btn').first().click();
+  await page.waitForTimeout(400);
+  ok('Orte umsortiert (Mitte zuerst)', (await page.locator('.ort-edit .inline-edit').first().inputValue()) === 'Mitte');
+
   // --- Geführte Messung erfassen ---
   await page.click('.nav-btn[data-view="messung"]');
   await page.waitForTimeout(200);
@@ -92,6 +98,10 @@ try {
   ok('2 Orte-Felder in Halle', await felder.count() === 2);
   ok('Sondentiefe-Feld je Ort', await page.locator('#view-messung .tiefe-feld').count() === 2);
   await page.locator('#view-messung .tiefe-feld').first().fill('150 cm');
+  // Plausibilitätsprüfung
+  await felder.nth(0).fill('200');
+  await page.waitForTimeout(100);
+  ok('Unplausibler Wert (200 °C) markiert', (await felder.nth(0).getAttribute('class')).includes('unplausibel'));
   await felder.nth(0).fill('75');
   await page.waitForTimeout(100);
   ok('75°C wird rot markiert', (await felder.nth(0).getAttribute('class')).includes('s-rot'));
@@ -129,10 +139,12 @@ try {
   await page.uncheck('#view-verlauf .check input[type="checkbox"]');
   await page.waitForTimeout(150);
 
-  // --- Diagramm ---
+  // --- Diagramm (alle Orte einer Messstelle zusammen) ---
   await page.click('.nav-btn[data-view="diagramm"]');
-  await page.waitForTimeout(200);
-  ok('Diagramm-Ortauswahl vorhanden', await page.locator('#view-diagramm select').count() === 1);
+  await page.waitForTimeout(300);
+  ok('Diagramm: Messstelle + Halle wählbar', await page.locator('#view-diagramm select').count() === 2);
+  ok('Diagramm zeichnet Punkte', await page.locator('#view-diagramm svg.chart .pkt').count() >= 1);
+  ok('Diagramm-Legende je Ort', await page.locator('#view-diagramm .diag-leg-eintrag').count() === 2);
 
   // --- Dashboard ---
   await page.click('.nav-btn[data-view="dashboard"]');

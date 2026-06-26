@@ -71,8 +71,11 @@ Messstellen, Hallen und Orte sind die **Stammdaten** (einmal anlegen); die
 - **Offline-Puffer**: kein WLAN im Stall? Messungen werden lokal zwischen­ge­speichert
   und automatisch übertragen, sobald wieder Verbindung besteht (Badge im Kopf).
 - **Filter** im Verlauf: nach Messstelle, Halle, Zeitraum und „nur kritische".
-- **Diagramm**: Temperaturverlauf eines Orts über die Zeit (kleines SVG, mit
-  Schwellen­linien).
+- **Diagramm**: Temperaturverlauf **aller Orte einer Messstelle** (oder einer
+  Halle) gemeinsam – je Ort eine farbige Linie mit Legende und Schwellenlinien.
+- **Reihenfolge** der Hallen und Orte per ▲/▼ sortierbar.
+- **Plausibilitätsprüfung**: unrealistische Temperaturen (< −20 / > 150 °C)
+  werden markiert und vor dem Speichern abgefragt (Tippfehler).
 - **Excel-Export** der Messwerte (optional nach Jahr gefiltert; SheetJS lokal).
 - **Backup/Wiederherstellen** des gesamten Datenbestands als JSON-Datei.
 - **PWA**: „Zum Startbildschirm hinzufügen", Vollbild, App-Shell offline

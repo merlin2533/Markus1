@@ -853,7 +853,7 @@ const App = (() => {
       el('h2', {}, 'Verlauf & Auswertung'),
       el('div', { class: 'werkzeuge' },
         el('button', { class: 'btn klein', onclick: () => window.print() }, '🖨 Drucken'),
-        tagesberichtSteuerung(),
+        berichtSteuerung(),
         jahrExportSteuerung(),
         el('button', { class: 'btn klein', onclick: backupHerunterladen }, '⭳ Backup'),
         wiederherstellenSteuerung(),
@@ -999,39 +999,95 @@ const App = (() => {
     return p(d.getHours()) + ':' + p(d.getMinutes());
   }
 
-  function tagesberichtSteuerung() {
+  function berichtSteuerung() {
     const letzte = State.messreihen[0] ? lokaleDatum(State.messreihen[0].zeitpunkt) : lokaleDatum(new Date().toISOString());
     const inp = el('input', { type: 'date', class: 'bericht-datum', value: letzte });
-    const btn = el('button', { class: 'btn klein', onclick: () => tagesbericht(inp.value) }, '📄 Tagesbericht');
-    return el('span', { class: 'bericht-steuerung' }, inp, btn);
+    const tagBtn = el('button', { class: 'btn klein', onclick: () => tagesbericht(inp.value) }, '📄 Tagesbericht');
+    const gesamtBtn = el('button', { class: 'btn klein', onclick: gesamtbericht }, '📋 Gesamtbericht');
+    const sel = el('select', { class: 'bericht-person' });
+    sel.append(el('option', { value: '' }, '– Person –'));
+    for (const n of erfasserNamen()) sel.append(el('option', { value: n }, n));
+    const personBtn = el('button', { class: 'btn klein', onclick: () => personenbericht(sel.value) }, '👤 Personenbericht');
+    return el('span', { class: 'bericht-steuerung' }, inp, tagBtn, gesamtBtn, sel, personBtn);
+  }
+
+  function druckeBericht(reihen, titel, untertitel) {
+    const ziel = $('#bericht-druck');
+    ziel.innerHTML = '';
+    ziel.append(bauBericht(reihen, titel, untertitel));
+    document.body.classList.add('drucke-bericht');
+    window.print();
   }
 
   function tagesbericht(datum) {
-    const reihen = State.messreihen.filter((r) => lokaleDatum(r.zeitpunkt) === datum)
-      .sort((a, b) => new Date(a.zeitpunkt) - new Date(b.zeitpunkt));
-    if (!reihen.length) {
-      meldung('Für ' + tagLesbar(datum) + ' liegen keine Messungen vor.', 'fehler');
-      return;
-    }
-    const ziel = $('#bericht-druck');
-    ziel.innerHTML = '';
-    ziel.append(bauBericht(reihen, datum));
-    document.body.classList.add('drucke-bericht');
-    window.print();
+    const reihen = State.messreihen.filter((r) => lokaleDatum(r.zeitpunkt) === datum);
+    if (!reihen.length) { meldung('Für ' + tagLesbar(datum) + ' liegen keine Messungen vor.', 'fehler'); return; }
+    druckeBericht(reihen, 'Tagesbericht', tagLesbar(datum));
+  }
+
+  function gesamtbericht() {
+    const reihen = gefilterteReihen();
+    if (!reihen.length) { meldung('Keine Messungen für den aktuellen Filter.', 'fehler'); return; }
+    druckeBericht(reihen, 'Gesamtbericht', zeitraumText(reihen));
+  }
+
+  function personenbericht(name) {
+    if (!name) { meldung('Bitte oben eine Person auswählen.', 'fehler'); return; }
+    const reihen = State.messreihen.filter((r) => (r.messer || '') === name);
+    if (!reihen.length) { meldung('Keine Messungen von ' + name + '.', 'fehler'); return; }
+    druckeBericht(reihen, 'Bericht', 'Erfasser/in: ' + name + ' · ' + zeitraumText(reihen));
+  }
+
+  function zeitraumText(reihen) {
+    const ds = reihen.map((r) => new Date(r.zeitpunkt).getTime());
+    const von = lokaleDatum(new Date(Math.min(...ds)).toISOString());
+    const bis = lokaleDatum(new Date(Math.max(...ds)).toISOString());
+    return von === bis ? tagLesbar(von) : tagLesbar(von) + ' – ' + tagLesbar(bis);
+  }
+
+  function berichtDatumZeit(iso) {
+    const d = new Date(iso); const p = (n) => String(n).padStart(2, '0');
+    return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear() + ', ' + uhrzeit(iso);
   }
 
   function bSummary(label, wert) {
     return el('div', { class: 'b-sum' }, el('div', { class: 'b-sum-l' }, label), el('div', { class: 'b-sum-w' }, wert));
   }
 
-  function bauBericht(reihen, tag) {
+  // Werte-Tabelle einer Messreihe (nach Halle gruppiert) für den Bericht.
+  function bauWerteTabelle(r) {
+    const grp = new Map();
+    for (const w of r.messwerte) {
+      const info = ortById(w.ort_id); const hn = info ? info.halle.name : '—';
+      if (!grp.has(hn)) grp.set(hn, []);
+      grp.get(hn).push({ w, info });
+    }
+    const tab = el('table', { class: 'b-tab' });
+    tab.append(el('tr', {}, ...['Halle', 'Ort', 'Tiefe/Pos.', 'Temperatur', 'Bewertung', 'Notiz'].map((h) => el('th', {}, h))));
+    for (const [hn, eintraege] of grp) {
+      eintraege.forEach(({ w, info }, i) => {
+        const st = stufeFuer(w.temperatur);
+        tab.append(el('tr', { class: st ? 's-' + st.klasse : '' },
+          el('td', {}, i === 0 ? hn : ''),
+          el('td', {}, info ? info.ort.bezeichnung : ('#' + w.ort_id)),
+          el('td', {}, w.tiefe || ''),
+          el('td', { class: 'num' }, w.temperatur != null ? w.temperatur.toFixed(1) + ' °C' : '—'),
+          el('td', {}, el('span', { class: 'b-dot ' + (st ? 's-' + st.klasse : '') }), st ? st.titel : ''),
+          el('td', {}, w.notiz || '')));
+      });
+    }
+    return tab;
+  }
+
+  function bauBericht(reihen, titel, untertitel) {
     const frag = document.createDocumentFragment();
     frag.append(el('div', { class: 'b-kopf' },
       el('div', {},
         el('div', { class: 'b-logo' }, '🚒 Freiwillige Feuerwehr'),
-        el('h1', {}, 'Heustock – Tagesbericht')),
-      el('div', { class: 'b-datum' }, tagLesbar(tag))));
+        el('h1', {}, 'Heustock – ' + titel)),
+      el('div', { class: 'b-datum' }, untertitel)));
 
+    // Zusammenfassung über alle Messreihen
     let maxT = -Infinity, kritisch = 0; const stellen = new Set();
     for (const r of reihen) {
       stellen.add(r.messstelle_id || (r.messwerte[0] ? ortById(r.messwerte[0].ort_id)?.stelle.id : null));
@@ -1046,39 +1102,29 @@ const App = (() => {
       bSummary('Höchstwert', maxT === -Infinity ? '–' : maxT.toFixed(1) + ' °C' + (stMax ? ' · ' + stMax.titel : '')),
       bSummary('Kritische Werte (≥ ' + SCHWELLEN.orange + '°)', String(kritisch))));
 
-    for (const r of reihen) {
+    // Nach Messstelle gruppieren, innerhalb chronologisch
+    const grp = new Map();
+    for (const r of [...reihen].sort((a, b) => new Date(a.zeitpunkt) - new Date(b.zeitpunkt))) {
       const stelle = r.messstelle_id ? stelleById(r.messstelle_id)
         : (r.messwerte[0] ? ortById(r.messwerte[0].ort_id)?.stelle : null);
-      const sec = el('section', { class: 'b-reihe' });
-      sec.append(el('h2', {}, stelle ? stelle.name : '—'));
-      sec.append(el('div', { class: 'b-meta' },
-        'Uhrzeit ' + uhrzeit(r.zeitpunkt)
-        + (r.messer ? ' · Erfasser/in: ' + r.messer : '')
-        + (r.aussentemperatur != null ? ' · Außentemp. ' + r.aussentemperatur + ' °C' + (r.temp_quelle === 'open-meteo' ? ' (autom.)' : '') : '')));
-
-      const grp = new Map();
-      for (const w of r.messwerte) {
-        const info = ortById(w.ort_id); const hn = info ? info.halle.name : '—';
-        if (!grp.has(hn)) grp.set(hn, []);
-        grp.get(hn).push({ w, info });
+      const key = stelle ? stelle.id : 0;
+      if (!grp.has(key)) grp.set(key, { stelle, rs: [] });
+      grp.get(key).rs.push(r);
+    }
+    for (const { stelle, rs } of grp.values()) {
+      const sec = el('section', { class: 'b-stelle' });
+      sec.append(el('h2', {}, (stelle ? stelle.name : '—') + ' ', el('span', { class: 'b-anzahl' }, '(' + rs.length + ' Messung' + (rs.length === 1 ? '' : 'en') + ')')));
+      for (const r of rs) {
+        const mess = el('div', { class: 'b-mess' });
+        mess.append(el('div', { class: 'b-meta' },
+          berichtDatumZeit(r.zeitpunkt)
+          + (r.messer ? ' · ' + r.messer : '')
+          + (r.aussentemperatur != null ? ' · außen ' + r.aussentemperatur + ' °C' + (r.temp_quelle === 'open-meteo' ? ' (autom.)' : '') : '')));
+        mess.append(bauWerteTabelle(r));
+        if (r.notiz) mess.append(el('div', { class: 'b-notiz' }, 'Notiz: ' + r.notiz));
+        if (r.foto) mess.append(el('img', { class: 'b-foto', src: r.foto, alt: 'Beleg' }));
+        sec.append(mess);
       }
-      const tab = el('table', { class: 'b-tab' });
-      tab.append(el('tr', {}, ...['Halle', 'Ort', 'Tiefe/Pos.', 'Temperatur', 'Bewertung', 'Notiz'].map((h) => el('th', {}, h))));
-      for (const [hn, eintraege] of grp) {
-        eintraege.forEach(({ w, info }, i) => {
-          const st = stufeFuer(w.temperatur);
-          tab.append(el('tr', { class: st ? 's-' + st.klasse : '' },
-            el('td', {}, i === 0 ? hn : ''),
-            el('td', {}, info ? info.ort.bezeichnung : ('#' + w.ort_id)),
-            el('td', {}, w.tiefe || ''),
-            el('td', { class: 'num' }, w.temperatur != null ? w.temperatur.toFixed(1) + ' °C' : '—'),
-            el('td', {}, el('span', { class: 'b-dot ' + (st ? 's-' + st.klasse : '') }), st ? st.titel : ''),
-            el('td', {}, w.notiz || '')));
-        });
-      }
-      sec.append(tab);
-      if (r.notiz) sec.append(el('div', { class: 'b-notiz' }, 'Notiz: ' + r.notiz));
-      if (r.foto) sec.append(el('img', { class: 'b-foto', src: r.foto, alt: 'Beleg' }));
       frag.append(sec);
     }
 

@@ -315,7 +315,7 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .sw-presets { display: flex; gap: 6px; justify-content: center; }
 .sort-knoepfe { display: inline-flex; gap: 2px; }
 .sort-knoepfe .btn { padding: 3px 7px; line-height: 1; }
-.bericht-datum { padding: 5px 8px; }
+.bericht-datum, .bericht-person { padding: 5px 8px; }
 
 /* PWA-Installations-Banner */
 #install-banner {

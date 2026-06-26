@@ -49,9 +49,12 @@
   .b-sum { border: 1px solid #bbb; border-radius: 6px; padding: 6px 12px; min-width: 110px; }
   .b-sum-l { font-size: 9px; text-transform: uppercase; letter-spacing: .03em; color: #666; }
   .b-sum-w { font-size: 14px; font-weight: 700; }
-  .b-reihe { margin-bottom: 16px; page-break-inside: avoid; }
-  .b-reihe h2 { font-size: 15px; margin: 0 0 2px; color: #7a0c15; }
-  .b-meta { font-size: 11px; color: #444; margin-bottom: 6px; }
+  .b-stelle { margin-bottom: 18px; }
+  .b-stelle h2 { font-size: 15px; margin: 0 0 4px; color: #7a0c15;
+    border-bottom: 1px solid #ddd; padding-bottom: 2px; }
+  .b-anzahl { font-size: 10px; font-weight: 400; color: #777; }
+  .b-mess { page-break-inside: avoid; margin-bottom: 10px; }
+  .b-meta { font-size: 11px; color: #444; margin-bottom: 4px; }
   .b-tab { width: 100%; border-collapse: collapse; }
   .b-tab th, .b-tab td { border: 1px solid #c8c8c8; padding: 4px 7px; text-align: left; font-size: 11px; }
   .b-tab th { background: #f1f1f1; font-size: 9px; text-transform: uppercase; letter-spacing: .03em; }

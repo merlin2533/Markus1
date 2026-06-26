@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Heustockmessen · Freiwillige Feuerwehr</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="print.css" media="print">
+</head>
+<body>
+
+  <!-- Anmeldung -->
+  <div id="login-overlay" class="overlay" hidden>
+    <form id="login-form" class="login-box" onsubmit="return false">
+      <div class="login-logo">🚒</div>
+      <h1>Heustockmessen</h1>
+      <p class="klein-grau">Freiwillige Feuerwehr · Temperaturüberwachung</p>
+      <input type="password" id="login-pass" placeholder="Passwort" autocomplete="current-password" required>
+      <button type="submit" id="login-btn" class="btn primaer breit">Anmelden</button>
+      <p id="login-fehler" class="login-fehler" hidden></p>
+      <p class="klein-grau">Standard-Passwort bei Erstinstallation: <code>Feuerwehr112!</code></p>
+    </form>
+  </div>
+
+  <!-- Hauptanwendung -->
+  <div id="app" hidden>
+    <header class="kopf">
+      <div class="kopf-titel">
+        <span class="logo">🚒</span>
+        <div>
+          <strong>Heustockmessen</strong>
+          <span class="kopf-sub">Freiwillige Feuerwehr · Temperaturüberwachung Heustock</span>
+        </div>
+      </div>
+      <div class="kopf-rechts">
+        <span id="verbindung" class="verbindung off">● …</span>
+        <button class="btn klein" id="btn-einstellungen">⚙ Passwort</button>
+        <button class="btn klein" id="btn-logout">Abmelden</button>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <button class="nav-btn aktiv" data-view="messung">➕ Messung erfassen</button>
+      <button class="nav-btn" data-view="messstellen">📍 Messstellen</button>
+      <button class="nav-btn" data-view="verlauf">📊 Verlauf & Auswertung</button>
+    </nav>
+
+    <div id="meldung" class="meldung" hidden></div>
+
+    <main class="inhalt">
+      <section id="view-messung"      class="view"></section>
+      <section id="view-messstellen"  class="view" hidden></section>
+      <section id="view-verlauf"      class="view" hidden></section>
+    </main>
+
+    <footer class="fuss klein-grau">
+      Heustockmessen · lokale Anwendung der Freiwilligen Feuerwehr · Richtwerte ohne Gewähr.
+    </footer>
+  </div>
+
+  <!-- Passwort-Dialog -->
+  <div id="pw-overlay" class="overlay" hidden>
+    <form id="pw-form" class="login-box" onsubmit="return false">
+      <h2>Passwort ändern</h2>
+      <input type="password" id="pw-alt" placeholder="Aktuelles Passwort" autocomplete="current-password">
+      <input type="password" id="pw-neu" placeholder="Neues Passwort (min. 6 Zeichen)" autocomplete="new-password">
+      <input type="password" id="pw-neu2" placeholder="Neues Passwort wiederholen" autocomplete="new-password">
+      <p id="pw-fehler" class="login-fehler" hidden></p>
+      <div class="aktionsleiste">
+        <button type="submit" id="pw-speichern" class="btn primaer">Speichern</button>
+        <button type="button" id="pw-abbrechen" class="btn">Abbrechen</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

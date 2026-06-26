@@ -1,0 +1,12 @@
+{
+  "name": "heustockmessen-tests",
+  "private": true,
+  "type": "module",
+  "description": "End-to-End Smoke-Test für die Heustockmessen-App (benötigt laufenden PHP-Server)",
+  "scripts": {
+    "test": "node smoke.test.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  }
+}

@@ -1,0 +1,207 @@
+/* Heustockmessen – Feuerwehr-Design (Rot). Mobil-first, ohne Build. */
+
+:root {
+  --rot:        #c1121f;
+  --rot-dunkel: #7a0c15;
+  --grau-bg:    #f4f5f7;
+  --grau-rand:  #d9dce1;
+  --grau-text:  #5b6470;
+  --text:       #1f2430;
+  --gruen:      #2e7d32;
+  --gelb:       #c9a227;
+  --orange:     #e8740c;
+  --rot-stufe:  #d32f2f;
+  --schatten:   0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: var(--grau-bg);
+  line-height: 1.45;
+}
+
+code { background: #eee; padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+.klein-grau { color: var(--grau-text); font-size: .85rem; }
+
+/* ---- Buttons ---- */
+.btn {
+  font: inherit;
+  border: 1px solid var(--grau-rand);
+  background: #fff;
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .12s, border-color .12s;
+}
+.btn:hover { background: #f0f1f4; }
+.btn.primaer { background: var(--rot); border-color: var(--rot); color: #fff; }
+.btn.primaer:hover { background: var(--rot-dunkel); }
+.btn.gefahr { color: var(--rot); border-color: #e8b4b4; }
+.btn.gefahr:hover { background: #fdeaea; }
+.btn.klein { padding: 5px 10px; font-size: .85rem; }
+.btn.mini  { padding: 3px 8px; font-size: .8rem; border-radius: 6px; }
+.btn.breit { width: 100%; }
+.btn:disabled { opacity: .55; cursor: default; }
+
+input, select {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--grau-rand);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--text);
+}
+input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; }
+
+/* ---- Overlay / Login ---- */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(20,22,28,.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px; z-index: 50;
+}
+.login-box {
+  background: #fff; border-radius: 14px; box-shadow: var(--schatten);
+  padding: 28px 26px; width: 100%; max-width: 360px;
+  display: flex; flex-direction: column; gap: 12px; text-align: center;
+}
+.login-box h1, .login-box h2 { margin: 0; color: var(--rot-dunkel); }
+.login-box input { text-align: center; }
+.login-logo { font-size: 2.6rem; }
+.login-fehler { color: var(--rot); font-size: .9rem; margin: 0; }
+
+/* ---- Kopf ---- */
+.kopf {
+  background: linear-gradient(135deg, var(--rot), var(--rot-dunkel));
+  color: #fff; padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap;
+}
+.kopf-titel { display: flex; align-items: center; gap: 12px; }
+.kopf-titel .logo { font-size: 1.9rem; }
+.kopf-titel strong { display: block; font-size: 1.15rem; }
+.kopf-sub { font-size: .8rem; opacity: .9; }
+.kopf-rechts { display: flex; align-items: center; gap: 8px; }
+.kopf .btn { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.35); color: #fff; }
+.kopf .btn:hover { background: rgba(255,255,255,.28); }
+
+.verbindung { font-size: .82rem; padding: 4px 8px; border-radius: 6px; }
+.verbindung.on  { background: rgba(46,125,50,.85); }
+.verbindung.off { background: rgba(0,0,0,.25); }
+
+/* ---- Navigation ---- */
+.nav {
+  display: flex; gap: 4px; background: #fff;
+  border-bottom: 1px solid var(--grau-rand);
+  padding: 6px 12px 0; flex-wrap: wrap;
+}
+.nav-btn {
+  font: inherit; border: none; background: none; cursor: pointer;
+  padding: 10px 14px; color: var(--grau-text);
+  border-bottom: 3px solid transparent; border-radius: 6px 6px 0 0;
+}
+.nav-btn:hover { background: var(--grau-bg); }
+.nav-btn.aktiv { color: var(--rot); border-bottom-color: var(--rot); font-weight: 600; }
+
+.inhalt { max-width: 920px; margin: 0 auto; padding: 18px 14px 60px; }
+.fuss { text-align: center; padding: 16px; }
+
+/* ---- Meldung ---- */
+.meldung {
+  max-width: 920px; margin: 10px auto 0; padding: 10px 14px; border-radius: 8px;
+  font-size: .9rem; box-shadow: var(--schatten);
+}
+.meldung.info   { background: #e8eefc; color: #244; }
+.meldung.ok     { background: #e3f4e4; color: var(--gruen); }
+.meldung.fehler { background: #fdeaea; color: var(--rot-dunkel); }
+
+/* ---- Messung erfassen ---- */
+.mess-kopf {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px; background: #fff; padding: 16px; border-radius: 12px;
+  box-shadow: var(--schatten); margin-bottom: 14px;
+}
+.feld { display: flex; flex-direction: column; gap: 4px; }
+.feld-label { font-size: .8rem; color: var(--grau-text); font-weight: 600; }
+.temp-zeile { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.temp-feld { width: 90px; text-align: center; }
+.quelle { font-size: .78rem; color: var(--grau-text); }
+
+.legende { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.leg-eintrag { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem;
+  background: #fff; padding: 4px 10px; border-radius: 20px; box-shadow: var(--schatten); }
+.leg-punkt { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.leg-eintrag.s-gruen  .leg-punkt { background: var(--gruen); }
+.leg-eintrag.s-gelb   .leg-punkt { background: var(--gelb); }
+.leg-eintrag.s-orange .leg-punkt { background: var(--orange); }
+.leg-eintrag.s-rot    .leg-punkt { background: var(--rot-stufe); }
+
+.stelle-karte {
+  background: #fff; border-radius: 12px; box-shadow: var(--schatten);
+  padding: 14px 16px; margin-bottom: 12px;
+}
+.stelle-karte h3 { margin: 0 0 10px; color: var(--rot-dunkel); }
+.ebene-zeile { display: flex; align-items: center; gap: 8px; padding: 5px 0;
+  border-top: 1px solid #eef0f3; }
+.ebene-zeile:first-of-type { border-top: none; }
+.ebene-name { flex: 1; font-weight: 500; }
+
+/* Ampel-Färbung der Temperaturfelder/Badges */
+.temp-feld.s-gruen  { border-color: var(--gruen);  background: #eef7ee; }
+.temp-feld.s-gelb   { border-color: var(--gelb);   background: #fbf6e3; }
+.temp-feld.s-orange { border-color: var(--orange); background: #fdeede; }
+.temp-feld.s-rot    { border-color: var(--rot-stufe); background: #fde5e5; font-weight: 700; }
+
+.badge { font-size: .76rem; padding: 2px 9px; border-radius: 20px; min-width: 70px;
+  text-align: center; color: #fff; }
+.badge:empty { background: transparent !important; }
+.badge.s-gruen  { background: var(--gruen); }
+.badge.s-gelb   { background: var(--gelb); color: #3a2f00; }
+.badge.s-orange { background: var(--orange); }
+.badge.s-rot    { background: var(--rot-stufe); }
+
+.aktionsleiste { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+
+.leer { background: #fff; border-radius: 12px; padding: 24px; box-shadow: var(--schatten); }
+
+/* ---- Messstellen-Verwaltung ---- */
+.stelle-neu { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 18px; }
+.stelle-neu input { flex: 1; min-width: 160px; }
+.stelle-kopf { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.inline-edit { flex: 1; min-width: 120px; }
+.inline-edit.klein { flex: 2; }
+.ebenen-liste { display: flex; flex-direction: column; gap: 6px; padding-left: 6px;
+  border-left: 3px solid #f0d3d5; }
+.ebene-edit, .ebene-neu { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ebene-edit .inline-edit { max-width: 260px; }
+.schnell { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* ---- Verlauf ---- */
+.verlauf-kopf { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.reihe { background: #fff; border-radius: 12px; box-shadow: var(--schatten);
+  margin-bottom: 12px; padding: 6px 14px; }
+.reihe summary { cursor: pointer; display: flex; gap: 10px; align-items: center;
+  flex-wrap: wrap; padding: 8px 0; font-weight: 500; }
+.r-zeit { font-weight: 600; }
+.werte-tab { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: .9rem; }
+.werte-tab th, .werte-tab td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eef0f3; }
+.werte-tab th { color: var(--grau-text); font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+.werte-tab td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.werte-tab tr.s-gruen  td.num { color: var(--gruen); }
+.werte-tab tr.s-gelb   td.num { color: var(--gelb); }
+.werte-tab tr.s-orange td.num { color: var(--orange); }
+.werte-tab tr.s-rot    td.num { color: var(--rot-stufe); }
+.werte-tab tr.s-rot    { background: #fdf3f3; }
+.reihe-fuss { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-bottom: 8px; }
+
+@media (max-width: 560px) {
+  .kopf-sub { display: none; }
+  .ebene-name { font-size: .9rem; }
+}

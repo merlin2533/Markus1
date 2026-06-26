@@ -1,9 +1,11 @@
-/* Druck-/PDF-Layout: nur der Verlauf, ohne Bedienelemente. */
+/* Druck-/PDF-Layout: nur der Verlauf, ohne Bedienelemente.
+   Je Messung eine Seite mit Kopf und Unterschriftszeile. */
 @media print {
   body { background: #fff; }
   .kopf, .nav, .meldung, .fuss, .overlay,
-  #view-messung, #view-messstellen,
-  .verlauf-kopf .btn, .reihe-fuss { display: none !important; }
+  .filterleiste, .verlauf-kopf .werkzeuge, .offline-status,
+  #view-messung, #view-messstellen, #view-diagramm,
+  .reihe-fuss { display: none !important; }
 
   #app { display: block !important; }
   .inhalt { max-width: 100%; padding: 0; }
@@ -11,17 +13,25 @@
   .view[hidden] { display: none; }
   #view-verlauf { display: block !important; }
 
-  .verlauf-kopf h2 { margin: 0 0 8px; }
   #view-verlauf::before {
     content: "Heustockmessen – Freiwillige Feuerwehr";
-    display: block; font-size: 1.2rem; font-weight: 700; margin-bottom: 4px;
+    display: block; font-size: 1.25rem; font-weight: 700; margin-bottom: 6px;
   }
+  .verlauf-kopf h2 { margin: 0 0 8px; }
 
-  .reihe { box-shadow: none; border: 1px solid #bbb; page-break-inside: avoid; margin-bottom: 10px; }
-  .reihe[open] summary { font-weight: 700; }
-  details:not([open]) > summary ~ * { display: revert; } /* alle Werte drucken */
+  .reihe { box-shadow: none; border: 1px solid #999; page-break-inside: avoid;
+    page-break-after: always; margin-bottom: 10px; padding: 8px 10px; }
+  .reihe:last-of-type { page-break-after: auto; }
+  .reihe[open] summary, .reihe summary { font-weight: 700; }
   .reihe > table { display: table !important; }
+
+  /* Unterschriftszeile am Ende jeder Messung */
+  .reihe::after {
+    content: "Kontrolliert am: __________________        Unterschrift: __________________________";
+    display: block; margin-top: 22px; padding-top: 6px; font-size: .85rem; color: #000;
+  }
 
   .badge { color: #000 !important; background: none !important; border: 1px solid #000; }
   .werte-tab th, .werte-tab td { border-bottom: 1px solid #ccc; }
+  .trend { color: #000 !important; }
 }

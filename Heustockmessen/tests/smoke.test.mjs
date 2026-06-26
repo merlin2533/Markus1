@@ -55,27 +55,40 @@ try {
   ok('App nach Login sichtbar', await page.locator('#app').isVisible());
   ok('Server verbunden', (await page.locator('#verbindung').textContent()).includes('verbunden'));
 
-  // --- Messstellen anlegen ---
+  // --- Stammdaten anlegen: Messstelle → Halle → Orte ---
   await page.click('.nav-btn[data-view="messstellen"]');
   await page.waitForTimeout(150);
-  await page.fill('.stelle-neu input:nth-child(1)', 'Testscheune');
+  await page.fill('.stelle-neu input:nth-child(1)', 'Hof Müller');
   await page.click('.stelle-neu .btn.primaer');
   await page.waitForTimeout(300);
   ok('Messstelle angelegt', await page.locator('.stelle-karte').count() >= 1);
 
-  // Ebenen über Schnellbuttons
-  await page.click('.ebene-neu .schnell .btn:has-text("Oben")');
-  await page.waitForTimeout(250);
-  await page.click('.ebene-neu .schnell .btn:has-text("Mitte")');
-  await page.waitForTimeout(250);
-  ok('2 Ebenen angelegt', await page.locator('.ebene-edit').count() === 2);
+  // Halle anlegen
+  await page.fill('.halle-neu input', 'Halle 1');
+  await page.click('.halle-neu .btn:has-text("+ Halle")');
+  await page.waitForTimeout(300);
+  ok('Halle angelegt', await page.locator('.halle-block').count() === 1);
 
-  // --- Messung erfassen ---
+  // Orte über Schnellbuttons
+  await page.click('.ort-neu .schnell .btn:has-text("Oben")');
+  await page.waitForTimeout(250);
+  await page.click('.ort-neu .schnell .btn:has-text("Mitte")');
+  await page.waitForTimeout(250);
+  ok('2 Orte angelegt', await page.locator('.ort-edit').count() === 2);
+
+  // --- Geführte Messung erfassen ---
   await page.click('.nav-btn[data-view="messung"]');
   await page.waitForTimeout(200);
-  const felder = page.locator('#view-messung .ebene-zeile .temp-feld');
-  ok('2 Temperatur-Felder', await felder.count() === 2);
+  // Schritt 1: Kopfdaten
+  ok('Wizard-Schritt 1 (Messstelle wählbar)', await page.locator('#m-stelle').count() === 1);
+  await page.fill('#m-temp', '20');
+  await page.fill('#m-messer', 'Tester');
+  await page.click('#view-messung .aktionsleiste .btn.primaer'); // Weiter →
+  await page.waitForTimeout(200);
 
+  // Schritt 2: Halle 1 mit ihren Orten
+  const felder = page.locator('#view-messung .ebene-zeile .temp-feld');
+  ok('2 Orte-Felder in Halle', await felder.count() === 2);
   await felder.nth(0).fill('75');
   await page.waitForTimeout(100);
   ok('75°C wird rot markiert', (await felder.nth(0).getAttribute('class')).includes('s-rot'));
@@ -83,19 +96,40 @@ try {
   await page.waitForTimeout(100);
   ok('30°C wird grün markiert', (await felder.nth(1).getAttribute('class')).includes('s-gruen'));
 
-  await page.fill('#m-temp', '20');
-  await page.fill('#m-messer', 'Tester');
-  await page.click('#view-messung .aktionsleiste .btn.primaer');
-  await page.waitForTimeout(500);
+  // Weiter zur Übersicht, dann speichern
+  await page.click('#view-messung .aktionsleiste .btn.primaer'); // Zur Übersicht →
+  await page.waitForTimeout(200);
+  ok('Übersicht zeigt Werte', await page.locator('#view-messung .werte-tab').count() >= 1);
+  await page.click('#view-messung .aktionsleiste .btn.primaer'); // Speichern
+  await page.waitForTimeout(600);
   ok('Speichern bestätigt', (await page.locator('#meldung').textContent()).includes('gespeichert'));
 
   // --- Verlauf ---
   await page.click('.nav-btn[data-view="verlauf"]');
   await page.waitForTimeout(250);
   ok('1 Messreihe im Verlauf', await page.locator('#view-verlauf .reihe').count() === 1);
+  ok('Messstelle im Verlauf', (await page.locator('#view-verlauf .r-stelle').first().textContent()).includes('Hof Müller'));
   ok('Max-Badge zeigt Brandgefahr-Stufe (rot)',
     await page.locator('#view-verlauf .reihe summary .badge.s-rot').count() === 1);
-  ok('Werte-Tabelle hat 2 Zeilen', await page.locator('#view-verlauf .werte-tab tr').count() === 3); // inkl. Kopf
+  ok('Werte-Tabelle hat 2 Wertezeilen', await page.locator('#view-verlauf .werte-tab tr').count() === 3); // inkl. Kopf
+
+  // --- Verlauf-Werkzeuge & Filter ---
+  ok('Excel-Export vorhanden', await page.locator('#view-verlauf .export-jahr .btn').count() === 1);
+  ok('Filterleiste vorhanden', await page.locator('#view-verlauf .filterleiste').count() === 1);
+  ok('Trend-Spalte vorhanden', (await page.locator('#view-verlauf .werte-tab th').allTextContents()).includes('Trend'));
+  ok('Backup-Button vorhanden', await page.locator('#view-verlauf .werkzeuge .btn:has-text("Backup")').count() === 1);
+
+  // Filter „nur kritische" greift (75°C ist kritisch → Reihe bleibt sichtbar)
+  await page.check('#view-verlauf .check input[type="checkbox"]');
+  await page.waitForTimeout(150);
+  ok('Filter nur-kritische zeigt die Reihe', await page.locator('#view-verlauf .reihe').count() === 1);
+  await page.uncheck('#view-verlauf .check input[type="checkbox"]');
+  await page.waitForTimeout(150);
+
+  // --- Diagramm ---
+  await page.click('.nav-btn[data-view="diagramm"]');
+  await page.waitForTimeout(200);
+  ok('Diagramm-Ortauswahl vorhanden', await page.locator('#view-diagramm select').count() === 1);
 
   // --- Passwort ändern und zurücksetzen ---
   await page.click('#btn-einstellungen');

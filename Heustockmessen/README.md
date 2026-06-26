@@ -13,23 +13,28 @@ Speicherung über ein kleines **PHP-Backend mit SQLite-Datenbank** auf dem Serve
 
 ## Aufbau / Datenmodell
 
-- **Messstelle** – ein Ort/Lager (z. B. „Scheune Nord"). Hat eine optionale
-  Beschreibung.
-- **Ebene** – ein Messpunkt innerhalb der Messstelle: **Oben / Mitte / Unten**
-  oder eine **beliebige eigene Bezeichnung**. (Schnellbuttons für die
-  Standard-Ebenen.)
-- **Messreihe** – ein Messdurchgang mit Zeitpunkt, **Außentemperatur**,
-  Messer/in und Notiz. Pro Ebene wird ein Temperaturwert erfasst.
-- **Messwert** – eine einzelne Temperatur an einer Ebene innerhalb einer
-  Messreihe.
+Hierarchie in drei Ebenen – so, wie man vor Ort vorgeht (man fährt die
+Messstelle an, darin gibt es Hallen, darin die einzelnen Orte):
 
-Messstellen und Ebenen sind die **Stammdaten** und werden einmal angelegt; die
+- **Messstelle** – der Standort, den man anfährt (z. B. „Hof Müller"). Kann
+  **mehrere Hallen** enthalten.
+- **Halle** – ein Gebäude/Lager an der Messstelle (z. B. „Halle 1").
+- **Ort** – ein Messpunkt in der Halle: **Oben / Mitte / Unten** oder eine
+  **beliebige eigene Bezeichnung** (Schnellbuttons für die Standard-Orte).
+- **Messreihe** – ein **Messbesuch an einer Messstelle** mit Zeitpunkt,
+  **Außentemperatur**, Erfasser/in und Notiz. Pro Ort wird ein Wert erfasst.
+- **Messwert** – eine einzelne Temperatur an einem Ort innerhalb einer Messreihe.
+
+Messstellen, Hallen und Orte sind die **Stammdaten** (einmal anlegen); die
 **Messreihen** kommen bei jedem Kontrollgang dazu.
 
 ## Funktionen
 
-- **Messung erfassen**: Temperatur je Ebene eingeben; Felder färben sich live
-  nach Warnstufe.
+- **Geführte Erfassung (Schritt für Schritt)**: Messstelle wählen → Kopfdaten →
+  **Halle für Halle** die Orte eingeben (mit Fortschrittsanzeige) → Übersicht →
+  speichern. Temperaturfelder färben sich live nach Warnstufe.
+- **Erfasser/in**: bekannte Namen aus bisherigen Messreihen stehen zur Auswahl;
+  der zuletzt genutzte Name wird automatisch vorausgefüllt.
 - **Außentemperatur**: zentral pro Messreihe – **manuell** oder per Knopf
   **automatisch** über den Standort des Geräts (Browser-Geolocation +
   [Open-Meteo](https://open-meteo.com/), nutzt u. a. DWD-ICON-Daten, kein
@@ -107,10 +112,11 @@ JSON über `GET`/`POST`, Aktion im Feld `action`. Antwort immer
 | `passwort_aendern` | ✓ | Passwort ändern (`alt`, `neu`) |
 | `stammdaten`, `messreihen`, `alles` | ✓ | Daten lesen |
 | `messstelle_save` / `_delete` | ✓ | Messstelle anlegen/ändern/löschen |
-| `ebene_save` / `_delete` | ✓ | Ebene anlegen/ändern/löschen |
+| `halle_save` / `_delete` | ✓ | Halle anlegen/ändern/löschen |
+| `ort_save` / `_delete` | ✓ | Ort anlegen/ändern/löschen |
 | `messreihe_save` / `_delete` | ✓ | Messreihe inkl. Werte (atomar) |
 
-Löschungen kaskadieren (Messstelle → Ebenen → Messwerte) über
+Löschungen kaskadieren (Messstelle → Hallen → Orte → Messwerte) über
 Fremdschlüssel/`ON DELETE CASCADE`.
 
 ## Dateien

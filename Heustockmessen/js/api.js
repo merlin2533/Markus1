@@ -43,8 +43,11 @@ const Api = (() => {
     messstelleSave:  (d)     => ruf('messstelle_save', d, 'POST'),
     messstelleDelete:(id)    => ruf('messstelle_delete', { id }, 'POST'),
 
-    ebeneSave:       (d)     => ruf('ebene_save', d, 'POST'),
-    ebeneDelete:     (id)    => ruf('ebene_delete', { id }, 'POST'),
+    halleSave:       (d)     => ruf('halle_save', d, 'POST'),
+    halleDelete:     (id)    => ruf('halle_delete', { id }, 'POST'),
+
+    ortSave:         (d)     => ruf('ort_save', d, 'POST'),
+    ortDelete:       (id)    => ruf('ort_delete', { id }, 'POST'),
 
     messreiheSave:   (d)     => ruf('messreihe_save', d, 'POST'),
     messreiheDelete: (id)    => ruf('messreihe_delete', { id }, 'POST'),

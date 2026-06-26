@@ -1,6 +1,7 @@
 /**
  * App – UI-Verdrahtung für die Heustockmessung.
  * Reine Vanilla-JS-SPA; Persistenz läuft serverseitig über Api (api.php / SQLite).
+ * Hierarchie: Messstelle → Halle → Ort. Erfassung als geführter Ablauf.
  */
 const App = (() => {
 
@@ -29,8 +30,19 @@ const App = (() => {
     messreihen: [],
     online: false,
     editReiheId: null,       // null = neue Reihe, sonst bestehende bearbeiten
-    werte: {},               // ebene_id -> { temperatur, notiz }
+    werte: {},               // ort_id -> { temperatur, notiz }
+    wizardStelleId: null,    // aktuell gewählte Messstelle
+    wizardSchritt: 0,        // 0 = Kopf, 1..H = Hallen, H+1 = Übersicht
+    kopf: leererKopf(),      // Kopfdaten der Messung (über Schritte hinweg)
   };
+
+  function leererKopf() {
+    return {
+      zeitpunkt: '', messer: '', notiz: '',
+      aussentemperatur: '', temp_quelle: 'manuell',
+      geo_lat: null, geo_lon: null, wetter_text: '',
+    };
+  }
 
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -50,11 +62,6 @@ const App = (() => {
     return n;
   }
 
-  function escape(s) {
-    return String(s ?? '').replace(/[&<>"']/g, (c) =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  }
-
   function meldung(text, art = 'info') {
     const box = $('#meldung');
     box.className = 'meldung ' + art;
@@ -67,7 +74,6 @@ const App = (() => {
   }
 
   function lokaleZeit(date = new Date()) {
-    // Für <input type="datetime-local"> (ohne Sekunden, lokale Zeitzone).
     const p = (n) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}`
          + `T${p(date.getHours())}:${p(date.getMinutes())}`;
@@ -101,16 +107,23 @@ const App = (() => {
     b.className = 'verbindung ' + (ok ? 'on' : 'off');
   }
 
-  function ebeneById(id) {
+  // Ort + zugehörige Halle + Messstelle anhand Ort-ID finden.
+  function ortById(id) {
     for (const s of State.messstellen) {
-      const e = (s.ebenen || []).find((x) => x.id === id);
-      if (e) return { ebene: e, stelle: s };
+      for (const h of (s.hallen || [])) {
+        const o = (h.orte || []).find((x) => x.id === id);
+        if (o) return { ort: o, halle: h, stelle: s };
+      }
     }
     return null;
   }
 
+  function stelleById(id) {
+    return State.messstellen.find((s) => s.id === id) || null;
+  }
+
   // ======================================================================
-  //  Ansicht 1: Messung erfassen
+  //  Ansicht 1: Messung erfassen (geführter Ablauf)
   // ======================================================================
   function renderMessung() {
     const wrap = $('#view-messung');
@@ -119,79 +132,235 @@ const App = (() => {
     if (!State.messstellen.length) {
       wrap.append(el('div', { class: 'leer' },
         'Noch keine Messstellen angelegt. Wechseln Sie zum Reiter ',
-        el('strong', {}, 'Messstellen'), ', um Messstellen und Ebenen (Oben/Mitte/Unten) anzulegen.'));
+        el('strong', {}, 'Messstellen'),
+        ', um Messstellen, Hallen und Orte (z. B. Oben/Mitte/Unten) anzulegen.'));
       return;
     }
 
-    // Kopf: Zeitpunkt, Messer, Außentemperatur + Wetter holen
+    const stelle = stelleById(State.wizardStelleId);
+
+    if (State.wizardSchritt === 0 || !stelle) {
+      renderKopfSchritt(wrap);
+      return;
+    }
+    const hallen = stelle.hallen || [];
+    if (State.wizardSchritt >= 1 && State.wizardSchritt <= hallen.length) {
+      renderHalleSchritt(wrap, stelle, hallen, State.wizardSchritt);
+      return;
+    }
+    renderUebersicht(wrap, stelle, hallen);
+  }
+
+  // Schritt 0: Messstelle wählen + Kopfdaten
+  function renderKopfSchritt(wrap) {
+    const aktiveId = State.wizardStelleId || State.messstellen[0].id;
+    wrap.append(schrittKopf('Schritt 1 von 2', State.editReiheId ? 'Messung bearbeiten' : 'Neue Messung – Messstelle & Kopfdaten'));
+
     const form = el('form', { class: 'mess-kopf', onsubmit: (e) => e.preventDefault() });
 
-    const fZeit = el('input', { type: 'datetime-local', id: 'm-zeit', value: lokaleZeit() });
-    const fMesser = el('input', { type: 'text', id: 'm-messer', placeholder: 'Name', autocomplete: 'name' });
-    const fTemp = el('input', { type: 'number', id: 'm-temp', step: '0.1', placeholder: '°C', class: 'temp-feld' });
-    const fQuelle = el('span', { id: 'm-quelle', class: 'quelle' }, 'manuell');
-    const wetterBtn = el('button', { type: 'button', class: 'btn klein', onclick: holeWetter }, '⤓ Standort/Wetter');
-    fTemp.addEventListener('input', () => { fQuelle.textContent = 'manuell'; fQuelle.dataset.lat = ''; fQuelle.dataset.lon = ''; });
+    // Messstelle (Anfahrt)
+    const sel = el('select', { id: 'm-stelle' });
+    for (const s of State.messstellen) {
+      sel.append(el('option', { value: s.id, ...(s.id === aktiveId ? { selected: '' } : {}) },
+        s.name + ((s.hallen || []).length ? ` (${s.hallen.length} Hallen)` : ' (keine Hallen)')));
+    }
 
-    const fNotiz = el('input', { type: 'text', id: 'm-notiz', placeholder: 'Notiz zur Messung (optional)' });
+    const fZeit = el('input', { type: 'datetime-local', id: 'm-zeit',
+      value: State.kopf.zeitpunkt || lokaleZeit() });
+
+    const bekannte = erfasserNamen();
+    const fMesser = el('input', {
+      type: 'text', id: 'm-messer', placeholder: 'Name auswählen oder eingeben',
+      autocomplete: 'off', list: 'erfasser-liste',
+      value: State.kopf.messer || (State.editReiheId ? '' : letzterErfasser()),
+    });
+    const dl = el('datalist', { id: 'erfasser-liste' }, ...bekannte.map((n) => el('option', { value: n })));
+
+    const fTemp = el('input', { type: 'number', id: 'm-temp', step: '0.1', inputmode: 'decimal',
+      placeholder: '°C', class: 'temp-feld', value: State.kopf.aussentemperatur ?? '' });
+    const autoVorh = State.kopf.temp_quelle === 'open-meteo';
+    const fQuelle = el('span', { id: 'm-quelle', class: 'quelle' }, autoVorh ? 'auto · ' + State.kopf.wetter_text : 'manuell');
+    if (autoVorh) { fQuelle.dataset.quelle = 'open-meteo'; fQuelle.dataset.lat = State.kopf.geo_lat; fQuelle.dataset.lon = State.kopf.geo_lon; }
+    const wetterBtn = el('button', { type: 'button', class: 'btn klein', onclick: holeWetter }, '⤓ Standort/Wetter');
+    fTemp.addEventListener('input', () => { fQuelle.textContent = 'manuell'; fQuelle.dataset.quelle = ''; fQuelle.dataset.lat = ''; fQuelle.dataset.lon = ''; });
+
+    const fNotiz = el('input', { type: 'text', id: 'm-notiz', placeholder: 'Notiz zur Messung (optional)', value: State.kopf.notiz || '' });
 
     form.append(
+      feld('Messstelle (Anfahrt)', sel),
       feld('Zeitpunkt', fZeit),
-      feld('Messer/in', fMesser),
+      feld('Erfasser/in', fMesser, dl),
       feld('Außentemperatur', el('span', { class: 'temp-zeile' }, fTemp, el('span', {}, '°C'), wetterBtn, fQuelle)),
       feld('Notiz', fNotiz),
     );
     wrap.append(form);
 
-    wrap.append(legende());
-
-    // Eingabe-Raster je Messstelle / Ebene
-    for (const stelle of State.messstellen) {
-      const karte = el('section', { class: 'stelle-karte' });
-      karte.append(el('h3', {}, stelle.name,
-        stelle.beschreibung ? el('span', { class: 'klein-grau' }, ' – ' + stelle.beschreibung) : null));
-
-      if (!(stelle.ebenen || []).length) {
-        karte.append(el('p', { class: 'klein-grau' }, 'Keine Ebenen – im Reiter „Messstellen" ergänzen.'));
-      }
-      for (const ebene of (stelle.ebenen || [])) {
-        const vorhanden = State.werte[ebene.id] || {};
-        const input = el('input', {
-          type: 'number', step: '0.1', class: 'temp-feld', placeholder: '°C',
-          'data-ebene': ebene.id, value: vorhanden.temperatur ?? '',
-        });
-        const badge = el('span', { class: 'badge' });
-        const aktualisiere = () => {
-          const t = input.value === '' ? null : parseFloat(input.value);
-          State.werte[ebene.id] = { ...(State.werte[ebene.id] || {}), temperatur: input.value === '' ? null : t };
-          const st = stufeFuer(t);
-          input.className = 'temp-feld' + (st ? ' s-' + st.klasse : '');
-          badge.className = 'badge' + (st ? ' s-' + st.klasse : '');
-          badge.textContent = st && t !== null ? st.titel : '';
-          badge.title = st ? st.hinweis : '';
-        };
-        input.addEventListener('input', aktualisiere);
-
-        const zeile = el('div', { class: 'ebene-zeile' },
-          el('label', { class: 'ebene-name' }, ebene.bezeichnung),
-          input, el('span', {}, '°C'), badge);
-        karte.append(zeile);
-        aktualisiere();
-      }
-      wrap.append(karte);
+    const stelle = stelleById(aktiveId);
+    if (stelle && !(stelle.hallen || []).length) {
+      wrap.append(el('div', { class: 'leer hinweis' },
+        'Diese Messstelle hat noch keine Hallen. Bitte im Reiter ', el('strong', {}, 'Messstellen'), ' anlegen.'));
     }
 
-    const aktion = el('div', { class: 'aktionsleiste' });
-    aktion.append(
+    const leiste = el('div', { class: 'aktionsleiste' });
+    leiste.append(
+      el('button', { class: 'btn primaer', onclick: () => {
+        State.wizardStelleId = Number($('#m-stelle').value);
+        leseKopf();
+        State.wizardSchritt = 1;
+        renderMessung();
+      } }, 'Weiter →'),
+      el('button', { class: 'btn', onclick: neueMessung }, '✕ Abbrechen'),
+    );
+    wrap.append(leiste);
+  }
+
+  // Schritte 1..H: eine Halle, ihre Orte erfassen
+  function renderHalleSchritt(wrap, stelle, hallen, n) {
+    const halle = hallen[n - 1];
+    wrap.append(schrittKopf(
+      `${stelle.name} · Halle ${n} von ${hallen.length}`,
+      halle.name + (halle.beschreibung ? ' – ' + halle.beschreibung : '')));
+    wrap.append(fortschritt(n, hallen.length + 1));
+    wrap.append(legende());
+
+    const karte = el('section', { class: 'stelle-karte' });
+    if (!(halle.orte || []).length) {
+      karte.append(el('p', { class: 'klein-grau' }, 'Keine Orte in dieser Halle – im Reiter „Messstellen" ergänzen.'));
+    }
+    for (const ort of (halle.orte || [])) {
+      karte.append(ortZeile(ort));
+    }
+    wrap.append(karte);
+
+    const leiste = el('div', { class: 'aktionsleiste' });
+    leiste.append(
+      el('button', { class: 'btn', onclick: () => { State.wizardSchritt = n - 1; renderMessung(); } }, '← Zurück'),
+      el('button', { class: 'btn primaer', onclick: () => { State.wizardSchritt = n + 1; renderMessung(); } },
+        n < hallen.length ? 'Weiter →' : 'Zur Übersicht →'),
+    );
+    wrap.append(leiste);
+  }
+
+  // Letzter Schritt: Übersicht + Speichern
+  function renderUebersicht(wrap, stelle, hallen) {
+    wrap.append(schrittKopf('Übersicht & Speichern', stelle.name));
+    wrap.append(fortschritt(hallen.length + 1, hallen.length + 1));
+
+    const k = State.kopf;
+    wrap.append(el('div', { class: 'uebersicht-kopf' },
+      el('span', {}, '🕓 ' + zeitLesbar(k.zeitpunkt || lokaleZeit())),
+      k.messer ? el('span', {}, '👤 ' + k.messer) : null,
+      (k.aussentemperatur !== '' && k.aussentemperatur != null)
+        ? el('span', {}, '🌡 außen ' + k.aussentemperatur + ' °C' + (k.temp_quelle === 'open-meteo' ? ' (auto)' : '')) : null,
+      k.notiz ? el('span', {}, '📝 ' + k.notiz) : null,
+    ));
+
+    let anzahl = 0;
+    for (const halle of hallen) {
+      const orte = (halle.orte || []).filter((o) => {
+        const v = State.werte[o.id];
+        return v && v.temperatur != null && !isNaN(v.temperatur);
+      });
+      if (!orte.length) continue;
+      const tab = el('table', { class: 'werte-tab' });
+      tab.append(el('tr', {}, el('th', { colspan: '3' }, '🏚 ' + halle.name)));
+      for (const ort of orte) {
+        const t = State.werte[ort.id].temperatur;
+        const st = stufeFuer(t);
+        anzahl++;
+        tab.append(el('tr', { class: st ? 's-' + st.klasse : '' },
+          el('td', {}, ort.bezeichnung),
+          el('td', { class: 'num' }, t.toFixed(1) + ' °C'),
+          el('td', {}, st ? st.titel : '')));
+      }
+      wrap.append(tab);
+    }
+    if (!anzahl) {
+      wrap.append(el('div', { class: 'leer hinweis' }, 'Noch keine Temperaturwerte erfasst.'));
+    }
+
+    const leiste = el('div', { class: 'aktionsleiste' });
+    leiste.append(
+      el('button', { class: 'btn', onclick: () => { State.wizardSchritt = hallen.length; renderMessung(); } }, '← Zurück'),
       el('button', { class: 'btn primaer', onclick: speichereMessreihe },
         State.editReiheId ? '✓ Änderungen speichern' : '✓ Messung speichern'),
-      el('button', { class: 'btn', onclick: neueMessung }, '✕ Zurücksetzen'),
     );
-    wrap.append(aktion);
+    wrap.append(leiste);
+  }
+
+  // --- Bausteine ----------------------------------------------------------
+  function schrittKopf(klein, gross) {
+    return el('div', { class: 'schritt-kopf' },
+      el('div', { class: 'schritt-klein' }, klein),
+      el('h2', { class: 'schritt-gross' }, gross));
+  }
+
+  function fortschritt(akt, gesamt) {
+    const pct = Math.max(0, Math.min(100, Math.round((akt / gesamt) * 100)));
+    return el('div', { class: 'fortschritt', title: `Schritt ${akt} von ${gesamt}` },
+      el('div', { class: 'fortschritt-bar', style: 'width:' + pct + '%' }));
   }
 
   function feld(label, ...inhalt) {
     return el('label', { class: 'feld' }, el('span', { class: 'feld-label' }, label), ...inhalt);
+  }
+
+  function ortZeile(ort) {
+    const vorhanden = State.werte[ort.id] || {};
+    const input = el('input', {
+      type: 'number', step: '0.1', inputmode: 'decimal', class: 'temp-feld', placeholder: '°C',
+      'data-ort': ort.id, value: vorhanden.temperatur ?? '',
+    });
+    const badge = el('span', { class: 'badge' });
+    const upd = () => {
+      const t = input.value === '' ? null : parseFloat(input.value);
+      State.werte[ort.id] = { ...(State.werte[ort.id] || {}), temperatur: input.value === '' ? null : t };
+      const st = stufeFuer(t);
+      input.className = 'temp-feld' + (st ? ' s-' + st.klasse : '');
+      badge.className = 'badge' + (st ? ' s-' + st.klasse : '');
+      badge.textContent = st && t !== null ? st.titel : '';
+      badge.title = st ? st.hinweis : '';
+    };
+    input.addEventListener('input', upd);
+    const z = el('div', { class: 'ebene-zeile' },
+      el('label', { class: 'ebene-name' }, ort.bezeichnung), input, el('span', {}, '°C'), badge);
+    upd();
+    return z;
+  }
+
+  // Kopfdaten aus den DOM-Feldern (nur auf Schritt 0 vorhanden) sichern.
+  function leseKopf() {
+    const z = $('#m-zeit');
+    if (!z) return;
+    State.kopf.zeitpunkt = z.value;
+    State.kopf.messer = $('#m-messer').value.trim();
+    State.kopf.notiz = $('#m-notiz').value.trim();
+    State.kopf.aussentemperatur = $('#m-temp').value;
+    const q = $('#m-quelle');
+    if (q.dataset.quelle === 'open-meteo') {
+      State.kopf.temp_quelle = 'open-meteo';
+      State.kopf.geo_lat = q.dataset.lat;
+      State.kopf.geo_lon = q.dataset.lon;
+      State.kopf.wetter_text = q.textContent.replace(/^auto · /, '');
+    } else {
+      State.kopf.temp_quelle = 'manuell';
+      State.kopf.geo_lat = null; State.kopf.geo_lon = null; State.kopf.wetter_text = '';
+    }
+  }
+
+  function erfasserNamen() {
+    const set = new Set();
+    for (const r of State.messreihen) {
+      const n = (r.messer || '').trim();
+      if (n) set.add(n);
+    }
+    return [...set].sort((a, b) => a.localeCompare(b, 'de'));
+  }
+  function letzterErfasser() {
+    try { return localStorage.getItem('heustock_erfasser') || ''; } catch (e) { return ''; }
+  }
+  function merkeErfasser(name) {
+    try { if (name) localStorage.setItem('heustock_erfasser', name); } catch (e) { /* egal */ }
   }
 
   function legende() {
@@ -224,66 +393,68 @@ const App = (() => {
   function neueMessung() {
     State.editReiheId = null;
     State.werte = {};
+    State.wizardStelleId = null;
+    State.wizardSchritt = 0;
+    State.kopf = leererKopf();
     renderMessung();
   }
 
   async function speichereMessreihe() {
-    const tempRoh = $('#m-temp').value;
-    const quelleEl = $('#m-quelle');
-    const auto = (quelleEl.dataset.quelle === 'open-meteo');
-
+    const k = State.kopf;
     const werte = Object.entries(State.werte)
       .filter(([, v]) => v && v.temperatur !== null && v.temperatur !== undefined && !isNaN(v.temperatur))
-      .map(([ebene_id, v]) => ({ ebene_id: Number(ebene_id), temperatur: v.temperatur, notiz: v.notiz || '' }));
+      .map(([ort_id, v]) => ({ ort_id: Number(ort_id), temperatur: v.temperatur, notiz: v.notiz || '' }));
 
     if (!werte.length) {
       meldung('Bitte mindestens einen Temperaturwert eingeben.', 'fehler');
       return;
     }
-
-    const zeitInput = $('#m-zeit').value;
+    const auto = k.temp_quelle === 'open-meteo';
     const daten = {
       id: State.editReiheId || undefined,
-      zeitpunkt: zeitInput ? new Date(zeitInput).toISOString() : new Date().toISOString(),
-      aussentemperatur: tempRoh === '' ? null : parseFloat(tempRoh),
+      messstelle_id: State.wizardStelleId || null,
+      zeitpunkt: k.zeitpunkt ? new Date(k.zeitpunkt).toISOString() : new Date().toISOString(),
+      aussentemperatur: (k.aussentemperatur === '' || k.aussentemperatur == null) ? null : parseFloat(k.aussentemperatur),
       temp_quelle: auto ? 'open-meteo' : 'manuell',
-      geo_lat: auto ? parseFloat(quelleEl.dataset.lat) : null,
-      geo_lon: auto ? parseFloat(quelleEl.dataset.lon) : null,
-      wetter_text: auto ? quelleEl.textContent.replace(/^auto · /, '') : '',
-      messer: $('#m-messer').value.trim(),
-      notiz: $('#m-notiz').value.trim(),
+      geo_lat: auto ? parseFloat(k.geo_lat) : null,
+      geo_lon: auto ? parseFloat(k.geo_lon) : null,
+      wetter_text: auto ? k.wetter_text : '',
+      messer: k.messer || '',
+      notiz: k.notiz || '',
       messwerte: werte,
     };
 
     try {
       await Api.messreiheSave(daten);
+      merkeErfasser(daten.messer);
       meldung('Messung gespeichert (' + werte.length + ' Werte).', 'ok');
       neueMessung();
       await ladeDaten();
       renderAlles();
+      zeigeView('verlauf');
     } catch (e) {
       meldung('Speichern fehlgeschlagen: ' + e.message, 'fehler');
     }
   }
 
   // ======================================================================
-  //  Ansicht 2: Messstellen (Stammdaten)
+  //  Ansicht 2: Messstellen (Stammdaten) – Messstelle → Halle → Ort
   // ======================================================================
   function renderMessstellen() {
     const wrap = $('#view-messstellen');
     wrap.innerHTML = '';
 
     const neu = el('div', { class: 'stelle-neu' });
-    const inName = el('input', { type: 'text', placeholder: 'Neue Messstelle (z. B. Scheune Nord)' });
-    const inBesch = el('input', { type: 'text', placeholder: 'Beschreibung (optional)' });
+    const inName = el('input', { type: 'text', placeholder: 'Neue Messstelle (z. B. Hof Müller)' });
+    const inBesch = el('input', { type: 'text', placeholder: 'Beschreibung/Adresse (optional)' });
     neu.append(inName, inBesch, el('button', {
       class: 'btn primaer',
-      onclick: async () => {
+      onclick: () => {
         if (!inName.value.trim()) { meldung('Name fehlt.', 'fehler'); return; }
-        await aktion(() => Api.messstelleSave({ name: inName.value.trim(), beschreibung: inBesch.value.trim() }));
+        aktion(() => Api.messstelleSave({ name: inName.value.trim(), beschreibung: inBesch.value.trim() }));
       },
     }, '+ Messstelle'));
-    wrap.append(el('h2', {}, 'Messstellen & Ebenen'), neu);
+    wrap.append(el('h2', {}, 'Messstellen · Hallen · Orte'), neu);
 
     if (!State.messstellen.length) {
       wrap.append(el('p', { class: 'klein-grau' }, 'Noch keine Messstellen.'));
@@ -291,51 +462,82 @@ const App = (() => {
     }
 
     for (const stelle of State.messstellen) {
-      const karte = el('section', { class: 'stelle-karte' });
-      const titel = el('input', { type: 'text', class: 'inline-edit', value: stelle.name });
-      const besch = el('input', { type: 'text', class: 'inline-edit klein', value: stelle.beschreibung || '', placeholder: 'Beschreibung' });
-      const kopf = el('div', { class: 'stelle-kopf' },
-        titel, besch,
-        el('button', { class: 'btn klein', onclick: () =>
-          aktion(() => Api.messstelleSave({ id: stelle.id, name: titel.value.trim(), beschreibung: besch.value.trim() })) }, 'Speichern'),
-        el('button', { class: 'btn klein gefahr', onclick: () => {
-          if (confirm('Messstelle „' + stelle.name + '" inkl. Ebenen und zugehörigen Messwerten löschen?'))
-            aktion(() => Api.messstelleDelete(stelle.id));
-        } }, 'Löschen'),
-      );
-      karte.append(kopf);
-
-      const liste = el('div', { class: 'ebenen-liste' });
-      for (const ebene of (stelle.ebenen || [])) {
-        const inB = el('input', { type: 'text', class: 'inline-edit', value: ebene.bezeichnung });
-        liste.append(el('div', { class: 'ebene-edit' },
-          inB,
-          el('button', { class: 'btn mini', onclick: () =>
-            aktion(() => Api.ebeneSave({ id: ebene.id, messstelle_id: stelle.id, bezeichnung: inB.value.trim() })) }, '✓'),
-          el('button', { class: 'btn mini gefahr', onclick: () => {
-            if (confirm('Ebene „' + ebene.bezeichnung + '" löschen?'))
-              aktion(() => Api.ebeneDelete(ebene.id));
-          } }, '✕'),
-        ));
-      }
-
-      // Neue Ebene – mit Schnellbuttons
-      const inNeu = el('input', { type: 'text', placeholder: 'Neue Ebene/Bezeichnung' });
-      const addEbene = (bez) => aktion(() => Api.ebeneSave({ messstelle_id: stelle.id, bezeichnung: bez }));
-      const schnell = el('span', { class: 'schnell' });
-      for (const v of ['Oben', 'Mitte', 'Unten']) {
-        schnell.append(el('button', { class: 'btn mini', onclick: () => addEbene(v) }, '+ ' + v));
-      }
-      liste.append(el('div', { class: 'ebene-neu' },
-        inNeu,
-        el('button', { class: 'btn klein', onclick: () => {
-          if (inNeu.value.trim()) addEbene(inNeu.value.trim());
-        } }, '+ Ebene'),
-        schnell,
-      ));
-      karte.append(liste);
-      wrap.append(karte);
+      wrap.append(messstelleKarte(stelle));
     }
+  }
+
+  function messstelleKarte(stelle) {
+    const karte = el('section', { class: 'stelle-karte' });
+    const titel = el('input', { type: 'text', class: 'inline-edit', value: stelle.name });
+    const besch = el('input', { type: 'text', class: 'inline-edit klein', value: stelle.beschreibung || '', placeholder: 'Beschreibung/Adresse' });
+    karte.append(el('div', { class: 'stelle-kopf' },
+      el('span', { class: 'ebene-tag' }, 'Messstelle'),
+      titel, besch,
+      el('button', { class: 'btn klein', onclick: () =>
+        aktion(() => Api.messstelleSave({ id: stelle.id, name: titel.value.trim(), beschreibung: besch.value.trim() })) }, 'Speichern'),
+      el('button', { class: 'btn klein gefahr', onclick: () => {
+        if (confirm('Messstelle „' + stelle.name + '" inkl. aller Hallen, Orte und Messwerte löschen?'))
+          aktion(() => Api.messstelleDelete(stelle.id));
+      } }, 'Löschen'),
+    ));
+
+    // Hallen
+    const hallenBox = el('div', { class: 'hallen-box' });
+    for (const halle of (stelle.hallen || [])) {
+      hallenBox.append(halleBlock(stelle, halle));
+    }
+    // Neue Halle
+    const inHalle = el('input', { type: 'text', placeholder: 'Neue Halle (z. B. Halle 1)' });
+    hallenBox.append(el('div', { class: 'halle-neu' },
+      inHalle,
+      el('button', { class: 'btn klein', onclick: () => {
+        if (inHalle.value.trim()) aktion(() => Api.halleSave({ messstelle_id: stelle.id, name: inHalle.value.trim() }));
+      } }, '+ Halle'),
+    ));
+    karte.append(hallenBox);
+    return karte;
+  }
+
+  function halleBlock(stelle, halle) {
+    const block = el('div', { class: 'halle-block' });
+    const hName = el('input', { type: 'text', class: 'inline-edit', value: halle.name });
+    block.append(el('div', { class: 'halle-kopf' },
+      el('span', { class: 'ebene-tag halle' }, 'Halle'),
+      hName,
+      el('button', { class: 'btn mini', onclick: () =>
+        aktion(() => Api.halleSave({ id: halle.id, messstelle_id: stelle.id, name: hName.value.trim() })) }, '✓'),
+      el('button', { class: 'btn mini gefahr', onclick: () => {
+        if (confirm('Halle „' + halle.name + '" inkl. Orte und Messwerte löschen?'))
+          aktion(() => Api.halleDelete(halle.id));
+      } }, '✕'),
+    ));
+
+    const orte = el('div', { class: 'orte-liste' });
+    for (const ort of (halle.orte || [])) {
+      const inO = el('input', { type: 'text', class: 'inline-edit', value: ort.bezeichnung });
+      orte.append(el('div', { class: 'ort-edit' },
+        inO,
+        el('button', { class: 'btn mini', onclick: () =>
+          aktion(() => Api.ortSave({ id: ort.id, halle_id: halle.id, bezeichnung: inO.value.trim() })) }, '✓'),
+        el('button', { class: 'btn mini gefahr', onclick: () => {
+          if (confirm('Ort „' + ort.bezeichnung + '" löschen?')) aktion(() => Api.ortDelete(ort.id));
+        } }, '✕'),
+      ));
+    }
+    // Neuer Ort + Schnellbuttons
+    const inOrt = el('input', { type: 'text', placeholder: 'Neuer Ort/Bezeichnung' });
+    const addOrt = (bez) => aktion(() => Api.ortSave({ halle_id: halle.id, bezeichnung: bez }));
+    const schnell = el('span', { class: 'schnell' });
+    for (const v of ['Oben', 'Mitte', 'Unten']) {
+      schnell.append(el('button', { class: 'btn mini', onclick: () => addOrt(v) }, '+ ' + v));
+    }
+    orte.append(el('div', { class: 'ort-neu' },
+      inOrt,
+      el('button', { class: 'btn mini', onclick: () => { if (inOrt.value.trim()) addOrt(inOrt.value.trim()); } }, '+ Ort'),
+      schnell,
+    ));
+    block.append(orte);
+    return block;
   }
 
   async function aktion(fn) {
@@ -368,8 +570,12 @@ const App = (() => {
       const det = el('details', { class: 'reihe', open: State.messreihen.length <= 3 ? '' : null });
       const max = r.messwerte.reduce((m, w) => (w.temperatur != null && w.temperatur > m ? w.temperatur : m), -Infinity);
       const stMax = stufeFuer(max === -Infinity ? null : max);
+      const stelle = r.messstelle_id ? stelleById(r.messstelle_id) : null;
+      const stelleName = stelle ? stelle.name
+        : (r.messwerte[0] ? (ortById(r.messwerte[0].ort_id)?.stelle.name || '—') : '—');
 
       det.append(el('summary', {},
+        el('span', { class: 'r-stelle' }, '📍 ' + stelleName),
         el('span', { class: 'r-zeit' }, zeitLesbar(r.zeitpunkt)),
         stMax ? el('span', { class: 'badge s-' + stMax.klasse }, 'max ' + max.toFixed(1) + ' °C · ' + stMax.titel) : null,
         el('span', { class: 'klein-grau' },
@@ -378,19 +584,29 @@ const App = (() => {
           + (r.messer ? ' · ' + r.messer : '')),
       ));
 
+      // Werte nach Halle gruppieren
+      const gruppen = new Map();
+      for (const w of r.messwerte) {
+        const info = ortById(w.ort_id);
+        const halleName = info ? info.halle.name : 'Unbekannte Halle';
+        if (!gruppen.has(halleName)) gruppen.set(halleName, []);
+        gruppen.get(halleName).push({ w, info });
+      }
+
       const tab = el('table', { class: 'werte-tab' });
       tab.append(el('tr', {},
-        el('th', {}, 'Messstelle'), el('th', {}, 'Ebene'),
+        el('th', {}, 'Halle'), el('th', {}, 'Ort'),
         el('th', {}, 'Temperatur'), el('th', {}, 'Bewertung'), el('th', {}, 'Notiz')));
-      for (const w of r.messwerte) {
-        const info = ebeneById(w.ebene_id);
-        const st = stufeFuer(w.temperatur);
-        tab.append(el('tr', { class: st ? 's-' + st.klasse : '' },
-          el('td', {}, info ? info.stelle.name : '—'),
-          el('td', {}, info ? info.ebene.bezeichnung : ('Ebene #' + w.ebene_id)),
-          el('td', { class: 'num' }, w.temperatur != null ? w.temperatur.toFixed(1) + ' °C' : '—'),
-          el('td', {}, st ? st.titel : ''),
-          el('td', {}, w.notiz || '')));
+      for (const [halleName, eintraege] of gruppen) {
+        eintraege.forEach(({ w, info }, i) => {
+          const st = stufeFuer(w.temperatur);
+          tab.append(el('tr', { class: st ? 's-' + st.klasse : '' },
+            el('td', { class: 'halle-zelle' }, i === 0 ? halleName : ''),
+            el('td', {}, info ? info.ort.bezeichnung : ('Ort #' + w.ort_id)),
+            el('td', { class: 'num' }, w.temperatur != null ? w.temperatur.toFixed(1) + ' °C' : '—'),
+            el('td', {}, st ? st.titel : ''),
+            el('td', {}, w.notiz || '')));
+        });
       }
       det.append(tab);
 
@@ -414,36 +630,27 @@ const App = (() => {
     State.editReiheId = r.id;
     State.werte = {};
     for (const w of r.messwerte) {
-      State.werte[w.ebene_id] = { temperatur: w.temperatur, notiz: w.notiz || '' };
+      State.werte[w.ort_id] = { temperatur: w.temperatur, notiz: w.notiz || '' };
     }
+    // Messstelle bestimmen (aus Feld oder aus erstem Ort herleiten)
+    let stelleId = r.messstelle_id;
+    if (!stelleId && r.messwerte[0]) {
+      const info = ortById(r.messwerte[0].ort_id);
+      stelleId = info ? info.stelle.id : null;
+    }
+    State.wizardStelleId = stelleId;
+    State.wizardSchritt = 0;
+    State.kopf = {
+      zeitpunkt: lokaleZeit(new Date(r.zeitpunkt)),
+      messer: r.messer || '',
+      notiz: r.notiz || '',
+      aussentemperatur: r.aussentemperatur != null ? String(r.aussentemperatur) : '',
+      temp_quelle: r.temp_quelle || 'manuell',
+      geo_lat: r.geo_lat, geo_lon: r.geo_lon, wetter_text: r.wetter_text || '',
+    };
     zeigeView('messung');
     renderMessung();
-    // Kopf-Felder nachfüllen
-    $('#m-zeit').value = lokaleZeit(new Date(r.zeitpunkt));
-    $('#m-messer').value = r.messer || '';
-    $('#m-notiz').value = r.notiz || '';
-    if (r.aussentemperatur != null) $('#m-temp').value = r.aussentemperatur;
-    const q = $('#m-quelle');
-    if (r.temp_quelle === 'open-meteo') {
-      q.textContent = 'auto · ' + (r.wetter_text || '');
-      q.dataset.quelle = 'open-meteo';
-      q.dataset.lat = r.geo_lat; q.dataset.lon = r.geo_lon;
-    }
     meldung('Messung wird bearbeitet.', 'info');
-  }
-
-  // ======================================================================
-  //  Navigation / Init
-  // ======================================================================
-  function zeigeView(name) {
-    $$('.view').forEach((v) => { v.hidden = v.id !== 'view-' + name; });
-    $$('.nav-btn').forEach((b) => b.classList.toggle('aktiv', b.dataset.view === name));
-  }
-
-  function renderAlles() {
-    renderMessung();
-    renderMessstellen();
-    renderVerlauf();
   }
 
   // ======================================================================
@@ -465,7 +672,6 @@ const App = (() => {
         zeigeLogin(true);
       }
     } catch (e) {
-      // Server nicht erreichbar – trotzdem Login zeigen mit Hinweis.
       zeigeLogin(true);
       const f = $('#login-fehler');
       f.hidden = false;
@@ -524,6 +730,17 @@ const App = (() => {
   // ======================================================================
   //  Navigation / Init
   // ======================================================================
+  function zeigeView(name) {
+    $$('.view').forEach((v) => { v.hidden = v.id !== 'view-' + name; });
+    $$('.nav-btn').forEach((b) => b.classList.toggle('aktiv', b.dataset.view === name));
+  }
+
+  function renderAlles() {
+    renderMessung();
+    renderMessstellen();
+    renderVerlauf();
+  }
+
   async function starteApp() {
     await ladeDaten();
     renderAlles();
@@ -540,7 +757,6 @@ const App = (() => {
     $('#pw-speichern').addEventListener('click', pwSpeichern);
     $('#pw-abbrechen').addEventListener('click', () => pwDialog(false));
 
-    // Vor dem Drucken alle Verlaufs-Einträge aufklappen.
     window.addEventListener('beforeprint', () => $$('#view-verlauf details').forEach((d) => (d.open = true)));
 
     await pruefeAnmeldung();

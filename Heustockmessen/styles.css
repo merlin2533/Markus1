@@ -201,7 +201,33 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .werte-tab tr.s-rot    { background: #fdf3f3; }
 .reihe-fuss { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-bottom: 8px; }
 
+/* ---- Geführter Ablauf (Wizard) ---- */
+.schritt-kopf { margin-bottom: 12px; }
+.schritt-klein { font-size: .78rem; color: var(--rot); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.schritt-gross { margin: 2px 0 0; color: var(--rot-dunkel); }
+.fortschritt { height: 8px; background: #e7e9ee; border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+.fortschritt-bar { height: 100%; background: linear-gradient(90deg, var(--rot), var(--rot-dunkel)); transition: width .2s; }
+.uebersicht-kopf { display: flex; flex-wrap: wrap; gap: 6px 16px; background: #fff; border-radius: 10px;
+  padding: 10px 14px; box-shadow: var(--schatten); margin-bottom: 12px; font-size: .9rem; }
+.hinweis { background: #fff6e5; border: 1px solid #f0d9a8; }
+
+/* ---- Stammdaten: Ebenen-Tags & Hallen ---- */
+.ebene-tag { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+  background: var(--rot); color: #fff; padding: 2px 7px; border-radius: 5px; white-space: nowrap; }
+.ebene-tag.halle { background: #6b7280; }
+.hallen-box { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+.halle-block { border: 1px solid var(--grau-rand); border-radius: 10px; padding: 10px 12px; background: #fafbfc; }
+.halle-kopf { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.orte-liste { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 0 6px;
+  padding-left: 8px; border-left: 3px solid #f0d3d5; }
+.ort-edit, .ort-neu { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ort-edit .inline-edit { max-width: 240px; }
+.halle-neu { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
+.r-stelle { font-weight: 700; color: var(--rot-dunkel); }
+.halle-zelle { font-weight: 600; color: var(--grau-text); }
+
 @media (max-width: 560px) {
   .kopf-sub { display: none; }
   .ebene-name { font-size: .9rem; }
+  .temp-feld { width: 80px; }
 }

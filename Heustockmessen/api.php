@@ -6,11 +6,8 @@
  * ersten Aufruf automatisch unter data/heustock.sqlite angelegt. So können
  * mehrere Personen über denselben Server auf denselben Datenbestand zugreifen.
  *
- * Aufruf:
- *   GET  api.php?action=ping
- *   GET  api.php?action=stammdaten
- *   GET  api.php?action=messreihen
- *   POST api.php            (JSON-Body mit Feld "action")
+ * Hierarchie der Stammdaten:  Messstelle → Halle → Ort.
+ * Eine Messreihe ist ein Messbesuch an EINER Messstelle; pro Ort ein Messwert.
  *
  * Antwort immer JSON: { ok: true, ... } oder { ok: false, error: "..." }.
  */
@@ -43,7 +40,6 @@ function fehler(string $text, int $code = 400): void {
 }
 
 function eingabe(): array {
-    // Body als JSON, sonst $_POST/$_GET als Fallback.
     $roh = file_get_contents('php://input');
     if ($roh !== '' && $roh !== false) {
         $json = json_decode($roh, true);
@@ -86,14 +82,22 @@ function schemaAnlegen(PDO $pdo): void {
             sortierung   INTEGER DEFAULT 0,
             erstellt_am  TEXT DEFAULT (datetime('now'))
         );
-        CREATE TABLE IF NOT EXISTS ebenen (
+        CREATE TABLE IF NOT EXISTS hallen (
             id            INTEGER PRIMARY KEY AUTOINCREMENT,
             messstelle_id INTEGER NOT NULL REFERENCES messstellen(id) ON DELETE CASCADE,
-            bezeichnung   TEXT NOT NULL,
+            name          TEXT NOT NULL,
+            beschreibung  TEXT DEFAULT '',
             sortierung    INTEGER DEFAULT 0
+        );
+        CREATE TABLE IF NOT EXISTS orte (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            halle_id    INTEGER NOT NULL REFERENCES hallen(id) ON DELETE CASCADE,
+            bezeichnung TEXT NOT NULL,
+            sortierung  INTEGER DEFAULT 0
         );
         CREATE TABLE IF NOT EXISTS messreihen (
             id               INTEGER PRIMARY KEY AUTOINCREMENT,
+            messstelle_id    INTEGER REFERENCES messstellen(id) ON DELETE SET NULL,
             zeitpunkt        TEXT NOT NULL,
             aussentemperatur REAL,
             temp_quelle      TEXT DEFAULT 'manuell',
@@ -107,7 +111,7 @@ function schemaAnlegen(PDO $pdo): void {
         CREATE TABLE IF NOT EXISTS messwerte (
             id           INTEGER PRIMARY KEY AUTOINCREMENT,
             messreihe_id INTEGER NOT NULL REFERENCES messreihen(id) ON DELETE CASCADE,
-            ebene_id     INTEGER NOT NULL REFERENCES ebenen(id) ON DELETE CASCADE,
+            ort_id       INTEGER NOT NULL REFERENCES orte(id) ON DELETE CASCADE,
             temperatur   REAL,
             notiz        TEXT DEFAULT ''
         );
@@ -115,9 +119,11 @@ function schemaAnlegen(PDO $pdo): void {
             schluessel TEXT PRIMARY KEY,
             wert       TEXT NOT NULL
         );
-        CREATE INDEX IF NOT EXISTS idx_ebenen_stelle   ON ebenen(messstelle_id);
-        CREATE INDEX IF NOT EXISTS idx_werte_reihe      ON messwerte(messreihe_id);
-        CREATE INDEX IF NOT EXISTS idx_werte_ebene      ON messwerte(ebene_id);
+        CREATE INDEX IF NOT EXISTS idx_hallen_stelle ON hallen(messstelle_id);
+        CREATE INDEX IF NOT EXISTS idx_orte_halle    ON orte(halle_id);
+        CREATE INDEX IF NOT EXISTS idx_reihen_stelle ON messreihen(messstelle_id);
+        CREATE INDEX IF NOT EXISTS idx_werte_reihe   ON messwerte(messreihe_id);
+        CREATE INDEX IF NOT EXISTS idx_werte_ort     ON messwerte(ort_id);
     SQL);
 }
 
@@ -161,29 +167,43 @@ function zahlOderNull($wert): ?float {
 }
 
 // ---------------------------------------------------------------------------
-// Stammdaten: Messstellen + Ebenen
+// Stammdaten: Messstellen → Hallen → Orte
 // ---------------------------------------------------------------------------
 
 function ladeStammdaten(PDO $pdo): array {
     $stellen = $pdo->query(
         'SELECT id, name, beschreibung, sortierung FROM messstellen ORDER BY sortierung, id'
     )->fetchAll();
-    $ebenen = $pdo->query(
-        'SELECT id, messstelle_id, bezeichnung, sortierung FROM ebenen ORDER BY sortierung, id'
+    $hallen = $pdo->query(
+        'SELECT id, messstelle_id, name, beschreibung, sortierung FROM hallen ORDER BY sortierung, id'
+    )->fetchAll();
+    $orte = $pdo->query(
+        'SELECT id, halle_id, bezeichnung, sortierung FROM orte ORDER BY sortierung, id'
     )->fetchAll();
 
-    $nachStelle = [];
-    foreach ($ebenen as $e) {
-        $nachStelle[(int)$e['messstelle_id']][] = [
-            'id'          => (int)$e['id'],
-            'bezeichnung' => $e['bezeichnung'],
-            'sortierung'  => (int)$e['sortierung'],
+    $orteNachHalle = [];
+    foreach ($orte as $o) {
+        $orteNachHalle[(int)$o['halle_id']][] = [
+            'id'          => (int)$o['id'],
+            'bezeichnung' => $o['bezeichnung'],
+            'sortierung'  => (int)$o['sortierung'],
+        ];
+    }
+    $hallenNachStelle = [];
+    foreach ($hallen as $h) {
+        $hid = (int)$h['id'];
+        $hallenNachStelle[(int)$h['messstelle_id']][] = [
+            'id'           => $hid,
+            'name'         => $h['name'],
+            'beschreibung' => $h['beschreibung'],
+            'sortierung'   => (int)$h['sortierung'],
+            'orte'         => $orteNachHalle[$hid] ?? [],
         ];
     }
     foreach ($stellen as &$s) {
         $s['id']         = (int)$s['id'];
         $s['sortierung'] = (int)$s['sortierung'];
-        $s['ebenen']     = $nachStelle[$s['id']] ?? [];
+        $s['hallen']     = $hallenNachStelle[$s['id']] ?? [];
     }
     return $stellen;
 }
@@ -193,20 +213,21 @@ function ladeMessreihen(PDO $pdo): array {
         'SELECT * FROM messreihen ORDER BY zeitpunkt DESC, id DESC'
     )->fetchAll();
     $werte = $pdo->query(
-        'SELECT id, messreihe_id, ebene_id, temperatur, notiz FROM messwerte'
+        'SELECT id, messreihe_id, ort_id, temperatur, notiz FROM messwerte'
     )->fetchAll();
 
     $nachReihe = [];
     foreach ($werte as $w) {
         $nachReihe[(int)$w['messreihe_id']][] = [
             'id'         => (int)$w['id'],
-            'ebene_id'   => (int)$w['ebene_id'],
+            'ort_id'     => (int)$w['ort_id'],
             'temperatur' => $w['temperatur'] === null ? null : (float)$w['temperatur'],
             'notiz'      => $w['notiz'],
         ];
     }
     foreach ($reihen as &$r) {
         $r['id']               = (int)$r['id'];
+        $r['messstelle_id']    = $r['messstelle_id'] === null ? null : (int)$r['messstelle_id'];
         $r['aussentemperatur'] = $r['aussentemperatur'] === null ? null : (float)$r['aussentemperatur'];
         $r['geo_lat']          = $r['geo_lat'] === null ? null : (float)$r['geo_lat'];
         $r['geo_lon']          = $r['geo_lon'] === null ? null : (float)$r['geo_lon'];
@@ -229,14 +250,13 @@ try {
             antwort(['ok' => true, 'app' => 'heustockmessen', 'zeit' => date('c')]);
 
         case 'status':
-            db(); // stellt sicher, dass DB/Schema existieren
+            db();
             antwort(['ok' => true, 'angemeldet' => istAngemeldet()]);
 
         case 'login': {
             $pdo  = db();
             $pass = (string)($in['passwort'] ?? '');
             if (!password_verify($pass, passwortHash($pdo))) {
-                // kleine Verzögerung gegen Brute-Force
                 usleep(400000);
                 fehler('Falsches Passwort.', 401);
             }
@@ -276,13 +296,14 @@ try {
         case 'messreihen':
             antwort(['ok' => true, 'messreihen' => ladeMessreihen(db())]);
 
-        case 'alles':
+        case 'alles': {
             $pdo = db();
             antwort([
                 'ok'          => true,
                 'messstellen' => ladeStammdaten($pdo),
                 'messreihen'  => ladeMessreihen($pdo),
             ]);
+        }
 
         // ---- Messstelle ----
         case 'messstelle_save': {
@@ -293,15 +314,11 @@ try {
             }
             $id = (int)($in['id'] ?? 0);
             if ($id > 0) {
-                $stmt = $pdo->prepare(
-                    'UPDATE messstellen SET name=?, beschreibung=?, sortierung=? WHERE id=?'
-                );
-                $stmt->execute([$name, (string)($in['beschreibung'] ?? ''), (int)($in['sortierung'] ?? 0), $id]);
+                $pdo->prepare('UPDATE messstellen SET name=?, beschreibung=?, sortierung=? WHERE id=?')
+                    ->execute([$name, (string)($in['beschreibung'] ?? ''), (int)($in['sortierung'] ?? 0), $id]);
             } else {
-                $stmt = $pdo->prepare(
-                    'INSERT INTO messstellen (name, beschreibung, sortierung) VALUES (?,?,?)'
-                );
-                $stmt->execute([$name, (string)($in['beschreibung'] ?? ''), (int)($in['sortierung'] ?? 0)]);
+                $pdo->prepare('INSERT INTO messstellen (name, beschreibung, sortierung) VALUES (?,?,?)')
+                    ->execute([$name, (string)($in['beschreibung'] ?? ''), (int)($in['sortierung'] ?? 0)]);
                 $id = (int)$pdo->lastInsertId();
             }
             antwort(['ok' => true, 'id' => $id]);
@@ -309,37 +326,59 @@ try {
 
         case 'messstelle_delete': {
             $pdo = db();
-            $id  = (int)($in['id'] ?? 0);
-            $pdo->prepare('DELETE FROM messstellen WHERE id=?')->execute([$id]);
+            $pdo->prepare('DELETE FROM messstellen WHERE id=?')->execute([(int)($in['id'] ?? 0)]);
             antwort(['ok' => true]);
         }
 
-        // ---- Ebene / Heuballen ----
-        case 'ebene_save': {
-            $pdo   = db();
+        // ---- Halle ----
+        case 'halle_save': {
+            $pdo    = db();
             $stelle = (int)($in['messstelle_id'] ?? 0);
-            $bez    = trim((string)($in['bezeichnung'] ?? ''));
-            if ($stelle <= 0 || $bez === '') {
-                fehler('Messstelle oder Bezeichnung fehlt.');
+            $name   = trim((string)($in['name'] ?? ''));
+            if ($stelle <= 0 || $name === '') {
+                fehler('Messstelle oder Hallenname fehlt.');
             }
             $id = (int)($in['id'] ?? 0);
             if ($id > 0) {
-                $stmt = $pdo->prepare('UPDATE ebenen SET bezeichnung=?, sortierung=? WHERE id=?');
-                $stmt->execute([$bez, (int)($in['sortierung'] ?? 0), $id]);
+                $pdo->prepare('UPDATE hallen SET name=?, beschreibung=?, sortierung=? WHERE id=?')
+                    ->execute([$name, (string)($in['beschreibung'] ?? ''), (int)($in['sortierung'] ?? 0), $id]);
             } else {
-                $stmt = $pdo->prepare(
-                    'INSERT INTO ebenen (messstelle_id, bezeichnung, sortierung) VALUES (?,?,?)'
-                );
-                $stmt->execute([$stelle, $bez, (int)($in['sortierung'] ?? 0)]);
+                $pdo->prepare('INSERT INTO hallen (messstelle_id, name, beschreibung, sortierung) VALUES (?,?,?,?)')
+                    ->execute([$stelle, $name, (string)($in['beschreibung'] ?? ''), (int)($in['sortierung'] ?? 0)]);
                 $id = (int)$pdo->lastInsertId();
             }
             antwort(['ok' => true, 'id' => $id]);
         }
 
-        case 'ebene_delete': {
+        case 'halle_delete': {
             $pdo = db();
-            $id  = (int)($in['id'] ?? 0);
-            $pdo->prepare('DELETE FROM ebenen WHERE id=?')->execute([$id]);
+            $pdo->prepare('DELETE FROM hallen WHERE id=?')->execute([(int)($in['id'] ?? 0)]);
+            antwort(['ok' => true]);
+        }
+
+        // ---- Ort ----
+        case 'ort_save': {
+            $pdo   = db();
+            $halle = (int)($in['halle_id'] ?? 0);
+            $bez   = trim((string)($in['bezeichnung'] ?? ''));
+            if ($halle <= 0 || $bez === '') {
+                fehler('Halle oder Bezeichnung fehlt.');
+            }
+            $id = (int)($in['id'] ?? 0);
+            if ($id > 0) {
+                $pdo->prepare('UPDATE orte SET bezeichnung=?, sortierung=? WHERE id=?')
+                    ->execute([$bez, (int)($in['sortierung'] ?? 0), $id]);
+            } else {
+                $pdo->prepare('INSERT INTO orte (halle_id, bezeichnung, sortierung) VALUES (?,?,?)')
+                    ->execute([$halle, $bez, (int)($in['sortierung'] ?? 0)]);
+                $id = (int)$pdo->lastInsertId();
+            }
+            antwort(['ok' => true, 'id' => $id]);
+        }
+
+        case 'ort_delete': {
+            $pdo = db();
+            $pdo->prepare('DELETE FROM orte WHERE id=?')->execute([(int)($in['id'] ?? 0)]);
             antwort(['ok' => true]);
         }
 
@@ -354,11 +393,14 @@ try {
             if (!is_array($werte)) {
                 $werte = [];
             }
+            $stelleId = isset($in['messstelle_id']) && $in['messstelle_id'] !== ''
+                ? (int)$in['messstelle_id'] : null;
 
             $pdo->beginTransaction();
             try {
                 $id = (int)($in['id'] ?? 0);
                 $felder = [
+                    $stelleId,
                     $zeitpunkt,
                     zahlOderNull($in['aussentemperatur'] ?? null),
                     (string)($in['temp_quelle'] ?? 'manuell'),
@@ -369,35 +411,33 @@ try {
                     (string)($in['notiz'] ?? ''),
                 ];
                 if ($id > 0) {
-                    $stmt = $pdo->prepare(
-                        'UPDATE messreihen SET zeitpunkt=?, aussentemperatur=?, temp_quelle=?,
+                    $pdo->prepare(
+                        'UPDATE messreihen SET messstelle_id=?, zeitpunkt=?, aussentemperatur=?, temp_quelle=?,
                          geo_lat=?, geo_lon=?, wetter_text=?, messer=?, notiz=? WHERE id=?'
-                    );
-                    $stmt->execute([...$felder, $id]);
+                    )->execute([...$felder, $id]);
                     $pdo->prepare('DELETE FROM messwerte WHERE messreihe_id=?')->execute([$id]);
                 } else {
-                    $stmt = $pdo->prepare(
+                    $pdo->prepare(
                         'INSERT INTO messreihen
-                         (zeitpunkt, aussentemperatur, temp_quelle, geo_lat, geo_lon, wetter_text, messer, notiz)
-                         VALUES (?,?,?,?,?,?,?,?)'
-                    );
-                    $stmt->execute($felder);
+                         (messstelle_id, zeitpunkt, aussentemperatur, temp_quelle, geo_lat, geo_lon, wetter_text, messer, notiz)
+                         VALUES (?,?,?,?,?,?,?,?,?)'
+                    )->execute($felder);
                     $id = (int)$pdo->lastInsertId();
                 }
 
                 $wStmt = $pdo->prepare(
-                    'INSERT INTO messwerte (messreihe_id, ebene_id, temperatur, notiz) VALUES (?,?,?,?)'
+                    'INSERT INTO messwerte (messreihe_id, ort_id, temperatur, notiz) VALUES (?,?,?,?)'
                 );
                 foreach ($werte as $w) {
-                    $ebene = (int)($w['ebene_id'] ?? 0);
-                    if ($ebene <= 0) {
+                    $ort = (int)($w['ort_id'] ?? 0);
+                    if ($ort <= 0) {
                         continue;
                     }
                     $temp = zahlOderNull($w['temperatur'] ?? null);
                     if ($temp === null && trim((string)($w['notiz'] ?? '')) === '') {
                         continue; // leeren Wert ohne Notiz nicht speichern
                     }
-                    $wStmt->execute([$id, $ebene, $temp, (string)($w['notiz'] ?? '')]);
+                    $wStmt->execute([$id, $ort, $temp, (string)($w['notiz'] ?? '')]);
                 }
 
                 $pdo->commit();
@@ -410,8 +450,7 @@ try {
 
         case 'messreihe_delete': {
             $pdo = db();
-            $id  = (int)($in['id'] ?? 0);
-            $pdo->prepare('DELETE FROM messreihen WHERE id=?')->execute([$id]);
+            $pdo->prepare('DELETE FROM messreihen WHERE id=?')->execute([(int)($in['id'] ?? 0)]);
             antwort(['ok' => true]);
         }
 

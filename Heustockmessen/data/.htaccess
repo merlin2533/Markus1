@@ -1,0 +1,2 @@
+# Direkten Zugriff auf die SQLite-Datenbank über das Web unterbinden (Apache).
+Require all denied

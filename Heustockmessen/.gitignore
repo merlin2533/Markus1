@@ -1,0 +1,4 @@
+# Laufzeit-Datenbank nicht versionieren
+data/heustock.sqlite
+data/heustock.sqlite-shm
+data/heustock.sqlite-wal

@@ -6,6 +6,10 @@ Dieses Repository enthält mehrere eigenständige, rein webbasierte HTML/JS-Anwe
 ## Projekte
 - **Offside/** – Interaktiver Kommunikationsplan für Behörden (Polizei-Blau, DEMO-Daten).
   Hauptprojekt dieser Sitzung. Siehe `Offside/README.md`.
+- **Heustockmessen/** – Temperaturüberwachung von Heustöcken bei der Freiwilligen
+  Feuerwehr. **Mehrbenutzer** über ein PHP-Backend mit SQLite (`api.php`),
+  Passwortschutz (Standard `Feuerwehr112!`), Außentemperatur manuell oder per
+  Standort/Open-Meteo. Nicht rein offline. Siehe `Heustockmessen/README.md`.
 - **Dashboard/**, **Polizei-Dashboard/**, **Protokoll/** – ältere eigenständige Apps.
 
 ## Offside – Architektur

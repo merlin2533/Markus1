@@ -1054,7 +1054,68 @@ const App = (() => {
     return el('div', { class: 'b-sum' }, el('div', { class: 'b-sum-l' }, label), el('div', { class: 'b-sum-w' }, wert));
   }
 
-  // Werte-Tabelle einer Messreihe (nach Halle gruppiert) für den Bericht.
+  // Übersichtstabelle je Messstelle: Zeilen = Orte (mit Halle),
+  // Spalten = Messungen (Datum/Zeit), Zellen = Temperatur (farbig).
+  function bauStellePivot(stelle, rs) {
+    // Werte je Ort und Messung
+    const werteMap = new Map(); // ort_id -> Map(reiheIndex -> wert)
+    rs.forEach((r, ri) => {
+      for (const w of r.messwerte) {
+        if (!werteMap.has(w.ort_id)) werteMap.set(w.ort_id, new Map());
+        werteMap.get(w.ort_id).set(ri, w);
+      }
+    });
+
+    const tab = el('table', { class: 'b-pivot' });
+    const kopf = el('tr', {}, el('th', { class: 'b-th-halle' }, 'Halle'), el('th', {}, 'Ort'));
+    rs.forEach((r) => {
+      kopf.append(el('th', { class: 'b-spalte' },
+        el('div', {}, berichtDatumZeit(r.zeitpunkt)),
+        el('div', { class: 'b-sub' },
+          (r.messer || '') + (r.aussentemperatur != null ? (r.messer ? ' · ' : '') + 'außen ' + r.aussentemperatur + '°' : ''))));
+    });
+    tab.append(kopf);
+
+    let letzteHalle = null;
+    for (const h of (stelle.hallen || [])) {
+      for (const o of (h.orte || [])) {
+        const tr = el('tr', {},
+          el('td', { class: 'b-halle' }, letzteHalle === h.id ? '' : h.name),
+          el('td', {}, o.bezeichnung));
+        letzteHalle = h.id;
+        rs.forEach((r, ri) => {
+          const w = werteMap.get(o.id) ? werteMap.get(o.id).get(ri) : null;
+          const t = w && w.temperatur != null ? w.temperatur : null;
+          const st = stufeFuer(t);
+          tr.append(el('td', { class: 'num' + (st ? ' s-' + st.klasse : '') }, t != null ? t.toFixed(1) : '–'));
+        });
+        tab.append(tr);
+      }
+    }
+    return tab;
+  }
+
+  // Anmerkungen (Tiefe/Notizen) je Messstelle als saubere Liste unter der Tabelle.
+  function bauStelleNotizen(rs) {
+    const zeilen = [];
+    rs.forEach((r) => {
+      if ((r.notiz || '').trim()) zeilen.push('Messung ' + berichtDatumZeit(r.zeitpunkt) + ': ' + r.notiz.trim());
+      for (const w of r.messwerte) {
+        const extra = [(w.tiefe || '').trim() ? 'Tiefe ' + w.tiefe.trim() : '', (w.notiz || '').trim()].filter(Boolean).join(', ');
+        if (extra) {
+          const info = ortById(w.ort_id);
+          zeilen.push((info ? info.halle.name + ' · ' + info.ort.bezeichnung : '#' + w.ort_id)
+            + ' (' + berichtDatumZeit(r.zeitpunkt) + '): ' + extra);
+        }
+      }
+    });
+    if (!zeilen.length) return null;
+    const box = el('div', { class: 'b-notizen' }, el('div', { class: 'b-notizen-titel' }, 'Anmerkungen'));
+    for (const z of zeilen) box.append(el('div', { class: 'b-notiz' }, '• ' + z));
+    return box;
+  }
+
+  // Werte-Tabelle einer Messreihe (nach Halle gruppiert) – Fallback ohne Messstelle.
   function bauWerteTabelle(r) {
     const grp = new Map();
     for (const w of r.messwerte) {
@@ -1111,20 +1172,23 @@ const App = (() => {
       if (!grp.has(key)) grp.set(key, { stelle, rs: [] });
       grp.get(key).rs.push(r);
     }
+    let erste = true;
     for (const { stelle, rs } of grp.values()) {
-      const sec = el('section', { class: 'b-stelle' });
-      sec.append(el('h2', {}, (stelle ? stelle.name : '—') + ' ', el('span', { class: 'b-anzahl' }, '(' + rs.length + ' Messung' + (rs.length === 1 ? '' : 'en') + ')')));
-      for (const r of rs) {
-        const mess = el('div', { class: 'b-mess' });
-        mess.append(el('div', { class: 'b-meta' },
-          berichtDatumZeit(r.zeitpunkt)
-          + (r.messer ? ' · ' + r.messer : '')
-          + (r.aussentemperatur != null ? ' · außen ' + r.aussentemperatur + ' °C' + (r.temp_quelle === 'open-meteo' ? ' (autom.)' : '') : '')));
-        mess.append(bauWerteTabelle(r));
-        if (r.notiz) mess.append(el('div', { class: 'b-notiz' }, 'Notiz: ' + r.notiz));
-        if (r.foto) mess.append(el('img', { class: 'b-foto', src: r.foto, alt: 'Beleg' }));
-        sec.append(mess);
+      const sec = el('section', { class: 'b-stelle' + (erste ? ' erste' : '') });
+      erste = false;
+      sec.append(el('h2', {}, (stelle ? stelle.name : '—') + ' ',
+        el('span', { class: 'b-anzahl' }, '(' + rs.length + ' Messung' + (rs.length === 1 ? '' : 'en') + ')')));
+      if (stelle && stelle.beschreibung) sec.append(el('div', { class: 'b-besch' }, stelle.beschreibung));
+
+      if (stelle) {
+        sec.append(bauStellePivot(stelle, rs));
+      } else {
+        // Fallback ohne Messstellen-Zuordnung: je Messung eine Tabelle
+        for (const r of rs) { sec.append(el('div', { class: 'b-meta' }, berichtDatumZeit(r.zeitpunkt))); sec.append(bauWerteTabelle(r)); }
       }
+      const anm = bauStelleNotizen(rs);
+      if (anm) sec.append(anm);
+      for (const r of rs) if (r.foto) sec.append(el('img', { class: 'b-foto', src: r.foto, alt: 'Beleg' }));
       frag.append(sec);
     }
 

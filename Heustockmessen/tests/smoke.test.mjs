@@ -132,12 +132,24 @@ try {
   ok('Trend-Spalte vorhanden', (await page.locator('#view-verlauf .werte-tab th').allTextContents()).includes('Trend'));
   ok('Backup-Button vorhanden', await page.locator('#view-verlauf .werkzeuge .btn:has-text("Backup")').count() === 1);
 
-  // Tagesbericht erzeugen (Druck unterdrücken)
-  ok('Tagesbericht-Knopf vorhanden', await page.locator('#view-verlauf .werkzeuge .btn:has-text("Tagesbericht")').count() === 1);
+  // Berichte erzeugen (Druck unterdrücken)
   await page.evaluate(() => { window.print = () => {}; });
+  ok('Tagesbericht-Knopf vorhanden', await page.locator('#view-verlauf .werkzeuge .btn:has-text("Tagesbericht")').count() === 1);
   await page.click('#view-verlauf .werkzeuge .btn:has-text("Tagesbericht")');
-  await page.waitForTimeout(200);
-  ok('Tagesbericht enthält Messstelle', await page.locator('#bericht-druck .b-reihe').count() >= 1);
+  await page.waitForTimeout(150);
+  ok('Tagesbericht enthält Messstelle', await page.locator('#bericht-druck .b-stelle').count() >= 1);
+  await page.evaluate(() => document.body.classList.remove('drucke-bericht'));
+
+  ok('Gesamtbericht-Knopf vorhanden', await page.locator('#view-verlauf .werkzeuge .btn:has-text("Gesamtbericht")').count() === 1);
+  await page.click('#view-verlauf .werkzeuge .btn:has-text("Gesamtbericht")');
+  await page.waitForTimeout(150);
+  ok('Gesamtbericht enthält Messstelle', await page.locator('#bericht-druck .b-stelle').count() >= 1);
+  await page.evaluate(() => document.body.classList.remove('drucke-bericht'));
+
+  await page.selectOption('#view-verlauf .bericht-person', 'Tester');
+  await page.click('#view-verlauf .werkzeuge .btn:has-text("Personenbericht")');
+  await page.waitForTimeout(150);
+  ok('Personenbericht enthält Messstelle', await page.locator('#bericht-druck .b-stelle').count() >= 1);
   await page.evaluate(() => document.body.classList.remove('drucke-bericht'));
 
   // Filter „nur kritische" greift (75°C ist kritisch → Reihe bleibt sichtbar)

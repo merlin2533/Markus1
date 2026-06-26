@@ -49,23 +49,42 @@
   .b-sum { border: 1px solid #bbb; border-radius: 6px; padding: 6px 12px; min-width: 110px; }
   .b-sum-l { font-size: 9px; text-transform: uppercase; letter-spacing: .03em; color: #666; }
   .b-sum-w { font-size: 14px; font-weight: 700; }
-  .b-stelle { margin-bottom: 18px; }
-  .b-stelle h2 { font-size: 15px; margin: 0 0 4px; color: #7a0c15;
-    border-bottom: 1px solid #ddd; padding-bottom: 2px; }
+  /* Jede Messstelle auf ein eigenes Blatt (erste bleibt bei der Übersicht) */
+  .b-stelle { page-break-before: always; page-break-inside: auto; }
+  .b-stelle.erste { page-break-before: avoid; }
+  .b-stelle h2 { font-size: 16px; margin: 0 0 2px; color: #7a0c15;
+    border-bottom: 2px solid #c1121f; padding-bottom: 3px; }
   .b-anzahl { font-size: 10px; font-weight: 400; color: #777; }
-  .b-mess { page-break-inside: avoid; margin-bottom: 10px; }
+  .b-besch { font-size: 11px; color: #555; margin: 2px 0 8px; }
+
+  /* Übersichtstabelle (Orte × Messungen) */
+  .b-pivot { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  .b-pivot th, .b-pivot td { border: 1px solid #c8c8c8; padding: 5px 8px; font-size: 11px; }
+  .b-pivot th { background: #f1f1f1; text-align: left; vertical-align: bottom; }
+  .b-pivot .b-spalte { text-align: right; font-size: 10px; white-space: nowrap; }
+  .b-pivot .b-sub { font-weight: 400; color: #666; font-size: 9px; }
+  .b-pivot td.b-halle { font-weight: 700; }
+  .b-pivot td.num { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .b-pivot td.num.s-gelb { color: #9a7d00; background: #fbf6e3; }
+  .b-pivot td.num.s-orange { color: #b85a00; background: #fdeede; }
+  .b-pivot td.num.s-rot { color: #c1121f; background: #fde5e5; }
+  .b-pivot td.num.s-gruen { color: #2e7d32; }
+
+  /* Anmerkungen */
+  .b-notizen { margin-top: 8px; }
+  .b-notizen-titel { font-size: 10px; text-transform: uppercase; letter-spacing: .03em; color: #555; margin-bottom: 2px; }
+  .b-notiz { font-size: 11px; }
+  .b-foto { max-width: 220px; margin-top: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+  /* Fallback-Tabelle (ohne Messstellen-Zuordnung) */
   .b-meta { font-size: 11px; color: #444; margin-bottom: 4px; }
-  .b-tab { width: 100%; border-collapse: collapse; }
+  .b-tab { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
   .b-tab th, .b-tab td { border: 1px solid #c8c8c8; padding: 4px 7px; text-align: left; font-size: 11px; }
-  .b-tab th { background: #f1f1f1; font-size: 9px; text-transform: uppercase; letter-spacing: .03em; }
+  .b-tab th { background: #f1f1f1; font-size: 9px; text-transform: uppercase; }
   .b-tab td.num { text-align: right; font-weight: 700; }
-  .b-tab tr.s-rot td.num { color: #c1121f; }
-  .b-tab tr.s-orange td.num { color: #b85a00; }
   .b-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
   .b-dot.s-gruen { background: #2e7d32; } .b-dot.s-gelb { background: #c9a227; }
   .b-dot.s-orange { background: #e8740c; } .b-dot.s-rot { background: #d32f2f; }
-  .b-notiz { font-size: 11px; margin-top: 4px; }
-  .b-foto { max-width: 220px; margin-top: 8px; border: 1px solid #ccc; border-radius: 4px; }
   .b-fuss { margin-top: 28px; display: flex; gap: 50px; }
   .b-sign { font-size: 12px; }
   .b-line { display: inline-block; width: 190px; border-bottom: 1px solid #000; }

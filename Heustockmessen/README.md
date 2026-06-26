@@ -85,10 +85,13 @@ Messstellen, Hallen und Orte sind die **Stammdaten** (einmal anlegen); die
 - **Für Smartphone und Desktop optimiert**: große Touch-Felder, beim Erfassen
   unten andockende Bedienleiste, sticky Navigation, horizontal scrollbare
   Tabellen, Berücksichtigung der Geräte-Ränder (Notch/Safe-Area).
-- **Berichte (HTML/PDF)** im Verlauf – jeweils mit Kopf, Zusammenfassung
-  (Messungen, Messstellen, Höchstwert, kritische Werte), nach Messstelle
-  gruppierten Tabellen (Halle/Ort/Tiefe/Temperatur/Bewertung/Notiz) und
-  Unterschriftszeile:
+- **Berichte (HTML/PDF)** im Verlauf – Kopf mit Zeitraum, Zusammenfassung
+  (Messungen, Messstellen, Höchstwert, kritische Werte) und Unterschriftszeile.
+  **Jede Messstelle auf einer eigenen Seite** mit *einer* übersichtlichen
+  Tabelle: Zeilen = Halle/Ort, Spalten = die einzelnen Messungen (mit
+  Datum/Erfasser/Außentemperatur), Zellen = farbige Temperaturwerte – so sieht
+  man je Ort den Verlauf über mehrere Messungen. Tiefe/Notizen als
+  „Anmerkungen" darunter. Drei Varianten:
   - **📄 Tagesbericht** – alle Messungen aller Messstellen eines Tages.
   - **📋 Gesamtbericht** – alle Messungen (folgt dem aktiven Verlauf-Filter,
     z. B. Messstelle/Zeitraum) auf einem Blatt.

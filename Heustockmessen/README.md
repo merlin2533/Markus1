@@ -77,6 +77,9 @@ Messstellen, Hallen und Orte sind die **Stammdaten** (einmal anlegen); die
 - **Backup/Wiederherstellen** des gesamten Datenbestands als JSON-Datei.
 - **PWA**: „Zum Startbildschirm hinzufügen", Vollbild, App-Shell offline
   (Service Worker), App-Icon.
+- **Für Smartphone und Desktop optimiert**: große Touch-Felder, beim Erfassen
+  unten andockende Bedienleiste, sticky Navigation, horizontal scrollbare
+  Tabellen, Berücksichtigung der Geräte-Ränder (Notch/Safe-Area).
 - **Drucken / PDF**: Verlauf als Bericht – je Messung eine Seite mit
   Unterschriftszeile (`print.css`).
 - **Passwortschutz**: gemeinsames Passwort, in der DB als Hash gespeichert.

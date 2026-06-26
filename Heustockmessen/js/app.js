@@ -437,18 +437,23 @@ const App = (() => {
   }
 
   async function holeWetter() {
-    const quelle = $('#m-quelle');
-    quelle.textContent = '… Standort wird ermittelt';
+    const q0 = $('#m-quelle');
+    if (q0) q0.textContent = '… Standort wird ermittelt';
     try {
       const w = await Wetter.aktuelleTemperatur();
-      $('#m-temp').value = w.temperatur.toFixed(1);
-      quelle.textContent = 'auto · ' + w.text;
-      quelle.dataset.lat = w.lat;
-      quelle.dataset.lon = w.lon;
-      quelle.dataset.quelle = w.quelle;
+      // Zuerst in den Zustand schreiben – so geht der Wert auch bei einem
+      // zwischenzeitlichen Re-Render nicht verloren.
+      State.kopf.aussentemperatur = w.temperatur.toFixed(1);
+      State.kopf.temp_quelle = 'open-meteo';
+      State.kopf.geo_lat = w.lat; State.kopf.geo_lon = w.lon; State.kopf.wetter_text = w.text;
+      // Falls die Felder noch da sind, direkt aktualisieren.
+      const tempEl = $('#m-temp'), qEl = $('#m-quelle');
+      if (tempEl) tempEl.value = w.temperatur.toFixed(1);
+      if (qEl) { qEl.textContent = 'auto · ' + w.text; qEl.dataset.lat = w.lat; qEl.dataset.lon = w.lon; qEl.dataset.quelle = w.quelle; }
       meldung('Außentemperatur automatisch übernommen: ' + w.temperatur.toFixed(1) + ' °C', 'ok');
     } catch (e) {
-      quelle.textContent = 'manuell';
+      const qEl = $('#m-quelle');
+      if (qEl) qEl.textContent = 'manuell';
       meldung('Automatik fehlgeschlagen: ' + e.message + ' – bitte manuell eingeben.', 'fehler');
     }
   }
@@ -848,6 +853,7 @@ const App = (() => {
       el('h2', {}, 'Verlauf & Auswertung'),
       el('div', { class: 'werkzeuge' },
         el('button', { class: 'btn klein', onclick: () => window.print() }, '🖨 Drucken'),
+        tagesberichtSteuerung(),
         jahrExportSteuerung(),
         el('button', { class: 'btn klein', onclick: backupHerunterladen }, '⭳ Backup'),
         wiederherstellenSteuerung(),
@@ -979,6 +985,110 @@ const App = (() => {
     e.target.value = '';
   }
 
+  // ---- Tagesbericht (HTML/PDF) ----
+  function lokaleDatum(iso) {
+    const d = new Date(iso); const p = (n) => String(n).padStart(2, '0');
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+  function tagLesbar(tag) {
+    const d = new Date(tag + 'T00:00');
+    return isNaN(d) ? tag : d.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  }
+  function uhrzeit(iso) {
+    const d = new Date(iso); const p = (n) => String(n).padStart(2, '0');
+    return p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  function tagesberichtSteuerung() {
+    const letzte = State.messreihen[0] ? lokaleDatum(State.messreihen[0].zeitpunkt) : lokaleDatum(new Date().toISOString());
+    const inp = el('input', { type: 'date', class: 'bericht-datum', value: letzte });
+    const btn = el('button', { class: 'btn klein', onclick: () => tagesbericht(inp.value) }, '📄 Tagesbericht');
+    return el('span', { class: 'bericht-steuerung' }, inp, btn);
+  }
+
+  function tagesbericht(datum) {
+    const reihen = State.messreihen.filter((r) => lokaleDatum(r.zeitpunkt) === datum)
+      .sort((a, b) => new Date(a.zeitpunkt) - new Date(b.zeitpunkt));
+    if (!reihen.length) {
+      meldung('Für ' + tagLesbar(datum) + ' liegen keine Messungen vor.', 'fehler');
+      return;
+    }
+    const ziel = $('#bericht-druck');
+    ziel.innerHTML = '';
+    ziel.append(bauBericht(reihen, datum));
+    document.body.classList.add('drucke-bericht');
+    window.print();
+  }
+
+  function bSummary(label, wert) {
+    return el('div', { class: 'b-sum' }, el('div', { class: 'b-sum-l' }, label), el('div', { class: 'b-sum-w' }, wert));
+  }
+
+  function bauBericht(reihen, tag) {
+    const frag = document.createDocumentFragment();
+    frag.append(el('div', { class: 'b-kopf' },
+      el('div', {},
+        el('div', { class: 'b-logo' }, '🚒 Freiwillige Feuerwehr'),
+        el('h1', {}, 'Heustock – Tagesbericht')),
+      el('div', { class: 'b-datum' }, tagLesbar(tag))));
+
+    let maxT = -Infinity, kritisch = 0; const stellen = new Set();
+    for (const r of reihen) {
+      stellen.add(r.messstelle_id || (r.messwerte[0] ? ortById(r.messwerte[0].ort_id)?.stelle.id : null));
+      for (const w of r.messwerte) {
+        if (w.temperatur != null) { if (w.temperatur > maxT) maxT = w.temperatur; if (w.temperatur >= SCHWELLEN.orange) kritisch++; }
+      }
+    }
+    const stMax = stufeFuer(maxT === -Infinity ? null : maxT);
+    frag.append(el('div', { class: 'b-summary' },
+      bSummary('Messungen', String(reihen.length)),
+      bSummary('Messstellen', String(stellen.size)),
+      bSummary('Höchstwert', maxT === -Infinity ? '–' : maxT.toFixed(1) + ' °C' + (stMax ? ' · ' + stMax.titel : '')),
+      bSummary('Kritische Werte (≥ ' + SCHWELLEN.orange + '°)', String(kritisch))));
+
+    for (const r of reihen) {
+      const stelle = r.messstelle_id ? stelleById(r.messstelle_id)
+        : (r.messwerte[0] ? ortById(r.messwerte[0].ort_id)?.stelle : null);
+      const sec = el('section', { class: 'b-reihe' });
+      sec.append(el('h2', {}, stelle ? stelle.name : '—'));
+      sec.append(el('div', { class: 'b-meta' },
+        'Uhrzeit ' + uhrzeit(r.zeitpunkt)
+        + (r.messer ? ' · Erfasser/in: ' + r.messer : '')
+        + (r.aussentemperatur != null ? ' · Außentemp. ' + r.aussentemperatur + ' °C' + (r.temp_quelle === 'open-meteo' ? ' (autom.)' : '') : '')));
+
+      const grp = new Map();
+      for (const w of r.messwerte) {
+        const info = ortById(w.ort_id); const hn = info ? info.halle.name : '—';
+        if (!grp.has(hn)) grp.set(hn, []);
+        grp.get(hn).push({ w, info });
+      }
+      const tab = el('table', { class: 'b-tab' });
+      tab.append(el('tr', {}, ...['Halle', 'Ort', 'Tiefe/Pos.', 'Temperatur', 'Bewertung', 'Notiz'].map((h) => el('th', {}, h))));
+      for (const [hn, eintraege] of grp) {
+        eintraege.forEach(({ w, info }, i) => {
+          const st = stufeFuer(w.temperatur);
+          tab.append(el('tr', { class: st ? 's-' + st.klasse : '' },
+            el('td', {}, i === 0 ? hn : ''),
+            el('td', {}, info ? info.ort.bezeichnung : ('#' + w.ort_id)),
+            el('td', {}, w.tiefe || ''),
+            el('td', { class: 'num' }, w.temperatur != null ? w.temperatur.toFixed(1) + ' °C' : '—'),
+            el('td', {}, el('span', { class: 'b-dot ' + (st ? 's-' + st.klasse : '') }), st ? st.titel : ''),
+            el('td', {}, w.notiz || '')));
+        });
+      }
+      sec.append(tab);
+      if (r.notiz) sec.append(el('div', { class: 'b-notiz' }, 'Notiz: ' + r.notiz));
+      if (r.foto) sec.append(el('img', { class: 'b-foto', src: r.foto, alt: 'Beleg' }));
+      frag.append(sec);
+    }
+
+    frag.append(el('div', { class: 'b-fuss' },
+      el('div', { class: 'b-sign' }, 'Kontrolliert: ', el('span', { class: 'b-line' })),
+      el('div', { class: 'b-sign' }, 'Unterschrift: ', el('span', { class: 'b-line' }))));
+    frag.append(el('div', { class: 'b-gen' }, 'Erstellt am ' + new Date().toLocaleString('de-DE')));
+    return frag;
+  }
+
   // ======================================================================
   //  Ansicht 4: Diagramm (Temperaturverlauf je Ort)
   // ======================================================================
@@ -1043,9 +1153,24 @@ const App = (() => {
     wrap.append(legende());
   }
 
-  // Mehrlinien-Diagramm: je Ort eine farbige Linie, mit Schwellenlinien.
+  // Weicher Bezier-Pfad (Catmull-Rom) durch die Punkte.
+  function glättePfad(pts) {
+    if (pts.length < 2) return '';
+    if (pts.length === 2) return `M${pts[0].x},${pts[0].y} L${pts[1].x},${pts[1].y}`;
+    let d = `M${pts[0].x},${pts[0].y}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1x = p1.x + (p2.x - p0.x) / 6, c1y = p1.y + (p2.y - p0.y) / 6;
+      const c2x = p2.x - (p3.x - p1.x) / 6, c2y = p2.y - (p3.y - p1.y) / 6;
+      d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+    }
+    return d;
+  }
+
+  // Mehrlinien-Diagramm mit farbigen Gefahren-Zonen, weichen Linien und
+  // End-Wert-Labels – optisch ansprechend statt schlichter Liniengrafik.
   function svgMultiChart(serien) {
-    const W = 720, H = 320, pad = { l: 44, r: 16, t: 16, b: 40 };
+    const W = 720, H = 340, pad = { l: 46, r: 52, t: 18, b: 42 };
     const alleX = serien.flatMap((s) => s.points.map((p) => p.t));
     const alleY = serien.flatMap((s) => s.points.map((p) => p.temp));
     const minX = Math.min(...alleX), maxX = Math.max(...alleX);
@@ -1057,42 +1182,61 @@ const App = (() => {
     const svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     svg.setAttribute('class', 'chart');
-    const mk = (name, attrs, txt) => {
+    const mk = (name, attrs, txt, parent) => {
       const n = document.createElementNS(ns, name);
       for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
       if (txt != null) n.textContent = txt;
-      svg.append(n);
+      (parent || svg).append(n);
       return n;
     };
-    // Schwellenlinien
+
+    // Farbige Gefahren-Zonen als Hintergrundbänder
+    const bands = [
+      { von: minY, bis: SCHWELLEN.gelb, farbe: 'rgba(46,125,50,.08)' },
+      { von: SCHWELLEN.gelb, bis: SCHWELLEN.orange, farbe: 'rgba(201,162,39,.15)' },
+      { von: SCHWELLEN.orange, bis: SCHWELLEN.rot, farbe: 'rgba(232,116,12,.15)' },
+      { von: SCHWELLEN.rot, bis: maxY, farbe: 'rgba(211,47,47,.15)' },
+    ];
+    for (const b of bands) {
+      const y1 = sy(Math.min(maxY, b.bis)), y2 = sy(Math.max(minY, b.von));
+      if (y2 - y1 > 0.5) mk('rect', { x: pad.l, y: y1, width: W - pad.l - pad.r, height: y2 - y1, fill: b.farbe });
+    }
+
+    // Waagerechte Gitterlinien an den Y-Ticks
+    for (let v = Math.ceil(minY / 20) * 20; v <= maxY; v += 20) {
+      mk('line', { x1: pad.l, y1: sy(v), x2: W - pad.r, y2: sy(v), class: 'grid' });
+      mk('text', { x: pad.l - 8, y: sy(v) + 4, class: 'tick', 'text-anchor': 'end' }, v + '°');
+    }
+    // Schwellen-Beschriftung am rechten Rand
     for (const st of STUFEN) {
       if (st.ab === -Infinity) continue;
       const y = sy(st.ab);
-      if (y > pad.t && y < H - pad.b) {
-        mk('line', { x1: pad.l, y1: y, x2: W - pad.r, y2: y, class: 'schwelle s-' + st.klasse });
-        mk('text', { x: W - pad.r - 2, y: y - 3, class: 'schwelle-lbl', 'text-anchor': 'end' }, st.ab + '°');
-      }
+      if (y > pad.t + 6 && y < H - pad.b - 2)
+        mk('text', { x: W - pad.r + 6, y: y + 4, class: 'schwelle-lbl s-' + st.klasse, 'text-anchor': 'start' }, st.ab + '°');
     }
-    // Achsen + Ticks
+    // Achsen
     mk('line', { x1: pad.l, y1: pad.t, x2: pad.l, y2: H - pad.b, class: 'achse' });
     mk('line', { x1: pad.l, y1: H - pad.b, x2: W - pad.r, y2: H - pad.b, class: 'achse' });
-    for (let v = Math.ceil(minY / 20) * 20; v <= maxY; v += 20)
-      mk('text', { x: pad.l - 6, y: sy(v) + 4, class: 'tick', 'text-anchor': 'end' }, String(v));
     [minX, maxX].forEach((t, i) => {
       const d = new Date(t);
-      mk('text', { x: sx(t), y: H - pad.b + 16, class: 'tick', 'text-anchor': i === 0 ? 'start' : 'end' },
+      mk('text', { x: sx(t), y: H - pad.b + 17, class: 'tick', 'text-anchor': i === 0 ? 'start' : 'end' },
         ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.');
     });
-    // Serien
+
+    // Serien: weiche Linie + Punkte + End-Label
     for (const s of serien) {
-      if (s.points.length > 1)
-        mk('polyline', { class: 'linie', points: s.points.map((p) => sx(p.t) + ',' + sy(p.temp)).join(' '), style: 'stroke:' + s.farbe });
-      for (const p of s.points) {
-        const c = mk('circle', { cx: sx(p.t), cy: sy(p.temp), r: 3.5, class: 'pkt', style: 'fill:' + s.farbe });
+      const pts = s.points.map((p) => ({ x: sx(p.t), y: sy(p.temp) }));
+      if (pts.length > 1) mk('path', { class: 'linie', d: glättePfad(pts), style: 'stroke:' + s.farbe });
+      s.points.forEach((p, i) => {
+        const c = mk('circle', { cx: pts[i].x, cy: pts[i].y, r: 4, class: 'pkt', style: 'fill:' + s.farbe });
         const ti = document.createElementNS(ns, 'title');
         ti.textContent = s.label + ' · ' + zeitLesbar(new Date(p.t).toISOString()) + ': ' + p.temp.toFixed(1) + ' °C';
         c.append(ti);
-      }
+      });
+      // letzter Wert als Label am Linienende
+      const last = s.points[s.points.length - 1], lx = pts[pts.length - 1].x, ly = pts[pts.length - 1].y;
+      mk('text', { x: Math.min(lx + 7, W - 4), y: ly + 4, class: 'end-label', style: 'fill:' + s.farbe, 'text-anchor': 'start' },
+        last.temp.toFixed(0) + '°');
     }
     return svg;
   }
@@ -1279,7 +1423,10 @@ const App = (() => {
     try {
       const s = await Api.stand();
       if (s.rev !== State.rev) {
-        const messendAktiv = State.wizardSchritt > 0 || Object.keys(State.werte).length > 0;
+        // Erfassung nicht stören: nicht neu rendern, solange die Messansicht
+        // sichtbar ist oder bereits Werte/Schritte erfasst wurden.
+        const messungSichtbar = !$('#view-messung').hidden;
+        const messendAktiv = messungSichtbar || State.wizardSchritt > 0 || Object.keys(State.werte).length > 0;
         await ladeDaten();
         renderDashboard();
         renderVerlauf();
@@ -1395,6 +1542,22 @@ const App = (() => {
     startPolling();
   }
 
+  // ---- PWA-Installation ----
+  let installPrompt = null;
+  function zeigeInstallBanner(an) {
+    const b = $('#install-banner');
+    if (!b) return;
+    const verworfen = (() => { try { return localStorage.getItem('heustock_install_dismiss') === '1'; } catch (e) { return false; } })();
+    b.hidden = !(an && installPrompt && !verworfen);
+  }
+  async function installApp() {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    try { await installPrompt.userChoice; } catch (e) { /* egal */ }
+    installPrompt = null;
+    zeigeInstallBanner(false);
+  }
+
   async function init() {
     $$('.nav-btn').forEach((b) => b.addEventListener('click', () => zeigeView(b.dataset.view)));
     zeigeView('dashboard');
@@ -1411,6 +1574,16 @@ const App = (() => {
     $('#pw-abbrechen').addEventListener('click', () => pwDialog(false));
 
     window.addEventListener('beforeprint', () => $$('#view-verlauf details').forEach((d) => (d.open = true)));
+    window.addEventListener('afterprint', () => document.body.classList.remove('drucke-bericht'));
+
+    // PWA-Installation anbieten
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; zeigeInstallBanner(true); });
+    window.addEventListener('appinstalled', () => { installPrompt = null; zeigeInstallBanner(false); meldung('App installiert.', 'ok'); });
+    $('#install-btn').addEventListener('click', installApp);
+    $('#install-dismiss').addEventListener('click', () => {
+      try { localStorage.setItem('heustock_install_dismiss', '1'); } catch (e) { /* egal */ }
+      zeigeInstallBanner(false);
+    });
 
     // Offline-Puffer: Anzeige, manuelles Synchronisieren, Auto-Sync bei Netz
     $('#offline-status').addEventListener('click', syncOffline);

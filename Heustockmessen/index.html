@@ -67,7 +67,19 @@
     <footer class="fuss klein-grau">
       Heustockmessen · lokale Anwendung der Freiwilligen Feuerwehr · Richtwerte ohne Gewähr.
     </footer>
+
+    <!-- PWA-Installationshinweis -->
+    <div id="install-banner" hidden>
+      <span class="install-text">📲 App auf dem Gerät installieren?</span>
+      <span class="install-aktionen">
+        <button id="install-btn" class="btn klein primaer">Installieren</button>
+        <button id="install-dismiss" class="btn klein">Später</button>
+      </span>
+    </div>
   </div>
+
+  <!-- Druckbereich Tagesbericht (nur im Druck sichtbar) -->
+  <div id="bericht-druck" class="bericht" hidden></div>
 
   <!-- Passwort-Dialog -->
   <div id="pw-overlay" class="overlay" hidden>

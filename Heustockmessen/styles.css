@@ -243,7 +243,7 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 
 /* ---- Verlauf: Werkzeuge & Filter ---- */
 .verlauf-kopf .werkzeuge { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-.export-jahr { display: inline-flex; gap: 4px; align-items: center; }
+.export-jahr, .bericht-steuerung { display: inline-flex; gap: 4px; align-items: center; }
 .filterleiste { display: flex; gap: 10px 14px; flex-wrap: wrap; align-items: flex-end;
   background: #fff; border-radius: 10px; padding: 10px 14px; box-shadow: var(--schatten); margin: 8px 0 14px; }
 .filterleiste .feld { min-width: 130px; }
@@ -266,14 +266,16 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .chart-box { background: #fff; border-radius: 12px; box-shadow: var(--schatten); padding: 10px; margin-top: 10px; overflow-x: auto; }
 .chart { width: 100%; min-width: 520px; height: auto; font-size: 11px; }
 .chart .achse { stroke: #9aa1ab; stroke-width: 1; }
-.chart .linie { fill: none; stroke: var(--rot); stroke-width: 2.2; }
+.chart .grid { stroke: #eceef2; stroke-width: 1; }
+.chart .linie { fill: none; stroke: var(--rot); stroke-width: 2.6;
+  stroke-linecap: round; stroke-linejoin: round; }
 .chart .tick { fill: var(--grau-text); }
-.chart .schwelle { stroke-width: 1; stroke-dasharray: 4 4; opacity: .6; }
-.chart .schwelle.s-gelb { stroke: var(--gelb); }
-.chart .schwelle.s-orange { stroke: var(--orange); }
-.chart .schwelle.s-rot { stroke: var(--rot-stufe); }
-.chart .schwelle-lbl { fill: var(--grau-text); }
-.chart .pkt { fill: var(--rot); stroke: #fff; stroke-width: 1; }
+.chart .schwelle-lbl { fill: var(--grau-text); font-weight: 600; }
+.chart .schwelle-lbl.s-gelb { fill: var(--gelb); }
+.chart .schwelle-lbl.s-orange { fill: var(--orange); }
+.chart .schwelle-lbl.s-rot { fill: var(--rot-stufe); }
+.chart .end-label { font-size: 11px; font-weight: 700; }
+.chart .pkt { fill: var(--rot); stroke: #fff; stroke-width: 1.5; }
 .chart .pkt.s-gruen { fill: var(--gruen); }
 .chart .pkt.s-gelb { fill: var(--gelb); }
 .chart .pkt.s-orange { fill: var(--orange); }
@@ -313,6 +315,19 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .sw-presets { display: flex; gap: 6px; justify-content: center; }
 .sort-knoepfe { display: inline-flex; gap: 2px; }
 .sort-knoepfe .btn { padding: 3px 7px; line-height: 1; }
+.bericht-datum { padding: 5px 8px; }
+
+/* PWA-Installations-Banner */
+#install-banner {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 40;
+  display: flex; align-items: center; gap: 12px;
+  background: #fff; border: 1px solid var(--grau-rand); border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.18); padding: 10px 14px;
+  max-width: calc(100% - 24px);
+}
+.install-text { font-size: .92rem; font-weight: 600; }
+.install-aktionen { display: flex; gap: 6px; }
 
 /* Tabellen horizontal scrollbar machen (statt Überlauf) */
 .tab-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }

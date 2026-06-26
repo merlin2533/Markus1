@@ -47,8 +47,15 @@ const App = (() => {
     wizardSchritt: 0,        // 0 = Kopf, 1..H = Hallen, H+1 = Übersicht
     kopf: leererKopf(),      // Kopfdaten der Messung (über Schritte hinweg)
     filter: { stelleId: '', halleId: '', von: '', bis: '', nurKritisch: false },
-    diagrammOrtId: null,     // im Diagramm gewählter Ort
+    diagrammStelleId: null,  // im Diagramm gewählte Messstelle
+    diagrammHalleId: '',     // optional eingegrenzte Halle ('' = alle)
   };
+
+  // Plausibler Temperaturbereich – außerhalb davon Warnung (Tippfehler).
+  const PLAUSIBEL = { min: -20, max: 150 };
+  // Farbpalette für Mehrlinien-Diagramm (je Ort eine Farbe).
+  const DIAG_FARBEN = ['#c1121f', '#1d4ed8', '#0f766e', '#b45309', '#7c3aed',
+    '#be185d', '#4d7c0f', '#0369a1', '#9333ea', '#db2777', '#15803d', '#a16207'];
 
   function leererKopf() {
     return {
@@ -360,10 +367,12 @@ const App = (() => {
       const t = input.value === '' ? null : parseFloat(input.value);
       setze('temperatur', input.value === '' ? null : t);
       const st = stufeFuer(t);
-      input.className = 'temp-feld' + (st ? ' s-' + st.klasse : '');
-      badge.className = 'badge' + (st ? ' s-' + st.klasse : '');
-      badge.textContent = st && t !== null ? st.titel : '';
-      badge.title = st ? st.hinweis : '';
+      const unplausibel = t !== null && (t < PLAUSIBEL.min || t > PLAUSIBEL.max);
+      input.className = 'temp-feld' + (st ? ' s-' + st.klasse : '') + (unplausibel ? ' unplausibel' : '');
+      input.title = unplausibel ? 'Unplausibler Wert – Tippfehler?' : '';
+      badge.className = 'badge' + (unplausibel ? ' warn' : (st ? ' s-' + st.klasse : ''));
+      badge.textContent = unplausibel ? '⚠ prüfen' : (st && t !== null ? st.titel : '');
+      badge.title = unplausibel ? 'Temperatur außerhalb ' + PLAUSIBEL.min + '…' + PLAUSIBEL.max + ' °C' : (st ? st.hinweis : '');
     };
     input.addEventListener('input', upd);
 
@@ -500,6 +509,14 @@ const App = (() => {
       meldung('Bitte mindestens einen Wert (Temperatur oder Notiz) eingeben.', 'fehler');
       return;
     }
+    // Plausibilität: bei unrealistischen Temperaturen nachfragen
+    const unplausibel = werte.filter((w) => w.temperatur != null && (w.temperatur < PLAUSIBEL.min || w.temperatur > PLAUSIBEL.max));
+    if (unplausibel.length && !confirm('Unplausible Temperatur(en): '
+      + unplausibel.map((w) => w.temperatur + ' °C').join(', ')
+      + '\n(außerhalb ' + PLAUSIBEL.min + '…' + PLAUSIBEL.max + ' °C – Tippfehler?)\n\nTrotzdem speichern?')) {
+      return;
+    }
+
     // Vollständigkeit: bei fehlenden Orten nachfragen
     const stelle = stelleById(State.wizardStelleId);
     if (stelle) {
@@ -607,9 +624,8 @@ const App = (() => {
 
     // Hallen
     const hallenBox = el('div', { class: 'hallen-box' });
-    for (const halle of (stelle.hallen || [])) {
-      hallenBox.append(halleBlock(stelle, halle));
-    }
+    const hallen = stelle.hallen || [];
+    hallen.forEach((halle, hi) => hallenBox.append(halleBlock(stelle, halle, hi, hallen)));
     // Neue Halle
     const inHalle = el('input', { type: 'text', placeholder: 'Neue Halle (z. B. Halle 1)' });
     hallenBox.append(el('div', { class: 'halle-neu' },
@@ -622,12 +638,14 @@ const App = (() => {
     return karte;
   }
 
-  function halleBlock(stelle, halle) {
+  function halleBlock(stelle, halle, hi, hallen) {
     const block = el('div', { class: 'halle-block' });
     const hName = el('input', { type: 'text', class: 'inline-edit', value: halle.name });
+    const halleSaver = (h, k) => Api.halleSave({ id: h.id, messstelle_id: stelle.id, name: h.name, beschreibung: h.beschreibung || '', sortierung: k });
     block.append(el('div', { class: 'halle-kopf' },
       el('span', { class: 'ebene-tag halle' }, 'Halle'),
       hName,
+      sortKnoepfe(hallen, hi, halleSaver),
       el('button', { class: 'btn mini', onclick: () =>
         aktion(() => Api.halleSave({ id: halle.id, messstelle_id: stelle.id, name: hName.value.trim() })) }, '✓'),
       el('button', { class: 'btn mini gefahr', onclick: () => {
@@ -637,17 +655,20 @@ const App = (() => {
     ));
 
     const orte = el('div', { class: 'orte-liste' });
-    for (const ort of (halle.orte || [])) {
+    const orteListe = halle.orte || [];
+    const ortSaver = (o, k) => Api.ortSave({ id: o.id, halle_id: halle.id, bezeichnung: o.bezeichnung, sortierung: k });
+    orteListe.forEach((ort, oi) => {
       const inO = el('input', { type: 'text', class: 'inline-edit', value: ort.bezeichnung });
       orte.append(el('div', { class: 'ort-edit' },
         inO,
+        sortKnoepfe(orteListe, oi, ortSaver),
         el('button', { class: 'btn mini', onclick: () =>
           aktion(() => Api.ortSave({ id: ort.id, halle_id: halle.id, bezeichnung: inO.value.trim() })) }, '✓'),
         el('button', { class: 'btn mini gefahr', onclick: () => {
           if (confirm('Ort „' + ort.bezeichnung + '" löschen?')) aktion(() => Api.ortDelete(ort.id));
         } }, '✕'),
       ));
-    }
+    });
     // Neuer Ort + Schnellbuttons
     const inOrt = el('input', { type: 'text', placeholder: 'Neuer Ort/Bezeichnung' });
     const addOrt = (bez) => aktion(() => Api.ortSave({ halle_id: halle.id, bezeichnung: bez }));
@@ -671,6 +692,34 @@ const App = (() => {
       renderAlles();
     } catch (e) {
       meldung('Fehler: ' + e.message, 'fehler');
+    }
+  }
+
+  // ▲/▼-Knöpfe zum Umsortieren eines Listeneintrags.
+  function sortKnoepfe(items, index, saver) {
+    return el('span', { class: 'sort-knoepfe' },
+      el('button', { class: 'btn mini', title: 'nach oben', ...(index === 0 ? { disabled: '' } : {}),
+        onclick: () => verschiebe(items, index, -1, saver) }, '▲'),
+      el('button', { class: 'btn mini', title: 'nach unten', ...(index === items.length - 1 ? { disabled: '' } : {}),
+        onclick: () => verschiebe(items, index, 1, saver) }, '▼'),
+    );
+  }
+
+  // Element in einer Liste um eine Position verschieben und neue Reihenfolge
+  // (sortierung 0..n) speichern.
+  async function verschiebe(items, index, richtung, saver) {
+    const j = index + richtung;
+    if (j < 0 || j >= items.length) return;
+    const neu = items.slice();
+    [neu[index], neu[j]] = [neu[j], neu[index]];
+    try {
+      for (let k = 0; k < neu.length; k++) {
+        if ((neu[k].sortierung ?? 0) !== k) await saver(neu[k], k);
+      }
+      await ladeDaten();
+      renderAlles();
+    } catch (e) {
+      meldung('Sortieren fehlgeschlagen: ' + e.message, 'fehler');
     }
   }
 
@@ -937,34 +986,71 @@ const App = (() => {
     const wrap = $('#view-diagramm');
     if (!wrap) return;
     wrap.innerHTML = '';
-    wrap.append(el('h2', {}, '📈 Temperaturverlauf je Ort'));
+    wrap.append(el('h2', {}, '📈 Temperaturverlauf'));
 
-    const sel = el('select', { onchange: (e) => { State.diagrammOrtId = Number(e.target.value) || null; renderDiagramm(); } });
-    sel.append(el('option', { value: '' }, '– Ort wählen –'));
-    for (const s of State.messstellen) {
-      for (const h of (s.hallen || [])) {
-        if (!(h.orte || []).length) continue;
-        const og = el('optgroup', { label: s.name + ' · ' + h.name });
-        for (const o of h.orte)
-          og.append(el('option', { value: String(o.id), ...(o.id === State.diagrammOrtId ? { selected: '' } : {}) }, o.bezeichnung));
-        sel.append(og);
+    if (!State.messstellen.length) {
+      wrap.append(el('p', { class: 'klein-grau' }, 'Noch keine Messstellen.'));
+      return;
+    }
+    if (!State.diagrammStelleId || !stelleById(State.diagrammStelleId)) {
+      State.diagrammStelleId = State.messstellen[0].id;
+    }
+    const stelle = stelleById(State.diagrammStelleId);
+
+    const selStelle = el('select', { onchange: (e) => { State.diagrammStelleId = Number(e.target.value); State.diagrammHalleId = ''; renderDiagramm(); } });
+    for (const s of State.messstellen)
+      selStelle.append(el('option', { value: String(s.id), ...(s.id === stelle.id ? { selected: '' } : {}) }, s.name));
+
+    const selHalle = el('select', { onchange: (e) => { State.diagrammHalleId = e.target.value; renderDiagramm(); } });
+    selHalle.append(el('option', { value: '' }, 'Alle Hallen'));
+    for (const h of (stelle.hallen || []))
+      selHalle.append(el('option', { value: String(h.id), ...(String(h.id) === State.diagrammHalleId ? { selected: '' } : {}) }, h.name));
+
+    wrap.append(el('div', { class: 'diag-steuerung' }, feld('Messstelle', selStelle), feld('Halle', selHalle)));
+
+    // Eine Serie je Ort im gewählten Bereich
+    const timelines = ortTimelines();
+    const hallen = State.diagrammHalleId
+      ? (stelle.hallen || []).filter((h) => String(h.id) === State.diagrammHalleId)
+      : (stelle.hallen || []);
+    const serien = [];
+    let idx = 0;
+    for (const h of hallen) {
+      for (const o of (h.orte || [])) {
+        const pts = timelines.get(o.id);
+        if (!pts || !pts.length) continue;
+        serien.push({
+          label: (hallen.length > 1 ? h.name + ' · ' : '') + o.bezeichnung,
+          farbe: DIAG_FARBEN[idx % DIAG_FARBEN.length],
+          points: pts,
+        });
+        idx++;
       }
     }
-    wrap.append(feld('Ort', sel));
+    if (!serien.length) {
+      wrap.append(el('p', { class: 'klein-grau' }, 'Für diese Auswahl liegen noch keine Messwerte vor.'));
+      return;
+    }
 
-    if (!State.diagrammOrtId) { wrap.append(el('p', { class: 'klein-grau' }, 'Bitte einen Ort wählen.')); return; }
-    const tl = ortTimelines().get(State.diagrammOrtId) || [];
-    if (!tl.length) { wrap.append(el('p', { class: 'klein-grau' }, 'Für diesen Ort liegen noch keine Messwerte vor.')); return; }
+    wrap.append(el('div', { class: 'chart-box' }, svgMultiChart(serien)));
+
+    // Legende der Orte (Farbe → Ort)
+    const leg = el('div', { class: 'diag-legende' });
+    for (const s of serien)
+      leg.append(el('span', { class: 'diag-leg-eintrag' },
+        el('span', { class: 'diag-leg-punkt', style: 'background:' + s.farbe }), s.label));
+    wrap.append(leg);
     wrap.append(legende());
-    wrap.append(svgChart(tl));
   }
 
-  function svgChart(points) {
-    const W = 680, H = 280, pad = { l: 42, r: 14, t: 14, b: 42 };
-    const xs = points.map((p) => p.t), ys = points.map((p) => p.temp);
-    const minX = Math.min(...xs), maxX = Math.max(...xs);
-    const minY = Math.min(0, ...ys);
-    const maxY = Math.ceil((Math.max(...ys, 80) + 5) / 10) * 10;
+  // Mehrlinien-Diagramm: je Ort eine farbige Linie, mit Schwellenlinien.
+  function svgMultiChart(serien) {
+    const W = 720, H = 320, pad = { l: 44, r: 16, t: 16, b: 40 };
+    const alleX = serien.flatMap((s) => s.points.map((p) => p.t));
+    const alleY = serien.flatMap((s) => s.points.map((p) => p.temp));
+    const minX = Math.min(...alleX), maxX = Math.max(...alleX);
+    const minY = Math.min(0, ...alleY);
+    const maxY = Math.ceil((Math.max(...alleY, 80) + 5) / 10) * 10;
     const sx = (t) => pad.l + (maxX === minX ? 0.5 : (t - minX) / (maxX - minX)) * (W - pad.l - pad.r);
     const sy = (v) => H - pad.b - (v - minY) / (maxY - minY) * (H - pad.t - pad.b);
     const ns = 'http://www.w3.org/2000/svg';
@@ -978,36 +1064,37 @@ const App = (() => {
       svg.append(n);
       return n;
     };
-    // Schwellen-Linien
-    for (const s of STUFEN) {
-      if (s.ab === -Infinity) continue;
-      const y = sy(s.ab);
+    // Schwellenlinien
+    for (const st of STUFEN) {
+      if (st.ab === -Infinity) continue;
+      const y = sy(st.ab);
       if (y > pad.t && y < H - pad.b) {
-        mk('line', { x1: pad.l, y1: y, x2: W - pad.r, y2: y, class: 'schwelle s-' + s.klasse });
-        mk('text', { x: W - pad.r - 2, y: y - 3, class: 'schwelle-lbl', 'text-anchor': 'end' }, s.ab + '°');
+        mk('line', { x1: pad.l, y1: y, x2: W - pad.r, y2: y, class: 'schwelle s-' + st.klasse });
+        mk('text', { x: W - pad.r - 2, y: y - 3, class: 'schwelle-lbl', 'text-anchor': 'end' }, st.ab + '°');
       }
     }
-    // Achsen + Y-Ticks
+    // Achsen + Ticks
     mk('line', { x1: pad.l, y1: pad.t, x2: pad.l, y2: H - pad.b, class: 'achse' });
     mk('line', { x1: pad.l, y1: H - pad.b, x2: W - pad.r, y2: H - pad.b, class: 'achse' });
     for (let v = Math.ceil(minY / 20) * 20; v <= maxY; v += 20)
       mk('text', { x: pad.l - 6, y: sy(v) + 4, class: 'tick', 'text-anchor': 'end' }, String(v));
-    // Linie
-    mk('polyline', { class: 'linie', points: points.map((p) => sx(p.t) + ',' + sy(p.temp)).join(' ') });
-    // Punkte + sparsame X-Beschriftung
-    points.forEach((p, i) => {
-      const st = stufeFuer(p.temp);
-      const c = mk('circle', { cx: sx(p.t), cy: sy(p.temp), r: 4, class: 'pkt' + (st ? ' s-' + st.klasse : '') });
-      const ti = document.createElementNS(ns, 'title');
-      ti.textContent = zeitLesbar(new Date(p.t).toISOString()) + ': ' + p.temp.toFixed(1) + ' °C';
-      c.append(ti);
-      if (i === 0 || i === points.length - 1 || points.length <= 6) {
-        const d = new Date(p.t);
-        mk('text', { x: sx(p.t), y: H - pad.b + 16, class: 'tick', 'text-anchor': 'middle' },
-          ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2));
-      }
+    [minX, maxX].forEach((t, i) => {
+      const d = new Date(t);
+      mk('text', { x: sx(t), y: H - pad.b + 16, class: 'tick', 'text-anchor': i === 0 ? 'start' : 'end' },
+        ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.');
     });
-    return el('div', { class: 'chart-box' }, svg);
+    // Serien
+    for (const s of serien) {
+      if (s.points.length > 1)
+        mk('polyline', { class: 'linie', points: s.points.map((p) => sx(p.t) + ',' + sy(p.temp)).join(' '), style: 'stroke:' + s.farbe });
+      for (const p of s.points) {
+        const c = mk('circle', { cx: sx(p.t), cy: sy(p.temp), r: 3.5, class: 'pkt', style: 'fill:' + s.farbe });
+        const ti = document.createElementNS(ns, 'title');
+        ti.textContent = s.label + ' · ' + zeitLesbar(new Date(p.t).toISOString()) + ': ' + p.temp.toFixed(1) + ' °C';
+        c.append(ti);
+      }
+    }
+    return svg;
   }
 
   // ======================================================================

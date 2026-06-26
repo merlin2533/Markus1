@@ -179,6 +179,8 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .badge.s-gelb   { background: var(--gelb); color: #3a2f00; }
 .badge.s-orange { background: var(--orange); }
 .badge.s-rot    { background: var(--rot-stufe); }
+.badge.warn     { background: #8a4b00; }
+.temp-feld.unplausibel { outline: 2px solid var(--orange); outline-offset: 1px; }
 
 .aktionsleiste { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
 
@@ -276,6 +278,11 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .chart .pkt.s-gelb { fill: var(--gelb); }
 .chart .pkt.s-orange { fill: var(--orange); }
 .chart .pkt.s-rot { fill: var(--rot-stufe); }
+.diag-steuerung { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.diag-steuerung .feld { min-width: 160px; }
+.diag-legende { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 10px 0; }
+.diag-leg-eintrag { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; }
+.diag-leg-punkt { width: 14px; height: 4px; border-radius: 3px; display: inline-block; }
 
 /* ---- Dashboard ---- */
 .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
@@ -304,6 +311,8 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .ebene-zeile { flex-direction: column; align-items: stretch; }
 
 .sw-presets { display: flex; gap: 6px; justify-content: center; }
+.sort-knoepfe { display: inline-flex; gap: 2px; }
+.sort-knoepfe .btn { padding: 3px 7px; line-height: 1; }
 
 /* Tabellen horizontal scrollbar machen (statt Überlauf) */
 .tab-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }

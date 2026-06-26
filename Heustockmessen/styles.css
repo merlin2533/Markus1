@@ -24,7 +24,12 @@ body {
   color: var(--text);
   background: var(--grau-bg);
   line-height: 1.45;
+  min-height: 100dvh;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
 }
+/* iOS zoomt beim Fokus auf Eingaben < 16px – verhindern. */
+input, select, textarea { font-size: 16px; }
 
 code { background: #eee; padding: 1px 5px; border-radius: 4px; font-size: .9em; }
 .klein-grau { color: var(--grau-text); font-size: .85rem; }
@@ -80,7 +85,8 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 /* ---- Kopf ---- */
 .kopf {
   background: linear-gradient(135deg, var(--rot), var(--rot-dunkel));
-  color: #fff; padding: 12px 18px;
+  color: #fff;
+  padding: max(12px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 12px max(18px, env(safe-area-inset-left));
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   flex-wrap: wrap;
 }
@@ -100,22 +106,29 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .nav {
   display: flex; gap: 4px; background: #fff;
   border-bottom: 1px solid var(--grau-rand);
-  padding: 6px 12px 0; flex-wrap: wrap;
+  padding: 6px 12px 0;
+  position: sticky; top: 0; z-index: 30;
+  flex-wrap: nowrap; overflow-x: auto;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
 }
+.nav::-webkit-scrollbar { display: none; }
 .nav-btn {
   font: inherit; border: none; background: none; cursor: pointer;
   padding: 10px 14px; color: var(--grau-text);
   border-bottom: 3px solid transparent; border-radius: 6px 6px 0 0;
+  flex: 0 0 auto; white-space: nowrap;
 }
 .nav-btn:hover { background: var(--grau-bg); }
 .nav-btn.aktiv { color: var(--rot); border-bottom-color: var(--rot); font-weight: 600; }
 
-.inhalt { max-width: 920px; margin: 0 auto; padding: 18px 14px 60px; }
+.inhalt { max-width: 1040px; margin: 0 auto;
+  padding: 18px 16px calc(60px + env(safe-area-inset-bottom)); }
 .fuss { text-align: center; padding: 16px; }
 
 /* ---- Meldung ---- */
 .meldung {
-  max-width: 920px; margin: 10px auto 0; padding: 10px 14px; border-radius: 8px;
+  max-width: 1040px; margin: 10px auto 0; padding: 10px 14px; border-radius: 8px;
   font-size: .9rem; box-shadow: var(--schatten);
 }
 .meldung.info   { background: #e8eefc; color: #244; }
@@ -292,10 +305,51 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 
 .sw-presets { display: flex; gap: 6px; justify-content: center; }
 
+/* Tabellen horizontal scrollbar machen (statt Überlauf) */
+.tab-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tab-scroll .werte-tab { min-width: 460px; }
+
+/* ---- Touch-Geräte: größere Bedienelemente ---- */
+@media (pointer: coarse) {
+  .btn { padding: 11px 16px; }
+  .btn.klein { padding: 9px 13px; }
+  .btn.mini { padding: 7px 11px; }
+  input, select { padding: 11px 12px; }
+  .nav-btn { padding: 12px 16px; }
+  .temp-feld { height: 50px; font-size: 1.2rem; }
+  .tiefe-feld, .ort-notiz-feld { min-height: 44px; }
+}
+
+/* ---- Telefon (schmal) ---- */
 @media (max-width: 560px) {
+  :root { font-size: 17px; }
   .kopf-sub { display: none; }
-  .ebene-name { font-size: .9rem; }
-  .temp-feld { width: 80px; }
-  .filterleiste .feld { min-width: 110px; }
+  .kopf-titel strong { font-size: 1.05rem; }
+  .ebene-name { font-size: .95rem; }
+  .temp-feld { width: 96px; }
+  .filterleiste { gap: 8px; }
+  .filterleiste .feld { min-width: calc(50% - 8px); flex: 1 1 calc(50% - 8px); }
   .dash-grid { grid-template-columns: 1fr; }
+  .mess-kopf { padding: 12px; gap: 10px; }
+  .verlauf-kopf { flex-direction: column; align-items: stretch; gap: 8px; }
+  .verlauf-kopf .werkzeuge { justify-content: space-between; }
+
+  /* Aktionsleiste der Erfassung unten andocken – einhändig bedienbar */
+  #view-messung .aktionsleiste {
+    position: sticky; bottom: 0; z-index: 20;
+    background: var(--grau-bg);
+    margin: 12px -16px 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--grau-rand);
+  }
+  #view-messung .aktionsleiste .btn { flex: 1; text-align: center; }
+}
+
+/* ---- Desktop (breit) ---- */
+@media (min-width: 900px) {
+  .dash-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .reihe summary { gap: 12px; }
+  .btn { transition: background .12s, box-shadow .12s, transform .04s; }
+  .btn:active { transform: translateY(1px); }
+  .dash-karte { transition: box-shadow .15s; }
+  .dash-karte:hover { box-shadow: 0 4px 14px rgba(0,0,0,.12); }
 }

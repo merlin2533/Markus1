@@ -305,7 +305,7 @@ const App = (() => {
           el('td', { class: 'num' }, t.toFixed(1) + ' °C'),
           el('td', {}, st ? st.titel : '')));
       }
-      wrap.append(tab);
+      wrap.append(el('div', { class: 'tab-scroll' }, tab));
     }
     if (!anzahl) {
       wrap.append(el('div', { class: 'leer hinweis' }, 'Noch keine Temperaturwerte erfasst.'));
@@ -352,7 +352,7 @@ const App = (() => {
     const setze = (feld, wert) => { State.werte[ort.id] = { ...(State.werte[ort.id] || {}), [feld]: wert }; };
 
     const input = el('input', {
-      type: 'number', step: '0.1', inputmode: 'decimal', class: 'temp-feld', placeholder: '°C',
+      type: 'number', step: '0.1', inputmode: 'decimal', class: 'temp-feld', placeholder: '–',
       'data-ort': ort.id, value: vorhanden.temperatur ?? '',
     });
     const badge = el('span', { class: 'badge' });
@@ -738,7 +738,7 @@ const App = (() => {
             el('td', {}, w.notiz || '')));
         });
       }
-      det.append(tab);
+      det.append(el('div', { class: 'tab-scroll' }, tab));
 
       if (r.foto) {
         det.append(el('a', { href: r.foto, target: '_blank', class: 'foto-link' },
@@ -1284,7 +1284,12 @@ const App = (() => {
   // ======================================================================
   function zeigeView(name) {
     $$('.view').forEach((v) => { v.hidden = v.id !== 'view-' + name; });
-    $$('.nav-btn').forEach((b) => b.classList.toggle('aktiv', b.dataset.view === name));
+    $$('.nav-btn').forEach((b) => {
+      const aktiv = b.dataset.view === name;
+      b.classList.toggle('aktiv', aktiv);
+      if (aktiv) b.scrollIntoView({ inline: 'center', block: 'nearest' });
+    });
+    window.scrollTo({ top: 0 });
   }
 
   function renderAlles() {

@@ -1,7 +1,7 @@
 /* Service Worker – App-Shell offline verfügbar machen.
    API-Aufrufe (api.php) laufen IMMER übers Netzwerk; die Messdaten werden
    nicht im SW-Cache gehalten (dafür sorgt der Offline-Puffer in der App). */
-const CACHE = 'heustock-v2';
+const CACHE = 'heustock-v3';
 const ASSETS = [
   './', './index.html', './styles.css', './print.css',
   './js/api.js', './js/weather.js', './js/excel.js', './js/app.js',

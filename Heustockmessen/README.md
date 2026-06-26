@@ -30,9 +30,19 @@ Messstellen, Hallen und Orte sind die **Stammdaten** (einmal anlegen); die
 
 ## Funktionen
 
+- **Start-Dashboard**: Übersicht aller Messstellen mit Höchstwert (Ampel),
+  „zuletzt gemessen vor X Tagen", erfasste/gesamte Orte und „Kontrolle fällig" –
+  die kritischsten zuerst. Direkt von dort messen oder den Verlauf öffnen.
 - **Geführte Erfassung (Schritt für Schritt)**: Messstelle wählen → Kopfdaten →
   **Halle für Halle** die Orte eingeben (mit Fortschrittsanzeige) → Übersicht →
-  speichern. Temperaturfelder färben sich live nach Warnstufe.
+  speichern. Temperaturfelder färben sich live nach Warnstufe. Je Ort optional
+  **Sondentiefe/-position** und eine **Notiz**.
+- **Foto/Beleg je Messung**: optional ein Bild (z. B. der Sondenanzeige)
+  aufnehmen; wird verkleinert gespeichert und im Verlauf angezeigt.
+- **Konfigurierbare Schwellenwerte** (⚙ im Dashboard): Richtwerte für **Heu**
+  oder **Stroh** als Voreinstellung, frei anpassbar; serverseitig gespeichert.
+- **Messstelle duplizieren**: Hallen-/Orte-Struktur als Vorlage auf eine neue
+  Messstelle kopieren.
 - **Erfasser/in**: bekannte Namen aus bisherigen Messreihen stehen zur Auswahl;
   der zuletzt genutzte Name wird automatisch vorausgefüllt.
 - **Außentemperatur**: zentral pro Messreihe – **manuell** oder per Knopf
@@ -48,7 +58,8 @@ Messstellen, Hallen und Orte sind die **Stammdaten** (einmal anlegen); die
   | ≥ 60 °C    | 🟠 Kritisch     | Engmaschig kontrollieren, Feuerwehr informieren |
   | ≥ 70 °C    | 🔴 Akute Brandgefahr | Feuerwehr/Fachberater – Heu nur unter Aufsicht ausräumen |
 
-  Die Schwellen sind zentral in `js/app.js` (`STUFEN`) anpassbar.
+  Die Standard-Schwellen (Heu) sind in der App unter **⚙ Schwellenwerte**
+  anpassbar (Preset Heu/Stroh), die Texte je Stufe in `js/app.js` (`STUFEN_TEXT`).
 - **Verlauf & Auswertung**: alle Messreihen, je Reihe der Höchstwert mit
   Stufen-Badge, Werte-Tabelle (nach Halle gruppiert), Bearbeiten/Löschen.
 - **Trend je Ort**: Pfeil ▲/▼/▶ + Δ°C gegenüber der letzten Messung am selben
@@ -130,7 +141,9 @@ JSON über `GET`/`POST`, Aktion im Feld `action`. Antwort immer
 | `stand` | ✓ | Revisionsstand für das Live-Update |
 | `passwort_aendern` | ✓ | Passwort ändern (`alt`, `neu`) |
 | `stammdaten`, `messreihen`, `alles` | ✓ | Daten lesen |
+| `schwellen_set` | ✓ | Warnschwellen speichern (gelb/orange/rot, material) |
 | `messstelle_save` / `_delete` | ✓ | Messstelle anlegen/ändern/löschen |
+| `messstelle_duplizieren` | ✓ | Messstelle samt Hallen/Orten kopieren |
 | `halle_save` / `_delete` | ✓ | Halle anlegen/ändern/löschen |
 | `ort_save` / `_delete` | ✓ | Ort anlegen/ändern/löschen |
 | `messreihe_save` / `_delete` | ✓ | Messreihe inkl. Werte (atomar) |
@@ -144,7 +157,7 @@ das **CSRF-Token** (Header `X-CSRF-Token`, vom Client automatisch gesetzt).
 
 ```
 Heustockmessen/
-├─ index.html            – Oberfläche (Login, Navigation, vier Ansichten)
+├─ index.html            – Oberfläche (Login, Navigation, fünf Ansichten)
 ├─ styles.css            – Design (Feuerwehr-Rot), mobil-first
 ├─ print.css             – Druck-/PDF-Layout (Seite je Messung, Unterschrift)
 ├─ api.php               – PHP-Backend + SQLite (Auth, CSRF, CRUD, Restore, Schema)

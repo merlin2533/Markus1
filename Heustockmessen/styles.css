@@ -264,9 +264,38 @@ input:focus, select:focus { outline: 2px solid var(--rot); outline-offset: 1px; 
 .chart .pkt.s-orange { fill: var(--orange); }
 .chart .pkt.s-rot { fill: var(--rot-stufe); }
 
+/* ---- Dashboard ---- */
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.dash-karte { background: #fff; border-radius: 12px; box-shadow: var(--schatten);
+  padding: 14px; border-left: 6px solid var(--grau-rand); }
+.dash-karte.s-gruen  { border-left-color: var(--gruen); }
+.dash-karte.s-gelb   { border-left-color: var(--gelb); }
+.dash-karte.s-orange { border-left-color: var(--orange); }
+.dash-karte.s-rot    { border-left-color: var(--rot-stufe); }
+.dash-kopf { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.dash-zeile { font-size: .9rem; }
+.dash-faellig { margin-top: 6px; color: var(--orange); font-weight: 700; font-size: .85rem; }
+.dash-aktionen { display: flex; gap: 6px; margin-top: 10px; }
+
+/* ---- Foto/Beleg ---- */
+.foto-box { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.foto-vorschau { max-width: 120px; max-height: 120px; border-radius: 8px; border: 1px solid var(--grau-rand); }
+.foto-vorschau.gross { max-width: 220px; max-height: 220px; margin: 8px 0; }
+.foto-link { display: inline-block; }
+
+/* ---- Sondentiefe/Notiz je Ort ---- */
+.ebene-haupt { display: flex; align-items: center; gap: 8px; }
+.ebene-zusatz { display: flex; gap: 6px; margin-top: 4px; padding-left: 2px; }
+.tiefe-feld { width: 110px; }
+.ort-notiz-feld { flex: 1; min-width: 120px; }
+.ebene-zeile { flex-direction: column; align-items: stretch; }
+
+.sw-presets { display: flex; gap: 6px; justify-content: center; }
+
 @media (max-width: 560px) {
   .kopf-sub { display: none; }
   .ebene-name { font-size: .9rem; }
   .temp-feld { width: 80px; }
   .filterleiste .feld { min-width: 110px; }
+  .dash-grid { grid-template-columns: 1fr; }
 }

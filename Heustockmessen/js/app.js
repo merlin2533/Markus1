@@ -6,18 +6,29 @@
 const App = (() => {
 
   // --- Warnstufen (Ampel) -------------------------------------------------
-  // Übliche Richtwerte der Heustock-Temperaturüberwachung. Bei Bedarf hier
-  // zentral anpassen.
-  const STUFEN = [
-    { ab: 70,         klasse: 'rot',    titel: 'Akute Brandgefahr',
-      hinweis: 'Sofort Feuerwehr/Fachberater verständigen – Heu nur unter Aufsicht und Brandschutz ausräumen.' },
-    { ab: 60,         klasse: 'orange', titel: 'Kritisch',
+  // Texte je Stufe; die Schwellenwerte (ab welcher Temperatur) sind in der App
+  // konfigurierbar (Heu/Stroh) und werden serverseitig gespeichert.
+  const STUFEN_TEXT = {
+    rot:    { klasse: 'rot',    titel: 'Akute Brandgefahr',
+      hinweis: 'Sofort Feuerwehr/Fachberater verständigen – nur unter Aufsicht und Brandschutz ausräumen.' },
+    orange: { klasse: 'orange', titel: 'Kritisch',
       hinweis: 'Engmaschig (z. B. alle 2 Std.) kontrollieren, Feuerwehr informieren, Ausräumen vorbereiten.' },
-    { ab: 45,         klasse: 'gelb',   titel: 'Erhöht',
+    gelb:   { klasse: 'gelb',   titel: 'Erhöht',
       hinweis: 'Beginnende Selbsterhitzung – täglich kontrollieren und dokumentieren.' },
-    { ab: -Infinity,  klasse: 'gruen',  titel: 'Unbedenklich',
-      hinweis: 'Normaler Bereich.' },
-  ];
+    gruen:  { klasse: 'gruen',  titel: 'Unbedenklich', hinweis: 'Normaler Bereich.' },
+  };
+  // Standard: Richtwerte für Heu. Per ⚙ Schwellenwerte anpassbar.
+  let SCHWELLEN = { gelb: 45, orange: 60, rot: 70, material: 'Heu' };
+
+  function baueStufen() {
+    return [
+      { ab: SCHWELLEN.rot,    ...STUFEN_TEXT.rot },
+      { ab: SCHWELLEN.orange, ...STUFEN_TEXT.orange },
+      { ab: SCHWELLEN.gelb,   ...STUFEN_TEXT.gelb },
+      { ab: -Infinity,        ...STUFEN_TEXT.gruen },
+    ];
+  }
+  let STUFEN = baueStufen();
 
   function stufeFuer(t) {
     if (t === null || t === undefined || isNaN(t)) return null;
@@ -41,7 +52,7 @@ const App = (() => {
 
   function leererKopf() {
     return {
-      zeitpunkt: '', messer: '', notiz: '',
+      zeitpunkt: '', messer: '', notiz: '', foto: '',
       aussentemperatur: '', temp_quelle: 'manuell',
       geo_lat: null, geo_lon: null, wetter_text: '',
     };
@@ -96,6 +107,11 @@ const App = (() => {
       State.messstellen = d.messstellen || [];
       State.messreihen = d.messreihen || [];
       State.rev = d.rev ?? State.rev;
+      if (d.schwellen && typeof d.schwellen.gelb === 'number') {
+        SCHWELLEN = { gelb: d.schwellen.gelb, orange: d.schwellen.orange, rot: d.schwellen.rot,
+          material: d.schwellen.material || 'Heu' };
+        STUFEN = baueStufen();
+      }
       State.online = true;
     } catch (e) {
       State.online = false;
@@ -190,12 +206,23 @@ const App = (() => {
 
     const fNotiz = el('input', { type: 'text', id: 'm-notiz', placeholder: 'Notiz zur Messung (optional)', value: State.kopf.notiz || '' });
 
+    // Foto/Beleg
+    const fFoto = el('input', { type: 'file', accept: 'image/*', capture: 'environment', onchange: fotoGewaehlt });
+    const fotoBox = el('div', { class: 'foto-box' }, fFoto);
+    if (State.kopf.foto) {
+      fotoBox.append(
+        el('img', { class: 'foto-vorschau', src: State.kopf.foto, alt: 'Beleg' }),
+        el('button', { type: 'button', class: 'btn mini gefahr', onclick: () => { leseKopf(); State.kopf.foto = ''; renderMessung(); } }, 'Foto entfernen'),
+      );
+    }
+
     form.append(
       feld('Messstelle (Anfahrt)', sel),
       feld('Zeitpunkt', fZeit),
       feld('Erfasser/in', fMesser, dl),
       feld('Außentemperatur', el('span', { class: 'temp-zeile' }, fTemp, el('span', {}, '°C'), wetterBtn, fQuelle)),
       feld('Notiz', fNotiz),
+      feld('Foto/Beleg', fotoBox),
     );
     wrap.append(form);
 
@@ -258,6 +285,7 @@ const App = (() => {
         ? el('span', {}, '🌡 außen ' + k.aussentemperatur + ' °C' + (k.temp_quelle === 'open-meteo' ? ' (auto)' : '')) : null,
       k.notiz ? el('span', {}, '📝 ' + k.notiz) : null,
     ));
+    if (k.foto) wrap.append(el('img', { class: 'foto-vorschau gross', src: k.foto, alt: 'Beleg' }));
 
     let anzahl = 0;
     for (const halle of hallen) {
@@ -321,6 +349,8 @@ const App = (() => {
 
   function ortZeile(ort) {
     const vorhanden = State.werte[ort.id] || {};
+    const setze = (feld, wert) => { State.werte[ort.id] = { ...(State.werte[ort.id] || {}), [feld]: wert }; };
+
     const input = el('input', {
       type: 'number', step: '0.1', inputmode: 'decimal', class: 'temp-feld', placeholder: '°C',
       'data-ort': ort.id, value: vorhanden.temperatur ?? '',
@@ -328,7 +358,7 @@ const App = (() => {
     const badge = el('span', { class: 'badge' });
     const upd = () => {
       const t = input.value === '' ? null : parseFloat(input.value);
-      State.werte[ort.id] = { ...(State.werte[ort.id] || {}), temperatur: input.value === '' ? null : t };
+      setze('temperatur', input.value === '' ? null : t);
       const st = stufeFuer(t);
       input.className = 'temp-feld' + (st ? ' s-' + st.klasse : '');
       badge.className = 'badge' + (st ? ' s-' + st.klasse : '');
@@ -336,8 +366,18 @@ const App = (() => {
       badge.title = st ? st.hinweis : '';
     };
     input.addEventListener('input', upd);
+
+    const tiefe = el('input', { type: 'text', class: 'tiefe-feld', placeholder: 'Tiefe/Pos.',
+      value: vorhanden.tiefe || '', title: 'Sondentiefe oder -position, z. B. „150 cm"' });
+    tiefe.addEventListener('input', () => setze('tiefe', tiefe.value));
+    const notiz = el('input', { type: 'text', class: 'ort-notiz-feld', placeholder: 'Notiz (z. B. Sonde klemmt)',
+      value: vorhanden.notiz || '' });
+    notiz.addEventListener('input', () => setze('notiz', notiz.value));
+
     const z = el('div', { class: 'ebene-zeile' },
-      el('label', { class: 'ebene-name' }, ort.bezeichnung), input, el('span', {}, '°C'), badge);
+      el('div', { class: 'ebene-haupt' },
+        el('label', { class: 'ebene-name' }, ort.bezeichnung), input, el('span', {}, '°C'), badge),
+      el('div', { class: 'ebene-zusatz' }, tiefe, notiz));
     upd();
     return z;
   }
@@ -380,7 +420,7 @@ const App = (() => {
   function legende() {
     const l = el('div', { class: 'legende' });
     for (const s of [...STUFEN].reverse()) {
-      const von = s.ab === -Infinity ? '< 45' : '≥ ' + s.ab;
+      const von = s.ab === -Infinity ? '< ' + SCHWELLEN.gelb : '≥ ' + s.ab;
       l.append(el('span', { class: 'leg-eintrag s-' + s.klasse, title: s.hinweis },
         el('span', { class: 'leg-punkt' }), `${von} °C – ${s.titel}`));
     }
@@ -404,6 +444,38 @@ const App = (() => {
     }
   }
 
+  // Foto vor dem Hochladen verkleinern (spart Platz in DB/Backup).
+  function bildKomprimieren(file, maxPx = 1024, qualitaet = 0.7) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > h && w > maxPx) { h = Math.round(h * maxPx / w); w = maxPx; }
+        else if (h > maxPx) { w = Math.round(w * maxPx / h); h = maxPx; }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(img.src);
+        resolve(c.toDataURL('image/jpeg', qualitaet));
+      };
+      img.onerror = () => reject(new Error('Bild konnte nicht gelesen werden.'));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  async function fotoGewaehlt(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    leseKopf();
+    try {
+      State.kopf.foto = await bildKomprimieren(f);
+      meldung('Foto übernommen.', 'ok');
+    } catch (err) {
+      meldung('Foto: ' + err.message, 'fehler');
+    }
+    renderMessung();
+  }
+
   function neueMessung() {
     State.editReiheId = null;
     State.werte = {};
@@ -416,11 +488,16 @@ const App = (() => {
   async function speichereMessreihe() {
     const k = State.kopf;
     const werte = Object.entries(State.werte)
-      .filter(([, v]) => v && v.temperatur !== null && v.temperatur !== undefined && !isNaN(v.temperatur))
-      .map(([ort_id, v]) => ({ ort_id: Number(ort_id), temperatur: v.temperatur, notiz: v.notiz || '' }));
+      .map(([ort_id, v]) => ({
+        ort_id: Number(ort_id),
+        temperatur: (v.temperatur === undefined || v.temperatur === '' || isNaN(v.temperatur)) ? null : v.temperatur,
+        tiefe: (v.tiefe || '').trim(),
+        notiz: (v.notiz || '').trim(),
+      }))
+      .filter((w) => w.temperatur !== null || w.tiefe || w.notiz);
 
     if (!werte.length) {
-      meldung('Bitte mindestens einen Temperaturwert eingeben.', 'fehler');
+      meldung('Bitte mindestens einen Wert (Temperatur oder Notiz) eingeben.', 'fehler');
       return;
     }
     // Vollständigkeit: bei fehlenden Orten nachfragen
@@ -444,6 +521,7 @@ const App = (() => {
       wetter_text: auto ? k.wetter_text : '',
       messer: k.messer || '',
       notiz: k.notiz || '',
+      foto: k.foto || '',
       messwerte: werte,
     };
 
@@ -519,6 +597,8 @@ const App = (() => {
       titel, besch,
       el('button', { class: 'btn klein', onclick: () =>
         aktion(() => Api.messstelleSave({ id: stelle.id, name: titel.value.trim(), beschreibung: besch.value.trim() })) }, 'Speichern'),
+      el('button', { class: 'btn klein', title: 'Struktur (Hallen/Orte) als neue Messstelle kopieren', onclick: () =>
+        aktion(() => Api.messstelleDuplizieren(stelle.id)) }, 'Duplizieren'),
       el('button', { class: 'btn klein gefahr', onclick: () => {
         if (confirm('Messstelle „' + stelle.name + '" inkl. aller Hallen, Orte und Messwerte löschen?'))
           aktion(() => Api.messstelleDelete(stelle.id));
@@ -650,7 +730,8 @@ const App = (() => {
           const st = stufeFuer(w.temperatur);
           tab.append(el('tr', { class: st ? 's-' + st.klasse : '' },
             el('td', { class: 'halle-zelle' }, i === 0 ? halleName : ''),
-            el('td', {}, info ? info.ort.bezeichnung : ('Ort #' + w.ort_id)),
+            el('td', {}, info ? info.ort.bezeichnung : ('Ort #' + w.ort_id),
+              w.tiefe ? el('span', { class: 'klein-grau' }, ' · ' + w.tiefe) : null),
             el('td', { class: 'num' }, w.temperatur != null ? w.temperatur.toFixed(1) + ' °C' : '—'),
             trendZelle(timelines, w.ort_id, r.zeitpunkt, w.temperatur),
             el('td', {}, st ? st.titel : ''),
@@ -658,6 +739,11 @@ const App = (() => {
         });
       }
       det.append(tab);
+
+      if (r.foto) {
+        det.append(el('a', { href: r.foto, target: '_blank', class: 'foto-link' },
+          el('img', { class: 'foto-vorschau', src: r.foto, alt: 'Beleg zur Messung' })));
+      }
 
       const fuss = el('div', { class: 'reihe-fuss' });
       if (r.notiz) fuss.append(el('span', { class: 'klein-grau' }, 'Notiz: ' + r.notiz + ' '));
@@ -679,7 +765,7 @@ const App = (() => {
     State.editReiheId = r.id;
     State.werte = {};
     for (const w of r.messwerte) {
-      State.werte[w.ort_id] = { temperatur: w.temperatur, notiz: w.notiz || '' };
+      State.werte[w.ort_id] = { temperatur: w.temperatur, tiefe: w.tiefe || '', notiz: w.notiz || '' };
     }
     // Messstelle bestimmen (aus Feld oder aus erstem Ort herleiten)
     let stelleId = r.messstelle_id;
@@ -693,6 +779,7 @@ const App = (() => {
       zeitpunkt: lokaleZeit(new Date(r.zeitpunkt)),
       messer: r.messer || '',
       notiz: r.notiz || '',
+      foto: r.foto || '',
       aussentemperatur: r.aussentemperatur != null ? String(r.aussentemperatur) : '',
       temp_quelle: r.temp_quelle || 'manuell',
       geo_lat: r.geo_lat, geo_lon: r.geo_lon, wetter_text: r.wetter_text || '',
@@ -924,6 +1011,132 @@ const App = (() => {
   }
 
   // ======================================================================
+  //  Ansicht 0: Start-Dashboard (Übersicht aller Messstellen)
+  // ======================================================================
+  function letzteReiheFuer(stelleId) {
+    return State.messreihen.find((r) => {
+      const sid = r.messstelle_id || (r.messwerte[0] ? (ortById(r.messwerte[0].ort_id)?.stelle.id) : null);
+      return sid === stelleId;
+    });
+  }
+
+  function tageHer(iso) {
+    return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  }
+
+  // Empfohlenes Kontrollintervall (Tage) je Stufe – einfache Faustregel.
+  function intervallTage(stufe) {
+    if (!stufe) return 14;
+    return { rot: 0, orange: 1, gelb: 3, gruen: 7 }[stufe.klasse] ?? 7;
+  }
+
+  function dashInfo(stelle) {
+    const r = letzteReiheFuer(stelle.id);
+    const orteGesamt = (stelle.hallen || []).reduce((n, h) => n + (h.orte || []).length, 0);
+    let maxTemp = null, stufe = null, tage = null, gemessen = 0;
+    if (r) {
+      maxTemp = r.messwerte.reduce((m, w) => (w.temperatur != null && w.temperatur > m ? w.temperatur : m), -Infinity);
+      if (maxTemp === -Infinity) maxTemp = null;
+      stufe = stufeFuer(maxTemp);
+      tage = tageHer(r.zeitpunkt);
+      gemessen = r.messwerte.filter((w) => w.temperatur != null).length;
+    }
+    const faellig = !r || tage >= intervallTage(stufe);
+    return { stelle, r, maxTemp, stufe, tage, orteGesamt, gemessen, faellig };
+  }
+
+  function renderDashboard() {
+    const wrap = $('#view-dashboard');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    wrap.append(el('div', { class: 'verlauf-kopf' },
+      el('h2', {}, '🏠 Übersicht'),
+      el('div', { class: 'werkzeuge' },
+        el('span', { class: 'klein-grau' }, 'Schwellen: ' + (SCHWELLEN.material || 'Heu')
+          + ` (${SCHWELLEN.gelb}/${SCHWELLEN.orange}/${SCHWELLEN.rot} °C)`),
+        el('button', { class: 'btn klein', onclick: schwellenDialogOeffnen }, '⚙ Schwellenwerte'),
+      )));
+
+    if (!State.messstellen.length) {
+      wrap.append(el('div', { class: 'leer' }, 'Noch keine Messstellen. Legen Sie im Reiter ',
+        el('strong', {}, 'Messstellen'), ' Messstellen, Hallen und Orte an.'));
+      return;
+    }
+
+    // kritischste/fällige zuerst
+    const infos = State.messstellen.map(dashInfo).sort((a, b) => {
+      const av = a.maxTemp == null ? -1 : a.maxTemp, bv = b.maxTemp == null ? -1 : b.maxTemp;
+      return (b.faellig - a.faellig) || (bv - av);
+    });
+    const grid = el('div', { class: 'dash-grid' });
+    for (const i of infos) grid.append(dashKarte(i));
+    wrap.append(grid);
+  }
+
+  function dashKarte(i) {
+    const s = i.stelle;
+    const karte = el('section', { class: 'dash-karte' + (i.stufe ? ' s-' + i.stufe.klasse : '') });
+    karte.append(el('div', { class: 'dash-kopf' },
+      el('strong', {}, s.name),
+      i.stufe ? el('span', { class: 'badge s-' + i.stufe.klasse }, i.maxTemp.toFixed(1) + ' °C') : el('span', { class: 'klein-grau' }, 'keine Messung')));
+
+    if (i.r) {
+      karte.append(el('div', { class: 'dash-zeile' }, i.stufe.titel));
+      karte.append(el('div', { class: 'dash-zeile klein-grau' },
+        'zuletzt: ' + (i.tage === 0 ? 'heute' : 'vor ' + i.tage + ' Tag' + (i.tage === 1 ? '' : 'en'))
+        + ' · ' + i.gemessen + '/' + i.orteGesamt + ' Orte'));
+    } else {
+      karte.append(el('div', { class: 'dash-zeile klein-grau' }, i.orteGesamt + ' Orte angelegt'));
+    }
+    if (i.faellig) karte.append(el('div', { class: 'dash-faellig' }, '⏰ Kontrolle fällig'));
+
+    karte.append(el('div', { class: 'dash-aktionen' },
+      el('button', { class: 'btn klein primaer', onclick: () => starteMessungFuer(s.id) }, '➕ Messen'),
+      el('button', { class: 'btn klein', onclick: () => { State.filter = { stelleId: String(s.id), halleId: '', von: '', bis: '', nurKritisch: false }; renderVerlauf(); zeigeView('verlauf'); } }, 'Verlauf'),
+    ));
+    return karte;
+  }
+
+  function starteMessungFuer(stelleId) {
+    State.editReiheId = null;
+    State.werte = {};
+    State.kopf = leererKopf();
+    State.wizardStelleId = stelleId;
+    State.wizardSchritt = 0;
+    renderMessung();
+    zeigeView('messung');
+  }
+
+  // ---- Schwellenwerte konfigurieren ----
+  function schwellenDialogOeffnen() {
+    $('#sw-gelb').value = SCHWELLEN.gelb;
+    $('#sw-orange').value = SCHWELLEN.orange;
+    $('#sw-rot').value = SCHWELLEN.rot;
+    $('#sw-material').textContent = SCHWELLEN.material || 'Heu';
+    $('#sw-fehler').hidden = true;
+    $('#schwellen-overlay').hidden = false;
+  }
+  function schwellenPreset(material) {
+    if (material === 'Stroh') { $('#sw-gelb').value = 40; $('#sw-orange').value = 55; $('#sw-rot').value = 65; }
+    else { $('#sw-gelb').value = 45; $('#sw-orange').value = 60; $('#sw-rot').value = 70; }
+    $('#sw-material').textContent = material;
+  }
+  async function schwellenSpeichern() {
+    const g = parseFloat($('#sw-gelb').value), o = parseFloat($('#sw-orange').value), r = parseFloat($('#sw-rot').value);
+    const f = $('#sw-fehler');
+    if (isNaN(g) || isNaN(o) || isNaN(r) || !(g < o && o < r)) {
+      f.hidden = false; f.textContent = 'Bitte Zahlen mit gelb < orange < rot eingeben.'; return;
+    }
+    try {
+      await Api.schwellenSet({ gelb: g, orange: o, rot: r, material: $('#sw-material').textContent });
+      $('#schwellen-overlay').hidden = true;
+      await ladeDaten();
+      renderAlles();
+      meldung('Schwellenwerte gespeichert (' + g + '/' + o + '/' + r + ' °C).', 'ok');
+    } catch (e) { f.hidden = false; f.textContent = e.message; }
+  }
+
+  // ======================================================================
   //  Offline-Puffer + Live-Update
   // ======================================================================
   const Offline = (() => {
@@ -981,6 +1194,7 @@ const App = (() => {
       if (s.rev !== State.rev) {
         const messendAktiv = State.wizardSchritt > 0 || Object.keys(State.werte).length > 0;
         await ladeDaten();
+        renderDashboard();
         renderVerlauf();
         renderMessstellen();
         renderDiagramm();
@@ -1074,6 +1288,7 @@ const App = (() => {
   }
 
   function renderAlles() {
+    renderDashboard();
     renderMessung();
     renderMessstellen();
     renderVerlauf();
@@ -1090,9 +1305,13 @@ const App = (() => {
 
   async function init() {
     $$('.nav-btn').forEach((b) => b.addEventListener('click', () => zeigeView(b.dataset.view)));
-    zeigeView('messung');
+    zeigeView('dashboard');
 
     $('#login-form').addEventListener('submit', login);
+    $('#sw-speichern').addEventListener('click', schwellenSpeichern);
+    $('#sw-abbrechen').addEventListener('click', () => { $('#schwellen-overlay').hidden = true; });
+    $('#sw-heu').addEventListener('click', () => schwellenPreset('Heu'));
+    $('#sw-stroh').addEventListener('click', () => schwellenPreset('Stroh'));
     $('#login-btn').addEventListener('click', login);
     $('#btn-logout').addEventListener('click', logout);
     $('#btn-einstellungen').addEventListener('click', () => pwDialog(true));

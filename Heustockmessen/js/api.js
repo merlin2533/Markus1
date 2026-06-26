@@ -53,6 +53,8 @@ const Api = (() => {
 
     messstelleSave:  (d)     => ruf('messstelle_save', d, 'POST'),
     messstelleDelete:(id)    => ruf('messstelle_delete', { id }, 'POST'),
+    messstelleDuplizieren: (id) => ruf('messstelle_duplizieren', { id }, 'POST'),
+    schwellenSet:    (d)     => ruf('schwellen_set', d, 'POST'),
 
     halleSave:       (d)     => ruf('halle_save', d, 'POST'),
     halleDelete:     (id)    => ruf('halle_delete', { id }, 'POST'),
